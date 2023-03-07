@@ -22,4 +22,4 @@ percent_map(counties$white, "darkgreen", "% White")
 runApp("my_app", display.mode = "showcase")
 
 library(rsconnect)
-rsconnect::deployApp('test')  #PsyChild
+rsconnect::deployApp('PsyChild')  #PsyChild

@@ -199,13 +199,11 @@ ui <- navbarPage("PsyChild",
                                                  label = "Choose one or more class(es) to display",
                                                  choices = list("Deliriants",
                                                                 "Dissociatives",
-                                                                "Endocannabinoids",
                                                                 "Entactogens",
-                                                                "Harmala alkaloids",
+                                                                "MAOIs",
                                                                 "Phytocannabinoids",
                                                                 "Psychedelics",
                                                                 "Synthetic cannabinoids",
-                                                                "Can. rec. ant.",
                                                                 "all"),
                                                  selected = "all"),
                               
@@ -241,9 +239,9 @@ ui <- navbarPage("PsyChild",
                               checkboxGroupInput("Compound",
                                                  # h3("Compound"),
                                                  label = "Choose one or more compound(s) to display",
-                                                 choices = list("2-AG",
+                                                 choices = list(" 2-AG (2-Arachidonylglycerol)",
                                                                 "AA",
-                                                                "AEA",
+                                                                "AEA (Anandamid)",
                                                                 "Delta-8-tetrahydrocannabinol (delta-8-THC)",
                                                                 "Dexanabinol",
                                                                 "Dronabinol",
@@ -251,30 +249,29 @@ ui <- navbarPage("PsyChild",
                                                                 "Harmaline",
                                                                 "Harmine",
                                                                 "Iofetamine",
-                                                                "Kataphol",
                                                                 "Ketamine",
                                                                 "Ketodex",
                                                                 "Ketofol",
-                                                                "LAE-32",
+                                                                "LAE-32 (D-Lysergic acid ethylamide)",
                                                                 "Lenabasum",
                                                                 "Levonantradol",
-                                                                "LSD",
+                                                                "LSD (Lysergic acid diethylamide)",
                                                                 "Marinol",
-                                                                "mCPP",
+                                                                " mCPP (meta-Chlorphenylpiperazin)",
                                                                 "Mescaline",
                                                                 "Methysergide",
                                                                 "Nabilone",
                                                                 "Nabiximols",
                                                                 "Naboline",
-                                                                "OEA",
-                                                                "PCP",
-                                                                "PEA",
+                                                                "OEA (Oleoylethanolamide)",
+                                                                "PCP (Phencyclidin)",
+                                                                "PEA (Palmitoylethanolamid)",
                                                                 "Physostigmine",
                                                                 "Phytocannabinoids",
                                                                 "Psilocybin",
                                                                 "Scopolamine",
                                                                 "THC",
-                                                                "αET",
+                                                                "αET (alpha-Ethyltryptamine)",
                                                                 "all"),
                                                  selected = "all"),
                               
@@ -418,12 +415,20 @@ server <- function(input, output) {
     
     # # testing
     # input=list(range = c(1839, 2023), # 1839 1950 2023 1980
-    # range_compounds = c(1839, 2023), # 1839 1950 2023 1980
+    #            range_compounds = c(1839, 2023), # 1839 1950 2023 1980
     #            Class = c("Dissociatives, Entactogens"), # "Dissociatives" "all"
-    #            Compound = c("LSD", "Phytocannabinoids")) # LSD
+    #            Compound = c("αET (alpha-Ethyltryptamine)")) # LSD Phytocannabinoids αET (alpha-Ethyltryptamine) all OEA (Oleoylethanolamide)
+    c <- 1
+    for (c in length(input$Compound)) {
+      if(grepl("\\(", input$Compound[c])){
+        input$Compound[c] <- gsub(".*\\((\\w+)\\).*", "\\1", input$Compound[c])
+      }
+    }
+
     
     # filter by input range
-    PS.data.compounds.plot <- PS.data.compounds %>%
+    PS.data.compounds.plot <- PS.data.compounds  %>% 
+      ungroup() %>%
       filter(Date >= input$range_compounds[1],
              Date <= input$range_compounds[2])
     
@@ -433,8 +438,9 @@ server <- function(input, output) {
       tmp <- NULL
       for(i in 1:length(unlist(strsplit(input$Compound, split = ", ")))){
         tmp <- rbind(tmp, PS.data.compounds.plot %>%
+                       ungroup() %>%
                        # filter(Compound %in% unlist(strsplit(input$Compound, split = ", ")))
-                       filter(grepl(unlist(strsplit(input$Compound[i], split = ", ")), Compound)))
+                       filter(grepl(unlist(strsplit(input$Compound[i], split = ", ")), Compound))) # "Oleoylethanolamide"
       }
       PS.data.compounds.plot <- tmp
       rm(tmp)

@@ -460,7 +460,8 @@ server <- function(input, output) {
       labs(x = "Date", y = "Cumulative references") +
       scale_color_manual(values = c(unique(PS.data.compounds.plot$col_compound))) +
       theme(legend.position="bottom") +
-      theme_bw()
+      theme_bw() +
+      scale_x_continuous(breaks = round(seq(1840, max(PS.data.compounds.plot$Date), by = 10),1))
     p +
       theme(legend.position="bottom")
   })

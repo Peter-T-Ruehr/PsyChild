@@ -313,7 +313,7 @@ server <- function(input, output) {
   output$studies_over_year_plot_Class <- renderPlot({
     
     # # testing
-    # input=list(range = c(1950, 1980), # 1839 1950 2023 1980
+    # input=list(range = c(1839, 2023), # 1839 1950 2023 1980
     #            range_compounds = c(1950, 1980), # 1839 1950 2023 1980
     #            Class = c("Dissociatives, Entactogens"), # "Dissociatives" "all"
     #            Compound = c("LSD"))
@@ -341,9 +341,12 @@ server <- function(input, output) {
       ylim(0, max(PS.data$cumul_year_class)) +
       labs(x = "Date", y = "Cumulative references") +
       scale_color_manual(values = c(unique(PS.data.plot.Class$col_class))) +
-      theme_bw()
+      theme_bw() +
+      scale_x_continuous(breaks = round(seq(1840, max(PS.data.plot.Class$Date), by = 10),1)) #+
+      # scale_y_continuous(breaks = round(seq(min(PS.data.plot.Class$cumul_year_class), max(PS.data.plot.Class$cumul_year_class), by = 10),1))
     p +
-      theme(legend.position="bottom")
+      theme(legend.position="bottom",
+            axis.text.x = element_text(angle = 45, hjust=1)) # vjust = 0.5, 
   })
   
   output$table_print_Class <- renderDataTable({df <- reactiveVal(PS.data.print_Class)
@@ -424,7 +427,7 @@ server <- function(input, output) {
         input$Compound[c] <- gsub(".*\\((\\w+)\\).*", "\\1", input$Compound[c])
       }
     }
-
+    
     
     # filter by input range
     PS.data.compounds.plot <- PS.data.compounds  %>% 
@@ -521,7 +524,7 @@ server <- function(input, output) {
       `Comment`#,
       # `comment 1`,
       # `comment 2`
-      ))},
+    ))},
   options = list(pageLength = 1000,
                  searching = FALSE,
                  lengthChange = FALSE))

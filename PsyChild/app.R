@@ -37,7 +37,7 @@ PS.data$Date <- as.numeric(PS.data$Date)
 
 # rename some columns
 PS.data <- rename(PS.data, Class = 'Substance class')
-PS.data <- rename(PS.data, Compound = 'Psychedelic Compound(s) in children/adolescents')
+PS.data <- rename(PS.data, Compound = 'Compound(s)') # was before: 'Psychedelic Compound(s) in children/adolescents')
 # PS.data <- rename(PS.data, Indication = 'Indication (for children/adolescents)/Field of Application')
 # PS.data <- rename(PS.data, Indication_ICD11 = 'Indication (Current terminology according to ICD-11)')
 # PS.data <- rename(PS.data, Psychotherapy = 'Adjacent psychotherapy?')
@@ -366,22 +366,36 @@ server <- function(input, output) {
   }
   
   PS.data.print_Class <- PS.data.print_Class %>% 
-    select(-c(`Location photo`, 
-              `comment 1`, 
-              `comment 2`,
-              `Reported side effects/adverse events`,
-              `Only children and adolescents?`,
-              `Indication (for children/adolescents)/Field of Application`,
-              `Indication (Current terminology according to ICD-11)`,
-              `Psychiatric indication coded as ICD-11 Groups OR Field of Application`,
-              `Current terminology abbr.`,
-              `ICD-11 Gropus/Field of Application Abbr.`,
-              `Psychiatric indication?`,
-              `Adjacent psychotherapy?`,
-              `Date`,
-              `one`,
-              `cumul_years_all`,
-              `cumul_year_class`))
+    arrange(Date, Class) %>% 
+    rename(`Substance class` = Class,
+           `Compound(s)` = Compound) %>% 
+    select(c(# `Date`,
+      `Author`,
+      `Location`,
+      # `Location photo`,
+      `Title`,
+      `Type`,
+      `Compound(s)`,
+      `Substance class`,
+      `ICD-11 Indication or field of application`,
+      `ICD-11 Indication as Groups or field of application`,
+      # `Psychiatric indication?`,
+      `Adjunct psychotherapy`,
+      # `Adjacent psychotherapy?`,
+      `Subjects`,
+      # `Only children and adolescents?`,
+      `Main psychiatric outcomes`,
+      # `Reported side effects/adverse events`,
+      `Side effects (MedDRA)`,
+      `Consent`,
+      `in/out patient`,
+      # `Route of administration`,
+      `Regimen (route of administration, dose, frequency)`,
+      `Concomitant Medications`,
+      `Comment`#,
+      # `comment 1`,
+      # `comment 2`
+    ))
   
   PS.data.print_Class},
   options = list(pageLength = 1000,
@@ -473,22 +487,35 @@ server <- function(input, output) {
   
   PS.data.print_Compound %>% 
     arrange(Date, Compound) %>% 
-    select(-c(`Location photo`, 
-              `comment 1`, 
-              `comment 2`,
-              `Reported side effects/adverse events`,
-              `Only children and adolescents?`,
-              `Indication (for children/adolescents)/Field of Application`,
-              `Indication (Current terminology according to ICD-11)`,
-              `Psychiatric indication coded as ICD-11 Groups OR Field of Application`,
-              `Current terminology abbr.`,
-              `ICD-11 Gropus/Field of Application Abbr.`,
-              `Psychiatric indication?`,
-              `Adjacent psychotherapy?`,
-              `Date`,
-              `one`,
-              `cumul_years_all`,
-              `cumul_year_class`))},
+    rename(`Substance class` = Class,
+           `Compound(s)` = Compound) %>% 
+    select(c(# `Date`,
+      `Author`,
+      `Location`,
+      # `Location photo`,
+      `Title`,
+      `Type`,
+      `Compound(s)`,
+      `Substance class`,
+      `ICD-11 Indication or field of application`,
+      `ICD-11 Indication as Groups or field of application`,
+      # `Psychiatric indication?`,
+      `Adjunct psychotherapy`,
+      # `Adjacent psychotherapy?`,
+      `Subjects`,
+      # `Only children and adolescents?`,
+      `Main psychiatric outcomes`,
+      # `Reported side effects/adverse events`,
+      `Side effects (MedDRA)`,
+      `Consent`,
+      `in/out patient`,
+      # `Route of administration`,
+      `Regimen (route of administration, dose, frequency)`,
+      `Concomitant Medications`,
+      `Comment`#,
+      # `comment 1`,
+      # `comment 2`
+      ))},
   options = list(pageLength = 1000,
                  searching = FALSE,
                  lengthChange = FALSE))

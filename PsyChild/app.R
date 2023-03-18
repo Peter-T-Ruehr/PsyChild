@@ -7,7 +7,8 @@ library(viridisLite)
 # library(grid)
 library(ggrepel)
 library(googlesheets4)
-gs4_deauth()
+library(plotly)
+# gs4_deauth()
 sheet_id <- "https://docs.google.com/spreadsheets/d/1tL-9rg_K9rf5hpzj63MewlQLms1qV91Nt3RwMsFamaU/"
 PS.data <- read_sheet(sheet_id, sheet = 1)
 # remove unnamed columns
@@ -185,44 +186,64 @@ PS.data.compounds <- PS.data.compounds %>%
 ui <- navbarPage("PsyChild",
                  # Classes -----------------------------------------------------------------
                  tabPanel("Classes",
-                          sidebarLayout(
-                            sidebarPanel(
-                              helpText(h3("Tracking clinical psychedelics in children and adolescents.")), # "Visualize psychedelic drug use in children through time and space"
-                              
-                              # selectInput("Class",
-                              #             label = "Choose one or more class(es) to display",
-                              #             choices = classes,
-                              #             selected = classes[7]),
-                              
-                              checkboxGroupInput("Class",
-                                                 # h3("Class"),
-                                                 label = "Choose one or more class(es) to display",
-                                                 choices = list("Deliriants",
-                                                                "Dissociatives",
-                                                                "Entactogens",
-                                                                "MAOIs",
-                                                                "Phytocannabinoids",
-                                                                "Psychedelics",
-                                                                "Synthetic cannabinoids",
-                                                                "all"),
-                                                 selected = "all"),
-                              
-                              sliderInput("range",
-                                          label = "Years of interest:",
-                                          min = min(PS.data$Date),
-                                          max = max(PS.data$Date),
-                                          value = c(min(PS.data$Date), # c(min(PS.data$Date), 1950,
-                                                    max(PS.data$Date)),
-                                          step = 1,
-                                          sep = '')),
-                            
-                            mainPanel(
-                              verbatimTextOutput("class_selected"),
-                              plotOutput("studies_over_year_plot_Class"),
-                              # plotOutput("test_plot"),
-                              div(dataTableOutput("table_print_Class"), style = "font-size:80%")
-                            )
-                          )),
+                          # sidebarLayout(
+                          #   sidebarPanel(
+                          # helpText(h3("Tracking clinical psychedelics in children and adolescents.")), # "Visualize psychedelic drug use in children through time and space"
+                          
+                          # selectInput("Class",
+                          #             label = "Choose one or more class(es) to display",
+                          #             choices = classes,
+                          #             selected = classes[7]),
+                          
+                          # checkboxGroupInput("Class",
+                          #                    # h3("Class"),
+                          #                    label = "Choose one or more class(es) to display",
+                          #                    choices = list("Deliriants",
+                          #                                   "Dissociatives",
+                          #                                   "Entactogens",
+                          #                                   "MAOIs",
+                          #                                   "Phytocannabinoids",
+                          #                                   "Psychedelics",
+                          #                                   "Synthetic cannabinoids",
+                          #                                   "all"),
+                          #                    selected = "all"),
+                          
+                          # sliderInput("range",
+                          #             label = "Years of interest:",
+                          #             min = min(PS.data$Date),
+                          #             max = max(PS.data$Date),
+                          #             value = c(min(PS.data$Date), # c(min(PS.data$Date), 1950,
+                          #                       max(PS.data$Date)),
+                          #             step = 1,
+                          #             sep = '')),
+                          
+                          # mainPanel(
+                          helpText(h3("Tracking clinical psychedelics in children and adolescents.")), # "Visualize psychedelic drug use in children through time and space"
+                          verbatimTextOutput("class_selected"),
+                          plotlyOutput("studies_over_year_plot_Class"), # plotOutput
+                          # plotOutput("test_plot"),
+                          sliderInput("range",
+                                      label = "Years of interest:",
+                                      min = min(PS.data$Date),
+                                      max = max(PS.data$Date),
+                                      value = c(min(PS.data$Date), # c(min(PS.data$Date), 1950,
+                                                max(PS.data$Date)),
+                                      step = 1,
+                                      sep = ''),
+                          checkboxGroupInput("Class",
+                                             # h3("Class"),
+                                             label = "Choose one or more class(es) to display",
+                                             choices = list("Deliriants",
+                                                            "Dissociatives",
+                                                            "Entactogens",
+                                                            "MAOIs",
+                                                            "Phytocannabinoids",
+                                                            "Psychedelics",
+                                                            "Synthetic cannabinoids",
+                                                            "all"),
+                                             selected = "all"),
+                          div(dataTableOutput("table_print_Class"), style = "font-size:80%")
+                 ),
                  
                  # Compounds --------------------------------------------------------------
                  tabPanel("Compounds",
@@ -310,7 +331,7 @@ server <- function(input, output) {
     paste0("Classes selected: ", paste(input$Class, collapse = ", "), ".")
   })
   
-  output$studies_over_year_plot_Class <- renderPlot({
+  output$studies_over_year_plot_Class <- renderPlotly({ # renderPlot
     
     # # testing
     # input=list(range = c(1839, 2023), # 1839 1950 2023 1980
@@ -334,19 +355,26 @@ server <- function(input, output) {
     }
     
     
-    p <- ggplot(data = PS.data.plot.Class,
-                aes(x=Date, y=cumul_year_class,
-                    col = Class)) +
-      geom_step(linewidth = 2, alpha = 0.75) +
-      ylim(0, max(PS.data$cumul_year_class)) +
-      labs(x = "Date", y = "Cumulative references") +
-      scale_color_manual(values = c(unique(PS.data.plot.Class$col_class))) +
-      theme_bw() +
-      scale_x_continuous(breaks = round(seq(1840, max(PS.data.plot.Class$Date), by = 10),1)) #+
-      # scale_y_continuous(breaks = round(seq(min(PS.data.plot.Class$cumul_year_class), max(PS.data.plot.Class$cumul_year_class), by = 10),1))
-    p +
-      theme(legend.position="bottom",
-            axis.text.x = element_text(angle = 45, hjust=1)) # vjust = 0.5, 
+    # p <- ggplot(data = PS.data.plot.Class,
+    #             aes(x=Date, y=cumul_year_class,
+    #                 col = Class)) +
+    #   geom_step(linewidth = 2, alpha = 0.75) +
+    #   ylim(0, max(PS.data$cumul_year_class)) +
+    #   labs(x = "Date", y = "Cumulative references") +
+    #   scale_color_manual(values = c(unique(PS.data.plot.Class$col_class))) +
+    #   theme_bw() +
+    #   scale_x_continuous(breaks = round(seq(1840, max(PS.data.plot.Class$Date), by = 10),1)) #+
+    #   # scale_y_continuous(breaks = round(seq(min(PS.data.plot.Class$cumul_year_class), max(PS.data.plot.Class$cumul_year_class), by = 10),1))
+    # p +
+    #   theme(legend.position="bottom",
+    #         axis.text.x = element_text(angle = 45, hjust=1)) # vjust = 0.5, 
+    
+    globalcolors <- PS.data.plot.Class$col_class
+    opacity <- 0.75
+    fig_classes <- plot_ly(data = PS.data.plot.Class, x=~Date, y=~cumul_year_class,
+                           type="scatter",color=~Class, mode="lines", colors = globalcolors, opacity=opacity, line = list(width=4)) # ,
+    # height=800)
+    fig_classes %>% layout(legend = list(orientation = 'h'))
   })
   
   output$table_print_Class <- renderDataTable({df <- reactiveVal(PS.data.print_Class)

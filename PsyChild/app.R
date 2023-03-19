@@ -7,6 +7,7 @@ library(viridisLite)
 # library(grid)
 library(ggrepel)
 library(googlesheets4)
+gs4_deauth()
 library(plotly)
 # gs4_deauth()
 sheet_id <- "https://docs.google.com/spreadsheets/d/1tL-9rg_K9rf5hpzj63MewlQLms1qV91Nt3RwMsFamaU/"
@@ -37,108 +38,138 @@ PS.data$Date[PS.data$Date == "Current"] <- 2023
 PS.data$Date <- as.numeric(PS.data$Date)
 
 # rename some columns
-PS.data <- rename(PS.data, Class = 'Substance class')
-PS.data <- rename(PS.data, Compound = 'Compound(s)') # was before: 'Psychedelic Compound(s) in children/adolescents')
+# PS.data <- rename(PS.data, Class = 'Substance class')
+# PS.data <- rename(PS.data, Compound = 'Compound(s)') # was before: 'Psychedelic Compound(s) in children/adolescents')
 # PS.data <- rename(PS.data, Indication = 'Indication (for children/adolescents)/Field of Application')
 # PS.data <- rename(PS.data, Indication_ICD11 = 'Indication (Current terminology according to ICD-11)')
 # PS.data <- rename(PS.data, Psychotherapy = 'Adjacent psychotherapy?')
 # PS.data <- rename(PS.data, Psychiatric_indication = 'Psychiatric indication?')
 
-# replace "Cannabinoid receptor agonist" with "Can. rec. ant."
-PS.data$Class[PS.data$Class == "Cannabinoid receptor agonist"] <- "Can. rec. ant."
-
 # remove Date == NA columns
 PS.data <- PS.data %>% 
   filter(!is.na(Date))
 
+# create old new names for Compounds list
+compound_translation <- tibble(old = c("2-AG \\(2-Arachidonoylglycerol\\)",
+                                       "AA Arachidonic acid",
+                                       "AEA \\(Anandamide\\)",
+                                       "LAE-32 \\(D-Lysergic acid diethylamide\\)",
+                                       "LSD \\(Lysergic acid diethylamide\\)",
+                                       "OEA \\(Oleoylethanolamide\\)",
+                                       "PCP \\(Phencyclidine\\)",
+                                       "mCPP \\(meta-Chlorophenylpiperazine\\)",
+                                       "PEA \\(Palmitoylethanolamide\\)",
+                                       "THC \\(Delta-8-THC\\)",
+                                       "THC \\(Delta-9 THC\\)",
+                                       "THC \\(THC-homologs, Numbers 122 and 125A\\)",
+                                       "αET \\(alpha-Ethyltryptamine\\)"),
+                               new = c("AG",
+                                       "AA",
+                                       "AEA",
+                                       "LAE",
+                                       "LSD",
+                                       "OEA",
+                                       "PCP",
+                                       "mCPP",
+                                       "PEA",
+                                       "THC",
+                                       "THC",
+                                       "THC",
+                                       "αET"))
+
 # arrange PS_data
 PS.data <- PS.data %>% 
-  arrange(Date, Author, Class)
+  arrange(Date, Author, `Substance class`)
 
 # get unique classes
-classes <- sort(unique(unlist(strsplit(PS.data$Class, split = "; "))))
-
-# get unique compounds
-compounds <- sort(unique(unlist(strsplit(PS.data$Compound, split = "; "))))
+classes <- sort(unique(unlist(strsplit(PS.data$`Substance class`, split = "; "))))
 
 # Class and compound: arrange by date and add cumulative columns
 PS.data <- PS.data %>%
   arrange(Date) %>%
-  mutate(one = 1,
-         cumul_years_all = cumsum(one)) %>%
-  group_by(Class) %>%
-  mutate(cumul_year_class = cumsum(one)) %>%
+  mutate(one = 1) %>% # ,
+  # cumul_years_all = cumsum(one)) %>%
+  group_by(`Substance class`) %>%
+  mutate(cumul_years_class = cumsum(one)) %>%
   ungroup()
+
+# save for later processing
+PS.data.compounds <- PS.data
+
+# change input compounds and data compounds to workable strings
+# unique(PS.data.compounds$`Compound(s)`)
+PS.data.compounds$Compound_new_name <- PS.data.compounds$`Compound(s)`
+for(i in 1:nrow(compound_translation)){
+  PS.data.compounds$Compound_new_name <- gsub(compound_translation$old[i], compound_translation$new[i], PS.data.compounds$Compound_new_name)
+}
+# unique(PS.data.compounds$Compound_new_name)
+
+# get unique compounds
+compounds <- sort(unique(unlist(strsplit(PS.data.compounds$Compound_new_name, split = "; "))))
 
 # save for printing
 PS.data.print_Class <- PS.data
 PS.data.print_Compound <- PS.data
 
-# save for later processing
-PS.data.compounds <- PS.data
-
-# add all missing years
-# Class
-for(i in classes){
-  # i <- classes.selected[1]
-  missing_years <- setdiff(min(PS.data$Date):max(PS.data$Date), PS.data$Date[PS.data$Class == i])
-  PS.data <- PS.data %>%
-    add_row(Class = i,
-            Date = missing_years) %>% 
-    arrange(Class, Date)
-}
-
 # separate multiple compounds from each other
 # i=1
-# i=34
+# i=25
 for(i in 1:nrow(PS.data.compounds)){
   # if compound cell contains ";"
-  if(grepl(";", PS.data.compounds$Compound[i])){
-    curr_compounds <- unlist(strsplit(PS.data.compounds$Compound[i], "; "))
+  if(grepl(";", PS.data.compounds$Compound_new_name[i])){
+    curr_compounds <- unlist(strsplit(PS.data.compounds$Compound_new_name[i], "; "))
     for(k in curr_compounds){
       PS.data.compounds <- PS.data.compounds %>% 
-        # add_row(Author = PS.data.compounds$Author[i],
-        #         Date = PS.data.compounds$Date[i],
-        #         Class = PS.data.compounds$Class[i],
-        #         Compound = k)
         add_row(PS.data.compounds[i, ])
       # replace original compounds with new compounds
-      PS.data.compounds$Compound[nrow(PS.data.compounds)] <- k
+      PS.data.compounds$Compound_new_name[nrow(PS.data.compounds)] <- k
     }
     # remove original row
     PS.data.compounds <- PS.data.compounds[-i, ]
   }
 }
 
+# cumulative years of compounds
 PS.data.compounds <- PS.data.compounds %>%
   arrange(Date) %>%
-  group_by(Compound) %>%
-  mutate(cumul_year_compound = cumsum(one)) %>%
+  group_by(Compound_new_name) %>%
+  mutate(cumul_years_compound = cumsum(one)) %>%
   ungroup() %>%
   select((-one))
 
+
 # class -------------------------------------------------------------------
+# add all missing years
+for(i in classes){
+  # i <- classes.selected[1]
+  missing_years <- setdiff(min(PS.data$Date):max(PS.data$Date), PS.data$Date[PS.data$`Substance class` == i])
+  PS.data <- PS.data %>%
+    add_row(`Substance class` = i,
+            Date = missing_years) %>% 
+    arrange(`Substance class`, Date)
+}
+
 # add line at first year of current selection table
 first_year <- min(PS.data$Date) # input$range[1]
 for(i in classes){
   # i <- classes.selected[1]
   curr_author <- PS.data %>%
-    filter(Date == first_year, Class == i) %>%
+    filter(Date == first_year, `Substance class` == i) %>%
     pull(Author)
   if(is.na(curr_author)){
-    PS.data$cumul_year_class[PS.data$Class == i & PS.data$Date == first_year] <- 0
+    PS.data$cumul_years_class[PS.data$`Substance class` == i & PS.data$Date == first_year] <- 0
   }
 }
 
-# fill empty years with previous cumul_year_class value
+# fill empty years with previous cumul_years_class value
 PS.data <- PS.data %>% 
-  group_by(Class) %>% 
-  fill(cumul_year_class)
+  group_by(`Substance class`) %>% 
+  fill(cumul_years_class)
 
 # define constant viridis colours and add to PS.data
-cols_class <- tibble(Class = unique(PS.data$Class), col_class = viridis(n=length(unique(PS.data$Class))))
+cols_class <- tibble(`Substance class` = unique(PS.data$`Substance class`), col_class = viridis(n=length(unique(PS.data$`Substance class`))))
 PS.data <- PS.data %>% 
-  left_join(cols_class, by = "Class")
+  left_join(cols_class, by = "Substance class")
 # plot(1:nrow(cols), col = unique(PS.data$col), pch = 16, cex = 5)
 # plot(1:nrow(cols), col = unique(PS.data.plot.Class$col), pch = 16, cex = 5)
 
@@ -146,79 +177,53 @@ PS.data <- PS.data %>%
 # add all missing years
 for(i in compounds){
   # i <- classes.selected[1]
-  missing_years <- setdiff(min(PS.data.compounds$Date):max(PS.data.compounds$Date), PS.data.compounds$Date[PS.data.compounds$Compound == i])
+  missing_years <- setdiff(min(PS.data.compounds$Date):max(PS.data.compounds$Date), PS.data.compounds$Date[PS.data.compounds$Compound_new_name == i])
   PS.data.compounds <- PS.data.compounds %>%
-    add_row(Compound = i,
+    add_row(Compound_new_name = i,
             Date = missing_years)
   # PS.data <- PS.data %>%
-  #   arrange(Class, Date)
+  #   arrange(`Substance class`, Date)
 }
 
 # add line at first year of current selection table
 first_year <- min(PS.data.compounds$Date) # input$range[1]
-i = "2-AG"
+# i = "2-AG"
 for(i in compounds){
   # i <- classes.selected[1]
   curr_author <- PS.data.compounds %>%
-    filter(Date == first_year, Compound == i) %>%
+    filter(Date == first_year, Compound_new_name == i) %>%
     pull(Author)
   if(is.na(curr_author)){
-    PS.data.compounds$cumul_year_compound[PS.data.compounds$Compound == i & PS.data.compounds$Date == first_year] <- 0
+    PS.data.compounds$cumul_years_compound[PS.data.compounds$Compound_new_name == i & PS.data.compounds$Date == first_year] <- 0
   }
 }
 
 # arrange before filling
 PS.data.compounds <- PS.data.compounds %>% 
-  arrange(Compound, Date) 
+  arrange(Compound_new_name, Date) 
 
-# fill empty years with previous cumul_year_compound value
+
+# fill empty years with previous cumul_years_compound value
 PS.data.compounds <- PS.data.compounds %>% 
-  group_by(Compound) %>% 
-  fill(cumul_year_compound)
+  group_by(Compound_new_name) %>% 
+  fill(cumul_years_compound)
 
 # define constant viridis colours and add to PS.data
-cols_compound <- tibble(Compound = unique(PS.data.compounds$Compound), col_compound = viridis(n=length(unique(PS.data.compounds$Compound))))
+cols_compound <- tibble(Compound_new_name = unique(PS.data.compounds$Compound_new_name), 
+                        col_compound = viridis(n=length(unique(PS.data.compounds$Compound_new_name))))
 PS.data.compounds <- PS.data.compounds %>% 
-  left_join(cols_compound, by = "Compound")
+  left_join(cols_compound, by = "Compound_new_name")
 # plot(1:nrow(cols_compound), col = unique(PS.data.compounds$col_compound), pch = 16, cex = 5)
 
 # User interface ----
-ui <- navbarPage("PsyChild",
+ui <- navbarPage("PsyChild - Tracking clinical psychedelics in children and adolescents.",
                  # Classes -----------------------------------------------------------------
-                 tabPanel("Classes",
+                 tabPanel("Substance classes",
                           # sidebarLayout(
                           #   sidebarPanel(
-                          # helpText(h3("Tracking clinical psychedelics in children and adolescents.")), # "Visualize psychedelic drug use in children through time and space"
-                          
-                          # selectInput("Class",
-                          #             label = "Choose one or more class(es) to display",
-                          #             choices = classes,
-                          #             selected = classes[7]),
-                          
-                          # checkboxGroupInput("Class",
-                          #                    # h3("Class"),
-                          #                    label = "Choose one or more class(es) to display",
-                          #                    choices = list("Deliriants",
-                          #                                   "Dissociatives",
-                          #                                   "Entactogens",
-                          #                                   "MAOIs",
-                          #                                   "Phytocannabinoids",
-                          #                                   "Psychedelics",
-                          #                                   "Synthetic cannabinoids",
-                          #                                   "all"),
-                          #                    selected = "all"),
-                          
-                          # sliderInput("range",
-                          #             label = "Years of interest:",
-                          #             min = min(PS.data$Date),
-                          #             max = max(PS.data$Date),
-                          #             value = c(min(PS.data$Date), # c(min(PS.data$Date), 1950,
-                          #                       max(PS.data$Date)),
-                          #             step = 1,
-                          #             sep = '')),
                           
                           # mainPanel(
-                          helpText(h3("Tracking clinical psychedelics in children and adolescents.")), # "Visualize psychedelic drug use in children through time and space"
+                          # helpText(h3("Tracking clinical psychedelics in children and adolescents.")), # "Visualize psychedelic drug use in children through time and space"
                           verbatimTextOutput("class_selected"),
                           plotlyOutput("studies_over_year_plot_Class"), # plotOutput
                           # plotOutput("test_plot"),
@@ -226,21 +231,21 @@ ui <- navbarPage("PsyChild",
                                       label = "Years of interest:",
                                       min = min(PS.data$Date),
                                       max = max(PS.data$Date),
-                                      value = c(min(PS.data$Date), # c(min(PS.data$Date), 1950,
+                                      value = c(1950, # c(min(PS.data$Date), 1950,
                                                 max(PS.data$Date)),
                                       step = 1,
                                       sep = ''),
                           checkboxGroupInput("Class",
                                              # h3("Class"),
-                                             label = "Choose one or more class(es) to display",
-                                             choices = list("Deliriants",
+                                             label = "Choose one or more substance class(es) to display",
+                                             choices = list("all",
+                                                            "Deliriants",
                                                             "Dissociatives",
                                                             "Entactogens",
                                                             "MAOIs",
                                                             "Phytocannabinoids",
                                                             "Psychedelics",
-                                                            "Synthetic cannabinoids",
-                                                            "all"),
+                                                            "Synthetic cannabinoids"),
                                              selected = "all"),
                           div(dataTableOutput("table_print_Class"), style = "font-size:80%")
                  ),
@@ -260,54 +265,55 @@ ui <- navbarPage("PsyChild",
                               checkboxGroupInput("Compound",
                                                  # h3("Compound"),
                                                  label = "Choose one or more compound(s) to display",
-                                                 choices = list(" 2-AG (2-Arachidonylglycerol)",
-                                                                "AA",
-                                                                "AEA (Anandamid)",
-                                                                "Delta-8-tetrahydrocannabinol (delta-8-THC)",
-                                                                "Dexanabinol",
-                                                                "Dronabinol",
-                                                                "Esketamine",
-                                                                "Harmaline",
-                                                                "Harmine",
-                                                                "Iofetamine",
-                                                                "Ketamine",
-                                                                "Ketodex",
-                                                                "Ketofol",
-                                                                "LAE-32 (D-Lysergic acid ethylamide)",
-                                                                "Lenabasum",
-                                                                "Levonantradol",
-                                                                "LSD (Lysergic acid diethylamide)",
-                                                                "Marinol",
-                                                                " mCPP (meta-Chlorphenylpiperazin)",
-                                                                "Mescaline",
-                                                                "Methysergide",
-                                                                "Nabilone",
-                                                                "Nabiximols",
-                                                                "Naboline",
-                                                                "OEA (Oleoylethanolamide)",
-                                                                "PCP (Phencyclidin)",
-                                                                "PEA (Palmitoylethanolamid)",
-                                                                "Physostigmine",
-                                                                "Phytocannabinoids",
-                                                                "Psilocybin",
-                                                                "Scopolamine",
-                                                                "THC",
-                                                                "αET (alpha-Ethyltryptamine)",
-                                                                "all"),
+                                                 choices = c("all",
+                                                             compounds),
+                                                 # "2-AG (2-Arachidonylglycerol)",
+                                                 # "AA",
+                                                 # "AEA (Anandamid)",
+                                                 # "Delta-8-tetrahydrocannabinol (delta-8-THC)",
+                                                 # "Dexanabinol",
+                                                 # "Dronabinol",
+                                                 # "Esketamine",
+                                                 # "Harmaline",
+                                                 # "Harmine",
+                                                 # "Iofetamine",
+                                                 # "Ketamine",
+                                                 # "Ketodex",
+                                                 # "Ketofol",
+                                                 # "LAE-32 (D-Lysergic acid ethylamide)",
+                                                 # "Lenabasum",
+                                                 # "Levonantradol",
+                                                 # "LSD (Lysergic acid diethylamide)",
+                                                 # "Marinol",
+                                                 # "mCPP (meta-Chlorphenylpiperazin)",
+                                                 # "Mescaline",
+                                                 # "Methysergide",
+                                                 # "Nabilone",
+                                                 # "Nabiximols",
+                                                 # "Naboline",
+                                                 # "OEA (Oleoylethanolamide)",
+                                                 # "PCP (Phencyclidin)",
+                                                 # "PEA (Palmitoylethanolamid)",
+                                                 # "Physostigmine",
+                                                 # "Phytocannabinoids",
+                                                 # "Psilocybin",
+                                                 # "Scopolamine",
+                                                 # "THC",
+                                                 # "αET (alpha-Ethyltryptamine)"
                                                  selected = "all"),
                               
                               sliderInput("range_compounds",
                                           label = "Years of interest:",
                                           min = min(PS.data$Date),
                                           max = max(PS.data$Date),
-                                          value = c(min(PS.data$Date), # c(min(PS.data$Date), 1950,
+                                          value = c(1950, # c(min(PS.data$Date), 1950,
                                                     max(PS.data$Date)),
                                           step = 1,
                                           sep = '')),
                             
                             mainPanel(
                               verbatimTextOutput("compound_selected"),
-                              plotOutput("studies_over_year_plot_Compound"),
+                              plotlyOutput("studies_over_year_plot_Compound"), # plotOutput
                               # plotOutput("test_plot"),
                               
                               div(dataTableOutput("table_print_Compound"), style = "font-size:80%")
@@ -333,14 +339,12 @@ server <- function(input, output) {
   
   output$studies_over_year_plot_Class <- renderPlotly({ # renderPlot
     
-    # # testing
+    # testing
     # input=list(range = c(1839, 2023), # 1839 1950 2023 1980
-    #            range_compounds = c(1950, 1980), # 1839 1950 2023 1980
+    #            range_compounds = c(1839, 2023), # 1839 1950 2023 1980
     #            Class = c("Dissociatives, Entactogens"), # "Dissociatives" "all"
-    #            Compound = c("LSD"))
-    
-    
-    
+    #            Compound = c("αET (alpha-Ethyltryptamine)")) # LSD Phytocannabinoids αET (alpha-Ethyltryptamine) all OEA (Oleoylethanolamide)
+
     # filter by input range
     PS.data.plot.Class <- PS.data %>%
       filter(Date >= input$range[1],
@@ -349,32 +353,28 @@ server <- function(input, output) {
     # select input classes
     if("all" %in% input$Class == FALSE){
       PS.data.plot.Class <- PS.data.plot.Class %>%
-        filter(Class %in% unlist(strsplit(input$Class, split = ", ")))
+        filter(`Substance class` %in% unlist(strsplit(input$Class, split = ", ")))
     } else {
       PS.data.plot.Class <- PS.data.plot.Class
     }
     
-    
-    # p <- ggplot(data = PS.data.plot.Class,
-    #             aes(x=Date, y=cumul_year_class,
-    #                 col = Class)) +
-    #   geom_step(linewidth = 2, alpha = 0.75) +
-    #   ylim(0, max(PS.data$cumul_year_class)) +
-    #   labs(x = "Date", y = "Cumulative references") +
-    #   scale_color_manual(values = c(unique(PS.data.plot.Class$col_class))) +
-    #   theme_bw() +
-    #   scale_x_continuous(breaks = round(seq(1840, max(PS.data.plot.Class$Date), by = 10),1)) #+
-    #   # scale_y_continuous(breaks = round(seq(min(PS.data.plot.Class$cumul_year_class), max(PS.data.plot.Class$cumul_year_class), by = 10),1))
-    # p +
-    #   theme(legend.position="bottom",
-    #         axis.text.x = element_text(angle = 45, hjust=1)) # vjust = 0.5, 
-    
     globalcolors <- PS.data.plot.Class$col_class
     opacity <- 0.75
-    fig_classes <- plot_ly(data = PS.data.plot.Class, x=~Date, y=~cumul_year_class,
-                           type="scatter",color=~Class, mode="lines", colors = globalcolors, opacity=opacity, line = list(width=4)) # ,
+    fig_classes <- plot_ly(data = PS.data.plot.Class, x=~Date, y=~cumul_years_class,
+                           type="scatter",
+                           color=~`Substance class`, 
+                           mode="lines", 
+                           colors = globalcolors, 
+                           opacity=opacity, 
+                           line = list(width=4)) # ,
     # height=800)
-    fig_classes %>% layout(legend = list(orientation = 'h'))
+    fig_classes %>% layout(legend = list(orientation = 'h', y=-0.25),
+                           xaxis = list(
+                             dtick = 10,
+                             # tick0 = 10, 
+                             tickmode = "linear"),
+                           yaxis = list(
+                             range = list(0, max(PS.data$cumul_years_class))))
   })
   
   output$table_print_Class <- renderDataTable({df <- reactiveVal(PS.data.print_Class)
@@ -384,19 +384,17 @@ server <- function(input, output) {
     filter(Date >= input$range[1],
            Date <= input$range[2])
   
-  
   # select input classes
   if("all" %in% input$Class == FALSE){
     PS.data.print_Class <- PS.data.print_Class %>%
-      filter(Class %in% unlist(strsplit(input$Class, split = ", ")))
+      filter(`Substance class` %in% unlist(strsplit(input$Class, split = ", ")))
   } else {
     PS.data.print_Class <- PS.data.print_Class
   }
   
   PS.data.print_Class <- PS.data.print_Class %>% 
-    arrange(Date, Class) %>% 
-    rename(`Substance class` = Class,
-           `Compound(s)` = Compound) %>% 
+    arrange(Date, `Substance class`) %>% 
+    # rename(`Compound(s)` = Compound) %>% 
     select(c(# `Date`,
       `Author`,
       `Location`,
@@ -442,26 +440,31 @@ server <- function(input, output) {
     paste0("Compounds selected: ", paste(input$Compound, collapse = ", "), ".")
   })
   
-  output$studies_over_year_plot_Compound <- renderPlot({
+  output$studies_over_year_plot_Compound <- renderPlotly({ # renderPlot
     
     # # testing
     # input=list(range = c(1839, 2023), # 1839 1950 2023 1980
     #            range_compounds = c(1839, 2023), # 1839 1950 2023 1980
     #            Class = c("Dissociatives, Entactogens"), # "Dissociatives" "all"
-    #            Compound = c("αET (alpha-Ethyltryptamine)")) # LSD Phytocannabinoids αET (alpha-Ethyltryptamine) all OEA (Oleoylethanolamide)
-    c <- 1
-    for (c in length(input$Compound)) {
-      if(grepl("\\(", input$Compound[c])){
-        input$Compound[c] <- gsub(".*\\((\\w+)\\).*", "\\1", input$Compound[c])
-      }
-    }
-    
+    #            Compound = c("αET (alpha-Ethyltryptamine)", "LSD (Lysergic acid diethylamide)")) # LSD Phytocannabinoids αET (alpha-Ethyltryptamine) all OEA (Oleoylethanolamide)
+    # c <- 1
+    # for (c in length(input$Compound)) {
+    #   if(grepl("\\(", input$Compound[c])){
+    #     input$Compound[c] <- gsub(".*\\((\\w+)\\).*", "\\1", input$Compound[c])
+    #   }
+    # }
     
     # filter by input range
     PS.data.compounds.plot <- PS.data.compounds  %>% 
       ungroup() %>%
       filter(Date >= input$range_compounds[1],
              Date <= input$range_compounds[2])
+    
+    # change input compounds and data compounds to workable strings
+    # for(i in 1:nrow(compound_translation)){
+    #   input$Compound <- gsub(compound_translation$old[i], compound_translation$new[i], input$Compound)
+    # }
+    # input
     
     # select input compounds
     if("all" %in% input$Compound == FALSE){
@@ -470,8 +473,8 @@ server <- function(input, output) {
       for(i in 1:length(unlist(strsplit(input$Compound, split = ", ")))){
         tmp <- rbind(tmp, PS.data.compounds.plot %>%
                        ungroup() %>%
-                       # filter(Compound %in% unlist(strsplit(input$Compound, split = ", ")))
-                       filter(grepl(unlist(strsplit(input$Compound[i], split = ", ")), Compound))) # "Oleoylethanolamide"
+                       # filter(`Compound(s)` %in% unlist(strsplit(input$Compound, split = ", ")))
+                       filter(grepl(unlist(strsplit(input$Compound[i], split = ", ")), Compound_new_name))) # "Oleoylethanolamide"
       }
       PS.data.compounds.plot <- tmp
       rm(tmp)
@@ -480,18 +483,36 @@ server <- function(input, output) {
     }
     
     
-    p <- ggplot(data = PS.data.compounds.plot,
-                aes(x=Date, y=cumul_year_compound,
-                    col = Compound)) +
-      geom_step(linewidth = 2, alpha = 0.75) +
-      ylim(0, max(PS.data.compounds$cumul_year_compound)) +
-      labs(x = "Date", y = "Cumulative references") +
-      scale_color_manual(values = c(unique(PS.data.compounds.plot$col_compound))) +
-      theme(legend.position="bottom") +
-      theme_bw() +
-      scale_x_continuous(breaks = round(seq(1840, max(PS.data.compounds.plot$Date), by = 10),1))
-    p +
-      theme(legend.position="bottom")
+    # p <- ggplot(data = PS.data.compounds.plot,
+    #             aes(x=Date, y=cumul_years_compound,
+    #                 col = Compound_new_name)) +
+    #   geom_step(linewidth = 2, alpha = 0.75) +
+    #   ylim(0, max(PS.data.compounds$cumul_years_compound)) +
+    #   labs(x = "Date", y = "Cumulative references") +
+    #   scale_color_manual(values = c(unique(PS.data.compounds.plot$col_compound))) +
+    #   theme(legend.position="bottom") +
+    #   theme_bw() +
+    #   scale_x_continuous(breaks = round(seq(1840, max(PS.data.compounds.plot$Date), by = 10),1))
+    # p +
+    #   theme(legend.position="bottom")
+    
+    globalcolors <- PS.data.compounds.plot$col_compound
+    opacity <- 0.75
+    fig_compounds <- plot_ly(data = PS.data.compounds.plot, x=~Date, y=~cumul_years_compound,
+                             type="scatter",
+                             color=~Compound_new_name, 
+                             mode="lines", 
+                             colors = globalcolors, 
+                             opacity=opacity, 
+                             line = list(width=4)) # ,
+    # height=800)
+    fig_compounds %>% layout(legend = list(orientation = 'h', y=-0.25),
+                             xaxis = list(
+                               dtick = 10,
+                               # tick0 = 10, 
+                               tickmode = "linear"),
+                             yaxis = list(
+                               range = list(0, max(PS.data.compounds$cumul_years_compound))))
   })
   
   output$table_print_Compound <- renderDataTable({df <- reactiveVal(PS.data.print_Compound)
@@ -505,7 +526,7 @@ server <- function(input, output) {
   # select input compounds
   # if("all" %in% input$Compound == FALSE){
   #   PS.data.print_Compound <- PS.data.print_Compound %>%
-  #     filter(grepl(unlist(strsplit(input$Compound, split = ", ")), Compound))
+  #     filter(grepl(unlist(strsplit(input$Compound, split = ", ")), `Compound(s)`))
   # } else {
   #   PS.data.print_Compound <- PS.data.print_Compound
   # }
@@ -515,7 +536,7 @@ server <- function(input, output) {
     for(i in 1:length(unlist(strsplit(input$Compound, split = ", ")))){
       tmp <- rbind(tmp, PS.data.print_Compound %>%
                      # filter(Compound %in% unlist(strsplit(input$Compound, split = ", ")))
-                     filter(grepl(unlist(strsplit(input$Compound[i], split = ", ")), Compound)))
+                     filter(grepl(unlist(strsplit(input$Compound[i], split = ", ")), `Compound(s)`)))
     }
     PS.data.print_Compound <- tmp
     rm(tmp)
@@ -523,10 +544,10 @@ server <- function(input, output) {
     PS.data.print_Compound <- PS.data.print_Compound
   }
   
-  PS.data.print_Compound %>% 
-    arrange(Date, Compound) %>% 
-    rename(`Substance class` = Class,
-           `Compound(s)` = Compound) %>% 
+  PS.data.print_Compound <- PS.data.print_Compound %>% 
+    arrange(Date, `Compound(s)`) %>% 
+    # rename(#`Substance class` = Class,
+    #   `Compound(s)` = Compound) %>% 
     select(c(# `Date`,
       `Author`,
       `Location`,
@@ -553,13 +574,13 @@ server <- function(input, output) {
       `Comment`#,
       # `comment 1`,
       # `comment 2`
-    ))},
+      # `Compound(s)`
+    ))
+  PS.data.print_Compound},
   options = list(pageLength = 1000,
                  searching = FALSE,
                  lengthChange = FALSE))
 }
-
-
 
 # Run app ----
 shinyApp(ui, server)

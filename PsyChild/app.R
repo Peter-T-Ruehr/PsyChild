@@ -252,73 +252,67 @@ ui <- navbarPage("PsyChild - Tracking clinical psychedelics in children and adol
                  
                  # Compounds --------------------------------------------------------------
                  tabPanel("Compounds",
-                          sidebarLayout(
-                            sidebarPanel(
-                              helpText(h3("Tracking clinical psychedelics in children and adolescents.")),
-                              
-                              # # testing
-                              # selectInput("Compound",
-                              #             label = "Choose one or more Compound(es) to display",
-                              #             choices = Compounds,
-                              #             selected = compounds[7]),
-                              
-                              checkboxGroupInput("Compound",
-                                                 # h3("Compound"),
-                                                 label = "Choose one or more compound(s) to display",
-                                                 choices = c("all",
-                                                             compounds),
-                                                 # "2-AG (2-Arachidonylglycerol)",
-                                                 # "AA",
-                                                 # "AEA (Anandamid)",
-                                                 # "Delta-8-tetrahydrocannabinol (delta-8-THC)",
-                                                 # "Dexanabinol",
-                                                 # "Dronabinol",
-                                                 # "Esketamine",
-                                                 # "Harmaline",
-                                                 # "Harmine",
-                                                 # "Iofetamine",
-                                                 # "Ketamine",
-                                                 # "Ketodex",
-                                                 # "Ketofol",
-                                                 # "LAE-32 (D-Lysergic acid ethylamide)",
-                                                 # "Lenabasum",
-                                                 # "Levonantradol",
-                                                 # "LSD (Lysergic acid diethylamide)",
-                                                 # "Marinol",
-                                                 # "mCPP (meta-Chlorphenylpiperazin)",
-                                                 # "Mescaline",
-                                                 # "Methysergide",
-                                                 # "Nabilone",
-                                                 # "Nabiximols",
-                                                 # "Naboline",
-                                                 # "OEA (Oleoylethanolamide)",
-                                                 # "PCP (Phencyclidin)",
-                                                 # "PEA (Palmitoylethanolamid)",
-                                                 # "Physostigmine",
-                                                 # "Phytocannabinoids",
-                                                 # "Psilocybin",
-                                                 # "Scopolamine",
-                                                 # "THC",
-                                                 # "αET (alpha-Ethyltryptamine)"
-                                                 selected = "all"),
-                              
-                              sliderInput("range_compounds",
-                                          label = "Years of interest:",
-                                          min = min(PS.data$Date),
-                                          max = max(PS.data$Date),
-                                          value = c(1950, # c(min(PS.data$Date), 1950,
-                                                    max(PS.data$Date)),
-                                          step = 1,
-                                          sep = '')),
-                            
-                            mainPanel(
-                              verbatimTextOutput("compound_selected"),
-                              plotlyOutput("studies_over_year_plot_Compound"), # plotOutput
-                              # plotOutput("test_plot"),
-                              
-                              div(dataTableOutput("table_print_Compound"), style = "font-size:80%")
-                            )
-                          )),
+                          # sidebarLayout(
+                          #   sidebarPanel(
+                          #     helpText(h3("Tracking clinical psychedelics in children and adolescents.")),
+                          
+                          # mainPanel(
+                          verbatimTextOutput("compound_selected"),
+                          plotlyOutput("studies_over_year_plot_Compound"), # plotOutput
+                          
+                          sliderInput("range_compounds",
+                                      label = "Years of interest:",
+                                      min = min(PS.data$Date),
+                                      max = max(PS.data$Date),
+                                      value = c(1950, # c(min(PS.data$Date), 1950,
+                                                max(PS.data$Date)),
+                                      step = 1,
+                                      sep = ''),
+                          
+                          checkboxGroupInput("Compound",
+                                             # h3("Compound"),
+                                             label = "Choose one or more compound(s) to display",
+                                             choices = c("all",
+                                                         compounds),
+                                             # "2-AG (2-Arachidonylglycerol)",
+                                             # "AA",
+                                             # "AEA (Anandamid)",
+                                             # "Delta-8-tetrahydrocannabinol (delta-8-THC)",
+                                             # "Dexanabinol",
+                                             # "Dronabinol",
+                                             # "Esketamine",
+                                             # "Harmaline",
+                                             # "Harmine",
+                                             # "Iofetamine",
+                                             # "Ketamine",
+                                             # "Ketodex",
+                                             # "Ketofol",
+                                             # "LAE-32 (D-Lysergic acid ethylamide)",
+                                             # "Lenabasum",
+                                             # "Levonantradol",
+                                             # "LSD (Lysergic acid diethylamide)",
+                                             # "Marinol",
+                                             # "mCPP (meta-Chlorphenylpiperazin)",
+                                             # "Mescaline",
+                                             # "Methysergide",
+                                             # "Nabilone",
+                                             # "Nabiximols",
+                                             # "Naboline",
+                                             # "OEA (Oleoylethanolamide)",
+                                             # "PCP (Phencyclidin)",
+                                             # "PEA (Palmitoylethanolamid)",
+                                             # "Physostigmine",
+                                             # "Phytocannabinoids",
+                                             # "Psilocybin",
+                                             # "Scopolamine",
+                                             # "THC",
+                                             # "αET (alpha-Ethyltryptamine)"
+                                             selected = "all"),
+                          
+                          div(dataTableOutput("table_print_Compound"), style = "font-size:80%")
+                 ),
+                 # )
+                 # ))
                  tabPanel("Map")
 )
 
@@ -344,7 +338,7 @@ server <- function(input, output) {
     #            range_compounds = c(1839, 2023), # 1839 1950 2023 1980
     #            Class = c("Dissociatives, Entactogens"), # "Dissociatives" "all"
     #            Compound = c("αET (alpha-Ethyltryptamine)")) # LSD Phytocannabinoids αET (alpha-Ethyltryptamine) all OEA (Oleoylethanolamide)
-
+    
     # filter by input range
     PS.data.plot.Class <- PS.data %>%
       filter(Date >= input$range[1],
@@ -429,13 +423,6 @@ server <- function(input, output) {
                  lengthChange = FALSE))
   
   # Compound -------------------------------------------------------------------  
-  
-  # output$test_plot <- renderPlot({
-  #   # plot(1:10)
-  #   ggplot(data = data.frame(x=1:10, y=1:10), aes(x=x, y=y)) + 
-  #     geom_point()
-  # })
-  
   output$compound_selected <-renderText({
     paste0("Compounds selected: ", paste(input$Compound, collapse = ", "), ".")
   })
@@ -447,24 +434,12 @@ server <- function(input, output) {
     #            range_compounds = c(1839, 2023), # 1839 1950 2023 1980
     #            Class = c("Dissociatives, Entactogens"), # "Dissociatives" "all"
     #            Compound = c("αET (alpha-Ethyltryptamine)", "LSD (Lysergic acid diethylamide)")) # LSD Phytocannabinoids αET (alpha-Ethyltryptamine) all OEA (Oleoylethanolamide)
-    # c <- 1
-    # for (c in length(input$Compound)) {
-    #   if(grepl("\\(", input$Compound[c])){
-    #     input$Compound[c] <- gsub(".*\\((\\w+)\\).*", "\\1", input$Compound[c])
-    #   }
-    # }
     
     # filter by input range
     PS.data.compounds.plot <- PS.data.compounds  %>% 
       ungroup() %>%
       filter(Date >= input$range_compounds[1],
              Date <= input$range_compounds[2])
-    
-    # change input compounds and data compounds to workable strings
-    # for(i in 1:nrow(compound_translation)){
-    #   input$Compound <- gsub(compound_translation$old[i], compound_translation$new[i], input$Compound)
-    # }
-    # input
     
     # select input compounds
     if("all" %in% input$Compound == FALSE){
@@ -482,20 +457,6 @@ server <- function(input, output) {
       PS.data.compounds.plot <- PS.data.compounds.plot
     }
     
-    
-    # p <- ggplot(data = PS.data.compounds.plot,
-    #             aes(x=Date, y=cumul_years_compound,
-    #                 col = Compound_new_name)) +
-    #   geom_step(linewidth = 2, alpha = 0.75) +
-    #   ylim(0, max(PS.data.compounds$cumul_years_compound)) +
-    #   labs(x = "Date", y = "Cumulative references") +
-    #   scale_color_manual(values = c(unique(PS.data.compounds.plot$col_compound))) +
-    #   theme(legend.position="bottom") +
-    #   theme_bw() +
-    #   scale_x_continuous(breaks = round(seq(1840, max(PS.data.compounds.plot$Date), by = 10),1))
-    # p +
-    #   theme(legend.position="bottom")
-    
     globalcolors <- PS.data.compounds.plot$col_compound
     opacity <- 0.75
     fig_compounds <- plot_ly(data = PS.data.compounds.plot, x=~Date, y=~cumul_years_compound,
@@ -506,7 +467,7 @@ server <- function(input, output) {
                              opacity=opacity, 
                              line = list(width=4)) # ,
     # height=800)
-    fig_compounds %>% layout(legend = list(orientation = 'h', y=-0.25),
+    fig_compounds %>% layout(legend = list(showlegend: true, orientation = 'h', y=-0.25),
                              xaxis = list(
                                dtick = 10,
                                # tick0 = 10, 
@@ -522,14 +483,6 @@ server <- function(input, output) {
     filter(Date >= input$range_compounds[1],
            Date <= input$range_compounds[2])
   
-  
-  # select input compounds
-  # if("all" %in% input$Compound == FALSE){
-  #   PS.data.print_Compound <- PS.data.print_Compound %>%
-  #     filter(grepl(unlist(strsplit(input$Compound, split = ", ")), `Compound(s)`))
-  # } else {
-  #   PS.data.print_Compound <- PS.data.print_Compound
-  # }
   if("all" %in% input$Compound == FALSE){
     # i=2
     tmp <- NULL
@@ -546,8 +499,6 @@ server <- function(input, output) {
   
   PS.data.print_Compound <- PS.data.print_Compound %>% 
     arrange(Date, `Compound(s)`) %>% 
-    # rename(#`Substance class` = Class,
-    #   `Compound(s)` = Compound) %>% 
     select(c(# `Date`,
       `Author`,
       `Location`,
@@ -574,7 +525,7 @@ server <- function(input, output) {
       `Comment`#,
       # `comment 1`,
       # `comment 2`
-      # `Compound(s)`
+      # `Compound_new_name
     ))
   PS.data.print_Compound},
   options = list(pageLength = 1000,

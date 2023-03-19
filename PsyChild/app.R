@@ -4,12 +4,15 @@ library(ggplot2)
 library(gsheet)
 library(shiny)
 library(viridisLite)
-# library(grid)
 library(ggrepel)
 library(googlesheets4)
 gs4_deauth()
 library(plotly)
-# gs4_deauth()
+
+library(rvest)
+# library(maps)
+# library(ggplot2)
+
 sheet_id <- "https://docs.google.com/spreadsheets/d/1tL-9rg_K9rf5hpzj63MewlQLms1qV91Nt3RwMsFamaU/"
 PS.data <- read_sheet(sheet_id, sheet = 1)
 # remove unnamed columns
@@ -106,6 +109,28 @@ for(i in 1:nrow(compound_translation)){
 
 # get unique compounds
 compounds <- sort(unique(unlist(strsplit(PS.data.compounds$Compound_new_name, split = "; "))))
+
+# get countries
+# PS.data$Location
+# i=1
+PS.data$Country <- NA
+for(i in 1:nrow(PS.data)){
+  curr_Location <- unlist(strsplit(PS.data$Location[i], split = "; "))
+  PS.data$Country[i] <- curr_Location[length(curr_Location)]
+}
+PS.data$Country <- gsub("USA", "United States of America", PS.data$Country)
+PS.data$Country <- gsub("^United States$", "United States of America", PS.data$Country)
+PS.data$Country <- gsub("Czechoslovakia", "Czech Republic", PS.data$Country)
+PS.data$Country <- gsub("England", "United Kingdom", PS.data$Country)
+PS.data$Country <- gsub("Scotland", "United Kingdom", PS.data$Country)
+PS.data$Country <- gsub("Iran", "Iran, Islamic Republic of", PS.data$Country)
+PS.data$Country <- gsub("Russia", "Russian Federation", PS.data$Country)
+# PS.data$Country <- gsub("USA", "United States of America", PS.data$Country)
+# PS.data$Country <- gsub("USA", "United States of America", PS.data$Country)
+# PS.data$Country <- gsub("USA", "United States of America", PS.data$Country)
+# PS.data$Country <- gsub("USA", "United States of America", PS.data$Country)
+# PS.data$Country <- gsub("USA", "United States of America", PS.data$Country)
+# PS.data$Country <- gsub("USA", "United States of America", PS.data$Country)
 
 # save for printing
 PS.data.print_Class <- PS.data
@@ -313,7 +338,8 @@ ui <- navbarPage("PsyChild - Tracking clinical psychedelics in children and adol
                  ),
                  # )
                  # ))
-                 tabPanel("Map")
+                 tabPanel("Map",
+                          plotlyOutput("map_plot"))
 )
 
 
@@ -414,7 +440,9 @@ server <- function(input, output) {
       `Concomitant Medications`,
       `Comment`#,
       # `comment 1`,
-      # `comment 2`
+      # `comment 2`,
+      # `Compound_new_name,
+      # Country
     ))
   
   PS.data.print_Class},
@@ -467,7 +495,7 @@ server <- function(input, output) {
                              opacity=opacity, 
                              line = list(width=4)) # ,
     # height=800)
-    fig_compounds %>% layout(legend = list(showlegend: true, orientation = 'h', y=-0.25),
+    fig_compounds %>% layout(legend = list(orientation = 'h', y=-0.25),
                              xaxis = list(
                                dtick = 10,
                                # tick0 = 10, 
@@ -524,14 +552,60 @@ server <- function(input, output) {
       `Concomitant Medications`,
       `Comment`#,
       # `comment 1`,
-      # `comment 2`
-      # `Compound_new_name
+      # `comment 2`,
+      # `Compound_new_name,
+      # Country
     ))
   PS.data.print_Compound},
   options = list(pageLength = 1000,
                  searching = FALSE,
                  lengthChange = FALSE))
+  
+  # MAP ---------------------------------------------------------------------
+  output$map_plot <- renderPlotly({ # renderPlot
+    url <- "https://www.nationsonline.org/oneworld/country_code_list.htm"
+    iso_codes <- url %>%
+      read_html() %>%
+      html_table() %>% 
+      bind_rows() %>% 
+      subset(nchar(as.character(X2)) > 1) %>% 
+      select(-X1)
+    names(iso_codes) <- c("Country", "ISO2", "ISO3", "UN")
+    # head(iso_codes)
+    
+    PS.data.map <- PS.data
+    PS.data.map['ISO3'] <- iso_codes$ISO3[match(PS.data.map$Country, iso_codes$Country)]
+    PS.data.map <- PS.data.map %>% 
+      filter(Country != "Unknown")
+    
+    PS.data.map.reduced <- PS.data.map %>%
+      select(Author, Location, Country, ISO3) %>% 
+      group_by(Country) %>% 
+      summarise(n = n(),
+                Publications = paste(Author, collapse = "\n")) %>% 
+      left_join(iso_codes %>% 
+                  select(Country, ISO3)) %>% 
+      mutate(log_n = log(n))
+    
+    PS.data.map.reduced$Publications[PS.data.map.reduced$Country == "United States of America"] <- 
+      paste(PS.data.map$Author[PS.data.map$Country == "United States of America"], collapse = ";")
+    
+    fig_map <- plot_ly(PS.data.map.reduced, type='choropleth', 
+                       locations=PS.data.map.reduced$ISO3, 
+                       z=PS.data.map.reduced$log_n, 
+                       # text=paste0(PS.data.map.reduced$Country, ":\n", PS.data.map.reduced$Publications), 
+                       colorscale="Viridis",
+                       hovertemplate = paste0(PS.data.map.reduced$Country, ":", PS.data.map.reduced$n, " Publications.\n", PS.data.map.reduced$Publications))
+
+    fig_map %>% 
+      hide_colorbar() %>%
+      layout(title = 'Map of Publications per country')
+  })
 }
 
 # Run app ----
 shinyApp(ui, server)
+
+
+
+

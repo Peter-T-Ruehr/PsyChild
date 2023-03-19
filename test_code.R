@@ -166,3 +166,19 @@ cols_compound <- tibble(Compound = unique(PS.data.compounds$Compound), col_compo
 PS.data.compounds <- PS.data.compounds %>% 
   left_join(cols_compound, by = "Compound")
 # plot(1:nrow(cols_compound), col = unique(PS.data.compounds$col_compound), pch = 16, cex = 5)
+
+
+library(rvest)
+url <- "https://www.nationsonline.org/oneworld/country_code_list.htm"
+iso_codes <- url %>%
+  read_html() %>%
+  # html_nodes(xpath = '//*[@id="CountryCode"]') %>%
+  html_table()
+iso_codes <- iso_codes[[1]][, -1]
+iso_codes <- iso_codes[!apply(iso_codes, 1, function(x){all(x == x[1])}), ]
+names(iso_codes) <- c("Country", "ISO2", "ISO3", "UN")
+head(iso_codes)
+
+
+# MAP ---------------------------------------------------------------------
+library(leaflet)

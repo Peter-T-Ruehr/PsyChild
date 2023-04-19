@@ -1,17 +1,14 @@
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-library(gsheet)
+# library(gsheet)
 library(shiny)
 library(viridisLite)
 library(ggrepel)
 library(googlesheets4)
 gs4_deauth()
 library(plotly)
-
 library(rvest)
-# library(maps)
-# library(ggplot2)
 
 sheet_id <- "https://docs.google.com/spreadsheets/d/1tL-9rg_K9rf5hpzj63MewlQLms1qV91Nt3RwMsFamaU/"
 PS.data <- read_sheet(sheet_id, sheet = 1)
@@ -20,6 +17,9 @@ PS.data <- PS.data %>%
   select(-contains('...'))
 # get PsyChild data
 # PS.data <- gsheet2tbl(url = 'https://docs.google.com/spreadsheets/d/1tL-9rg_K9rf5hpzj63MewlQLms1qV91Nt3RwMsFamaU/edit?usp=sharing')
+
+# get iso codes
+iso_codes <- read_sheet(sheet_id, sheet = "iso_codes")
 
 # remove NULL rows
 nulls <- NULL
@@ -125,12 +125,6 @@ PS.data$Country <- gsub("England", "United Kingdom", PS.data$Country)
 PS.data$Country <- gsub("Scotland", "United Kingdom", PS.data$Country)
 PS.data$Country <- gsub("Iran", "Iran, Islamic Republic of", PS.data$Country)
 PS.data$Country <- gsub("Russia", "Russian Federation", PS.data$Country)
-# PS.data$Country <- gsub("USA", "United States of America", PS.data$Country)
-# PS.data$Country <- gsub("USA", "United States of America", PS.data$Country)
-# PS.data$Country <- gsub("USA", "United States of America", PS.data$Country)
-# PS.data$Country <- gsub("USA", "United States of America", PS.data$Country)
-# PS.data$Country <- gsub("USA", "United States of America", PS.data$Country)
-# PS.data$Country <- gsub("USA", "United States of America", PS.data$Country)
 
 # save for printing
 PS.data.print_Class <- PS.data
@@ -240,8 +234,66 @@ PS.data.compounds <- PS.data.compounds %>%
   left_join(cols_compound, by = "Compound_new_name")
 # plot(1:nrow(cols_compound), col = unique(PS.data.compounds$col_compound), pch = 16, cex = 5)
 
+
+# Map ---------------------------------------------------------------------
+# url <- "https://www.nationsonline.org/oneworld/country_code_list.htm"
+# iso_codes <- url %>%
+#   read_html() %>%
+#   html_table() %>% 
+#   bind_rows() %>% 
+#   subset(nchar(as.character(X2)) > 1) %>% 
+#   select(-X1)
+# names(iso_codes) <- c("Country", "ISO2", "ISO3", "UN")
+# head(iso_codes)
+
+
+PS.data.map <- PS.data
+PS.data.map['ISO3'] <- iso_codes$ISO3[match(PS.data.map$Country, iso_codes$Country)]
+PS.data.map <- PS.data.map %>% 
+  filter(Country != "Unknown")
+
+PS.data.map.reduced <- PS.data.map %>%
+  select(Author, Location, Country, ISO3) %>% 
+  group_by(Country) %>% 
+  summarise(n = n(),
+            Publications = paste(Author, collapse = "\n")) %>% 
+  left_join(iso_codes %>% 
+              select(Country, ISO3)) %>% 
+  mutate(log_n = log(n))
+
+PS.data.map.reduced$Publications[PS.data.map.reduced$Country == "United States of America"] <- 
+  paste(PS.data.map$Author[PS.data.map$Country == "United States of America"], collapse = ";")
+
 # User interface ----
 ui <- navbarPage("PsyChild - Tracking clinical psychedelics in children and adolescents.",
+                 # Introduction -----------------------------------------------------------------
+                 tabPanel("PsyChild Home",
+                          # sidebarLayout(
+                          #   sidebarPanel(
+                          
+                          # mainPanel(
+                          helpText(h3("PsyChild - Tracking clinical psychedelics in children and adolescents."),
+                                   # h4("Tracking clinical psychedelics in children and adolescents."),
+                                   p("PsyChild is an online resource that tracks clinical research with psychedelics and
+                                      hallucinogenic cannabinoids in minors. The main aim of the webtool is to establish a
+                                      comprehensive bibliography of existing literature, with a focus on identifying potential
+                                      harms."),
+                                   p("Notably, the review of literature reveals accounts of violence, homophobia, and
+                                      unethical conduct, underscoring the urgent need for a harm-reduction oriented protocol for
+                                      psychedelic-assisted psychotherapy (PAP) in minors. PsyChild takes a neutral stance on
+                                      providing PAP to minors, acknowledging the complexity of the topic and emphasizing the
+                                      need for further research and consideration. The webtool provides a resource for
+                                      researchers, research subjects, guardians, therapists, and external experts to address this
+                                      issue. It is important to note that the information presented on the website is for
+                                      informational purposes only and should not be construed as medical advice."),
+                                   HTML("Please use the tabs above to access PsyChild's functionalities.<br>
+                                        Issues can be reported at <a href='https://github.com/Peter-T-Ruehr/PsyChild/issues'>PsyHild's GitHub page</a>."),
+                                   p("Philipp Rühr is constantly tracking and curating new data for PsyChild, while this webpage is written and maintened by Peter T. Rühr."),
+                                   HTML("If you use this website, please cite it as<br>
+                                     Rühr, P. & Rühr, P. (<b>2023</b>): <em>PsyChild</em>, accessed yyyy&#92;mm&#92;dd, &lt;http://ruehr.org/shiny/PsyChild/&gt;.")),
+                          
+                 ),
+                 
                  # Classes -----------------------------------------------------------------
                  tabPanel("Substance classes",
                           # sidebarLayout(
@@ -563,40 +615,13 @@ server <- function(input, output) {
   
   # MAP ---------------------------------------------------------------------
   output$map_plot <- renderPlotly({ # renderPlot
-    url <- "https://www.nationsonline.org/oneworld/country_code_list.htm"
-    iso_codes <- url %>%
-      read_html() %>%
-      html_table() %>% 
-      bind_rows() %>% 
-      subset(nchar(as.character(X2)) > 1) %>% 
-      select(-X1)
-    names(iso_codes) <- c("Country", "ISO2", "ISO3", "UN")
-    # head(iso_codes)
-    
-    PS.data.map <- PS.data
-    PS.data.map['ISO3'] <- iso_codes$ISO3[match(PS.data.map$Country, iso_codes$Country)]
-    PS.data.map <- PS.data.map %>% 
-      filter(Country != "Unknown")
-    
-    PS.data.map.reduced <- PS.data.map %>%
-      select(Author, Location, Country, ISO3) %>% 
-      group_by(Country) %>% 
-      summarise(n = n(),
-                Publications = paste(Author, collapse = "\n")) %>% 
-      left_join(iso_codes %>% 
-                  select(Country, ISO3)) %>% 
-      mutate(log_n = log(n))
-    
-    PS.data.map.reduced$Publications[PS.data.map.reduced$Country == "United States of America"] <- 
-      paste(PS.data.map$Author[PS.data.map$Country == "United States of America"], collapse = ";")
-    
     fig_map <- plot_ly(PS.data.map.reduced, type='choropleth', 
                        locations=PS.data.map.reduced$ISO3, 
                        z=PS.data.map.reduced$log_n, 
                        # text=paste0(PS.data.map.reduced$Country, ":\n", PS.data.map.reduced$Publications), 
                        colorscale="Viridis",
-                       hovertemplate = paste0(PS.data.map.reduced$Country, ":", PS.data.map.reduced$n, " Publications.\n", PS.data.map.reduced$Publications))
-
+                       hovertemplate = paste0(PS.data.map.reduced$Country, ":", PS.data.map.reduced$n, " Publications.")) # paste0(PS.data.map.reduced$Country, ":", PS.data.map.reduced$n, " Publications.\n", PS.data.map.reduced$Publications)
+    
     fig_map %>% 
       hide_colorbar() %>%
       layout(title = 'Map of Publications per country')

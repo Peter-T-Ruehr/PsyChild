@@ -9,9 +9,10 @@ library(googlesheets4)
 gs4_deauth()
 library(plotly)
 library(rvest)
+library(DT)
 
 sheet_id <- "https://docs.google.com/spreadsheets/d/1tL-9rg_K9rf5hpzj63MewlQLms1qV91Nt3RwMsFamaU/"
-PS.data <- read_sheet(sheet_id, sheet = 1)
+PS.data <- read_sheet(sheet_id, sheet = "PsychChild")
 # remove unnamed columns
 PS.data <- PS.data %>% 
   select(-contains('...'))
@@ -264,134 +265,147 @@ PS.data.map.reduced <- PS.data.map %>%
 PS.data.map.reduced$Publications[PS.data.map.reduced$Country == "United States of America"] <- 
   paste(PS.data.map$Author[PS.data.map$Country == "United States of America"], collapse = ";")
 
+# Add directory of static resources to Shiny's web server
+addResourcePath(prefix = "images", directoryPath = "images/")
+
+# get Further Reading data
+further_reading <- read_sheet(sheet_id, sheet = "Further reading")
+
+
 # User interface ----
-ui <- navbarPage("PsyChild - Tracking clinical psychedelics in children and adolescents.",
-                 # Introduction -----------------------------------------------------------------
-                 tabPanel("PsyChild Home",
-                          # sidebarLayout(
-                          #   sidebarPanel(
-                          
-                          # mainPanel(
-                          helpText(h3("PsyChild - Tracking clinical psychedelics in children and adolescents."),
-                                   # h4("Tracking clinical psychedelics in children and adolescents."),
-                                   p("PsyChild is an online resource that tracks clinical research with psychedelics and
-                                      hallucinogenic cannabinoids in minors. The main aim of the webtool is to establish a
-                                      comprehensive bibliography of existing literature, with a focus on identifying potential
-                                      harms."),
-                                   p("Notably, the review of literature reveals accounts of violence, homophobia, and
-                                      unethical conduct, underscoring the urgent need for a harm-reduction oriented protocol for
-                                      psychedelic-assisted psychotherapy (PAP) in minors. PsyChild takes a neutral stance on
-                                      providing PAP to minors, acknowledging the complexity of the topic and emphasizing the
-                                      need for further research and consideration. The webtool provides a resource for
-                                      researchers, research subjects, guardians, therapists, and external experts to address this
-                                      issue. It is important to note that the information presented on the website is for
-                                      informational purposes only and should not be construed as medical advice."),
-                                   HTML("Please use the tabs above to access PsyChild's functionalities.<br>
-                                        Issues can be reported at <a href='https://github.com/Peter-T-Ruehr/PsyChild/issues'>PsyHild's GitHub page</a>."),
-                                   p("Philipp Rühr is constantly tracking and curating new data for PsyChild, while this webpage is written and maintened by Peter T. Rühr."),
-                                   HTML("If you use this website, please cite it as<br>
-                                     Rühr, P. & Rühr, P. (<b>2023</b>): <em>PsyChild</em>, accessed yyyy&#92;mm&#92;dd, &lt;http://ruehr.org/shiny/PsyChild/&gt;.")),
-                          
-                 ),
-                 
-                 # Classes -----------------------------------------------------------------
-                 tabPanel("Substance classes",
-                          # sidebarLayout(
-                          #   sidebarPanel(
-                          
-                          # mainPanel(
-                          # helpText(h3("Tracking clinical psychedelics in children and adolescents.")), # "Visualize psychedelic drug use in children through time and space"
-                          verbatimTextOutput("class_selected"),
-                          plotlyOutput("studies_over_year_plot_Class"), # plotOutput
-                          # plotOutput("test_plot"),
-                          sliderInput("range",
-                                      label = "Years of interest:",
-                                      min = min(PS.data$Date),
-                                      max = max(PS.data$Date),
-                                      value = c(1950, # c(min(PS.data$Date), 1950,
-                                                max(PS.data$Date)),
-                                      step = 1,
-                                      sep = ''),
-                          checkboxGroupInput("Class",
-                                             # h3("Class"),
-                                             label = "Choose one or more substance class(es) to display",
-                                             choices = list("all",
-                                                            "Deliriants",
-                                                            "Dissociatives",
-                                                            "Entactogens",
-                                                            "MAOIs",
-                                                            "Phytocannabinoids",
-                                                            "Psychedelics",
-                                                            "Synthetic cannabinoids"),
-                                             selected = "all"),
-                          div(dataTableOutput("table_print_Class"), style = "font-size:80%")
-                 ),
-                 
-                 # Compounds --------------------------------------------------------------
-                 tabPanel("Compounds",
-                          # sidebarLayout(
-                          #   sidebarPanel(
-                          #     helpText(h3("Tracking clinical psychedelics in children and adolescents.")),
-                          
-                          # mainPanel(
-                          verbatimTextOutput("compound_selected"),
-                          plotlyOutput("studies_over_year_plot_Compound"), # plotOutput
-                          
-                          sliderInput("range_compounds",
-                                      label = "Years of interest:",
-                                      min = min(PS.data$Date),
-                                      max = max(PS.data$Date),
-                                      value = c(1950, # c(min(PS.data$Date), 1950,
-                                                max(PS.data$Date)),
-                                      step = 1,
-                                      sep = ''),
-                          
-                          checkboxGroupInput("Compound",
-                                             # h3("Compound"),
-                                             label = "Choose one or more compound(s) to display",
-                                             choices = c("all",
-                                                         compounds),
-                                             # "2-AG (2-Arachidonylglycerol)",
-                                             # "AA",
-                                             # "AEA (Anandamid)",
-                                             # "Delta-8-tetrahydrocannabinol (delta-8-THC)",
-                                             # "Dexanabinol",
-                                             # "Dronabinol",
-                                             # "Esketamine",
-                                             # "Harmaline",
-                                             # "Harmine",
-                                             # "Iofetamine",
-                                             # "Ketamine",
-                                             # "Ketodex",
-                                             # "Ketofol",
-                                             # "LAE-32 (D-Lysergic acid ethylamide)",
-                                             # "Lenabasum",
-                                             # "Levonantradol",
-                                             # "LSD (Lysergic acid diethylamide)",
-                                             # "Marinol",
-                                             # "mCPP (meta-Chlorphenylpiperazin)",
-                                             # "Mescaline",
-                                             # "Methysergide",
-                                             # "Nabilone",
-                                             # "Nabiximols",
-                                             # "Naboline",
-                                             # "OEA (Oleoylethanolamide)",
-                                             # "PCP (Phencyclidin)",
-                                             # "PEA (Palmitoylethanolamid)",
-                                             # "Physostigmine",
-                                             # "Phytocannabinoids",
-                                             # "Psilocybin",
-                                             # "Scopolamine",
-                                             # "THC",
-                                             # "αET (alpha-Ethyltryptamine)"
-                                             selected = "all"),
-                          
-                          div(dataTableOutput("table_print_Compound"), style = "font-size:80%")
-                 ),
-                 # )
-                 # ))
-                 tabPanel("Map",
-                          plotlyOutput("map_plot"))
+ui <- navbarPage(#tags$img(src = "./images/logo.svg", width = "200px"), # "PsyChild - Tracking clinical psychedelics in children and adolescents."
+  # Introduction -----------------------------------------------------------------
+  # Create Right Side Logo/Image with Link       
+  tags$script(HTML("var header = $('.navbar > .container-fluid');
+header.append('<div style=\"float:left\"><img src=\"./images/logo_header.svg\" alt=\"alt\" style=\"float:left;height:50px;padding-top:1px;\"></div>');
+    console.log(header)")),
+  # title=div(img(src="./images/logo.svg"), "My Title in the Navbar"),
+  tabPanel(span("Home", style="color:#1e9273ff"),
+           helpText(
+             h3("PsyChild - Tracking clinical psychedelics in children and adolescents."),
+             # HTML('<center><img src="PsyChild/logo.jpg" width="50%"></center>'),
+             # tags$img(src = "images/logo.jpg"), # , width = "99px"
+             # tags$img(src = "./images/logo.jpg", width = "99px"),
+             # HTML('<center><img src="./images/logo.jpg" width="10%"></center>'),
+             # tags$img(src = "./images/logo.svg", width = "400px"),
+             p(),
+             # h4("Tracking clinical psychedelics in children and adolescents."),
+             p("PsyChild is a database for psychedelic research in minors. It’s main aim is to provide a growing 
+                              bibliography on this multidisciplinary field for researchers, research subjects, patients, guardians, 
+                              clinicians, and external experts. Some of the provided records contain accounts of violence, homophobia, 
+                              and unethical conduct, underscoring the urgent need to grapple with the difficult history of this 
+                              field. While PsyChild takes a neutral stance on the question whether psychedelic-assisted psychotherapy 
+                              (PAP) should be provided to minors, we do call for evidence-based, harm-reduction-oriented PAP 
+                              protocols designed for minors in case research or treatement should be carried out. PsyChild is 
+                              committed to an open science approach and welcomes suggestions and submissions."),
+             HTML("Please use the tabs above to access PsyChild's functionalities.<br><br>"),
+             HTML("<a href='https://twitter.com/ChewingGinger'  target='_blank'>Philipp Rühr</a> 
+               is responsible for curating new data for PsyChild, while this webpage is written and maintened by 
+               <a href='https://twitter.com/Peter_Th_R'  target='_blank'>Peter T. Rühr</a>. Issues can be reported at <a href='https://github.com/Peter-T-Ruehr/PsyChild/issues'  target='_blank'>PsyChild's GitHub page</a>."),
+             HTML("If you use this website, please cite it as:<br>
+                                     Rühr, P. & Rühr, P. (<b>2023</b>): <em>PsyChild</em>, accessed yyyy&#92;mm&#92;dd, &lt;http://ruehr.org/shiny/PsyChild/&gt;.<br><br>"),
+             HTML('<center><img src="https://live.staticflickr.com/65535/52837830388_fa787a0c35_o.jpg" width="50%"></center>'))
+  ),
+  # Classes -----------------------------------------------------------------
+  tabPanel(span("Substance Classes", style="color:#1e9273ff"),
+           # sidebarLayout(
+           #   sidebarPanel(
+           
+           # mainPanel(
+           # helpText(h3("Tracking clinical psychedelics in children and adolescents.")), # "Visualize psychedelic drug use in children through time and space"
+           verbatimTextOutput("class_selected"),
+           plotlyOutput("studies_over_year_plot_Class"), # plotOutput
+           # plotOutput("test_plot"),
+           sliderInput("range",
+                       label = "Years of interest:",
+                       min = min(PS.data$Date),
+                       max = max(PS.data$Date),
+                       value = c(min(PS.data$Date), # min(PS.data$Date), 1950,
+                                 max(PS.data$Date)),
+                       step = 1,
+                       sep = ''),
+           checkboxGroupInput("Class",
+                              # h3("Class"),
+                              label = "Choose one or more substance class(es) to display",
+                              choices = list("all",
+                                             "Deliriants",
+                                             "Dissociatives",
+                                             "Entactogens",
+                                             "MAOIs",
+                                             "Phytocannabinoids",
+                                             "Psychedelics",
+                                             "Synthetic cannabinoids"),
+                              selected = "all"),
+           div(dataTableOutput("table_print_Class"), style = "font-size:100%")
+  ),
+  
+  # Compounds --------------------------------------------------------------
+  tabPanel(span("Compounds", style="color:#1e9273ff"),
+           # sidebarLayout(
+           #   sidebarPanel(
+           #     helpText(h3("Tracking clinical psychedelics in children and adolescents.")),
+           
+           # mainPanel(
+           verbatimTextOutput("compound_selected"),
+           plotlyOutput("studies_over_year_plot_Compound"), # plotOutput
+           
+           sliderInput("range_compounds",
+                       label = "Years of interest:",
+                       min = min(PS.data$Date),
+                       max = max(PS.data$Date),
+                       value = c(min(PS.data$Date), # c(min(PS.data$Date), 1950,
+                                 max(PS.data$Date)),
+                       step = 1,
+                       sep = ''),
+           
+           checkboxGroupInput("Compound",
+                              # h3("Compound"),
+                              label = "Choose one or more compound(s) to display",
+                              choices = c("all",
+                                          compounds),
+                              # "2-AG (2-Arachidonylglycerol)",
+                              # "AA",
+                              # "AEA (Anandamid)",
+                              # "Delta-8-tetrahydrocannabinol (delta-8-THC)",
+                              # "Dexanabinol",
+                              # "Dronabinol",
+                              # "Esketamine",
+                              # "Harmaline",
+                              # "Harmine",
+                              # "Iofetamine",
+                              # "Ketamine",
+                              # "Ketodex",
+                              # "Ketofol",
+                              # "LAE-32 (D-Lysergic acid ethylamide)",
+                              # "Lenabasum",
+                              # "Levonantradol",
+                              # "LSD (Lysergic acid diethylamide)",
+                              # "Marinol",
+                              # "mCPP (meta-Chlorphenylpiperazin)",
+                              # "Mescaline",
+                              # "Methysergide",
+                              # "Nabilone",
+                              # "Nabiximols",
+                              # "Naboline",
+                              # "OEA (Oleoylethanolamide)",
+                              # "PCP (Phencyclidin)",
+                              # "PEA (Palmitoylethanolamid)",
+                              # "Physostigmine",
+                              # "Phytocannabinoids",
+                              # "Psilocybin",
+                              # "Scopolamine",
+                              # "THC",
+                              # "αET (alpha-Ethyltryptamine)"
+                              selected = "all"),
+           
+           div(dataTableOutput("table_print_Compound"), style = "font-size:80%")
+  ),
+  # )
+  # ))
+  tabPanel(span("Publication Map", style="color:#1e9273ff"),
+           plotlyOutput("map_plot")),
+  tabPanel(span("Further Reading", style="color:#1e9273ff"),
+           div(dataTableOutput("table_print_further_reading"), style = "font-size:80%"))
 )
 
 
@@ -625,6 +639,23 @@ server <- function(input, output) {
     fig_map %>% 
       hide_colorbar() %>%
       layout(title = 'Map of Publications per country')
+  })
+  
+  
+  
+  # FURTHER READING ---------------------------------------------------------
+  output$table_print_further_reading <- renderDT({df <- reactiveVal(further_reading)
+  reduced_links <- further_reading %>% 
+    pull(Link) %>% 
+    gsub("https://", "", .)%>% 
+    gsub("http://", "", .)%>% 
+    gsub("www.", "", .)
+  datatable(further_reading %>% 
+    mutate(Link = paste0("<a href='", Link,"' target='_blank'>", reduced_links,"</a>")),
+    escape = FALSE,
+    rownames = FALSE) %>%
+    formatStyle(1:5, 'vertical-align'='top') %>% 
+    formatStyle(1:5, 'text-align' = 'left')
   })
 }
 

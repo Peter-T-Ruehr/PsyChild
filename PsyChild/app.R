@@ -129,11 +129,16 @@ PS.data$Country <- gsub("Russia", "Russian Federation", PS.data$Country)
 
 # save for printing
 PS.data.print_Class <- PS.data
-PS.data.print_Compound <- PS.data
+PS.data.print_Compound <- PS.data %>% 
+  ungroup()
 
 # separate multiple compounds from each other
 # i=1
 # i=25
+# i = 39 # Mescaline
+# tmp <- PS.data.compounds
+# PS.data.compounds <- tmp
+rows_to_remove <- NULL
 for(i in 1:nrow(PS.data.compounds)){
   # if compound cell contains ";"
   if(grepl(";", PS.data.compounds$Compound_new_name[i])){
@@ -144,10 +149,11 @@ for(i in 1:nrow(PS.data.compounds)){
       # replace original compounds with new compounds
       PS.data.compounds$Compound_new_name[nrow(PS.data.compounds)] <- k
     }
-    # remove original row
-    PS.data.compounds <- PS.data.compounds[-i, ]
+    rows_to_remove <- c(rows_to_remove, i)
   }
 }
+# remove original rows
+PS.data.compounds <- PS.data.compounds[-rows_to_remove, ]
 
 # cumulative years of compounds
 PS.data.compounds <- PS.data.compounds %>%
@@ -273,10 +279,10 @@ further_reading <- read_sheet(sheet_id, sheet = "Further reading")
 
 
 # User interface ----
-ui <- navbarPage(#tags$img(src = "./images/logo.svg", width = "200px"), # "PsyChild - Tracking clinical psychedelics in children and adolescents."
+ui <- navbarPage(#tags$img(src = "./images/logo.svg", width = "200px"),
   # Introduction -----------------------------------------------------------------
   # Create Right Side Logo/Image with Link       
-  tags$script(HTML("var header = $('.navbar > .container-fluid');
+  tags$script(HTML("PsyChild - Tracking clinical psychedelics in children and adolescents.);
 header.append('<div style=\"float:left\"><img src=\"./images/logo_header.svg\" alt=\"alt\" style=\"float:left;height:50px;padding-top:1px;\"></div>');
     console.log(header)")),
   # title=div(img(src="./images/logo.svg"), "My Title in the Navbar"),
@@ -480,7 +486,7 @@ server <- function(input, output) {
   
   PS.data.print_Class <- PS.data.print_Class %>% 
     arrange(Date, `Substance class`) %>% 
-    # rename(`Compound(s)` = Compound) %>% 
+  distinct(Title, .keep_all = TRUE) %>% 
     select(c(# `Date`,
       `Author`,
       `Location`,
@@ -527,7 +533,7 @@ server <- function(input, output) {
     # input=list(range = c(1839, 2023), # 1839 1950 2023 1980
     #            range_compounds = c(1839, 2023), # 1839 1950 2023 1980
     #            Class = c("Dissociatives, Entactogens"), # "Dissociatives" "all"
-    #            Compound = c("αET (alpha-Ethyltryptamine)", "LSD (Lysergic acid diethylamide)")) # LSD Phytocannabinoids αET (alpha-Ethyltryptamine) all OEA (Oleoylethanolamide)
+    #            Compound = "Mescaline") # c("αET (alpha-Ethyltryptamine)", "LSD (Lysergic acid diethylamide)")) LSD Phytocannabinoids αET (alpha-Ethyltryptamine) all OEA (Oleoylethanolamide)
     
     # filter by input range
     PS.data.compounds.plot <- PS.data.compounds  %>% 
@@ -550,6 +556,9 @@ server <- function(input, output) {
     } else {
       PS.data.compounds.plot <- PS.data.compounds.plot
     }
+    
+    # tmp <- PS.data.compounds.plot %>% 
+    #   drop_na(Title)
     
     globalcolors <- PS.data.compounds.plot$col_compound
     opacity <- 0.75
@@ -593,6 +602,7 @@ server <- function(input, output) {
   
   PS.data.print_Compound <- PS.data.print_Compound %>% 
     arrange(Date, `Compound(s)`) %>% 
+    distinct(Title, .keep_all = TRUE) %>% 
     select(c(# `Date`,
       `Author`,
       `Location`,

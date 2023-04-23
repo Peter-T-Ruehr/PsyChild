@@ -291,23 +291,20 @@ addResourcePath(prefix = "images", directoryPath = "./images/")
 further_reading <- read_sheet(sheet_id, sheet = "Further reading")
 
 
-
-
 # User interface ----
-ui <- navbarPage(#tags$img(src = "./images/logo.svg", width = "200px"),
+ui <- navbarPage(windowTitle = "PsyChild - Tracking clinical psychedelics in children and adolescents.",
+  # title="dsa",#tags$img(src = "./images/logo.svg", width = "200px"),
   # Introduction -----------------------------------------------------------------
-  # Create Right Side Logo/Image with Link       
-  tags$script(HTML("PsyChild - Tracking clinical psychedelics in children and adolescents.);
-header.append('<div style=\"float:left\"><img src=\"./images/logo_header.svg\" alt=\"alt\" style=\"float:left;height:50px;padding-top:1px;\"></div>');
-    console.log(header)")), # var header = $('.navbar > .container-fluid');
+  # titlePanel(title = span(img(src = "images/logo_header.svg", height = "50px", padding = "1px,1px,1px, 1px"), "")),
   # title=div(img(src="./images/logo.svg"), "My Title in the Navbar"),
+  # https://stackoverflow.com/questions/24705431/how-can-i-insert-an-image-into-the-navbar-on-a-shiny-navbarpage
+  tags$script(HTML("var header = $('.navbar > .container-fluid');
+  header.append('<div style=\"float:left\"><img src=\"images/logo_header.svg\" alt=\"alt\" style=\"float:left;height:50px;padding-top:1px;\"></div>');
+      console.log(header)")),
   tabPanel(span("Home", style="color:#1e9273ff"),
            helpText(
              h3("PsyChild - Tracking clinical psychedelics in children and adolescents."),
-             # HTML('<center><img src="PsyChild/logo.jpg" width="50%"></center>'),
-             # tags$img(src = "images/logo.jpg"), # , width = "99px"
-             # tags$img(src = "./images/logo.jpg", width = "99px"),
-             # HTML('<center><img src="./images/logo.jpg" width="10%"></center>'),
+             # HTML('<center><img src="images/logo_header.svg" width="50%"></center>'),
              # tags$img(src = "./images/logo_header.svg", width = "400px"),
              p(),
              # h4("Tracking clinical psychedelics in children and adolescents."),

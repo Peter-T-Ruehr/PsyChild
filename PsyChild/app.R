@@ -67,19 +67,32 @@ compound_translation <- tibble(old = c("2-AG \\(2-Arachidonoylglycerol\\)",
                                        "THC \\(Delta-9 THC\\)",
                                        "THC \\(THC-homologs, Numbers 122 and 125A\\)",
                                        "αET \\(alpha-Ethyltryptamine\\)"),
-                               new = c("AG",
-                                       "AA",
-                                       "AEA",
-                                       "LAE",
-                                       "LSD",
-                                       "OEA",
-                                       "PCP",
-                                       "mCPP",
-                                       "PEA",
-                                       "THC",
-                                       "THC",
-                                       "THC",
-                                       "αET"))
+                               # new = c("AG",
+                               #         "AA",
+                               #         "AEA",
+                               #         "LAE",
+                               #         "LSD",
+                               #         "OEA",
+                               #         "PCP",
+                               #         "mCPP",
+                               #         "PEA",
+                               #         "THC",
+                               #         "THC",
+                               #         "THC",
+                               #         "αET"))
+                               new = c("2-AG \\(2-Arachidonoylglycerol\\)",
+                                       "AA \\(Arachidonic acid\\)",
+                                       "AEA \\(Anandamide\\)",
+                                       "LAE-32 \\(D-Lysergic acid diethylamide\\)",
+                                       "LSD \\(Lysergic acid diethylamide\\)",
+                                       "OEA \\(Oleoylethanolamide\\)",
+                                       "PCP \\(Phencyclidine\\)",
+                                       "mCPP \\(meta-Chlorophenylpiperazine\\)",
+                                       "PEA \\(Palmitoylethanolamide\\)",
+                                       "THC \\(Delta-8-THC\\)",
+                                       "THC \\(Delta-9 THC\\)",
+                                       "THC \\(THC-homologs, Numbers 122 and 125A\\)",
+                                       "αET \\(alpha-Ethyltryptamine\\)"))
 
 # arrange PS_data
 PS.data <- PS.data %>% 
@@ -272,10 +285,12 @@ PS.data.map.reduced$Publications[PS.data.map.reduced$Country == "United States o
   paste(PS.data.map$Author[PS.data.map$Country == "United States of America"], collapse = ";")
 
 # Add directory of static resources to Shiny's web server
-addResourcePath(prefix = "images", directoryPath = "images/")
+addResourcePath(prefix = "images", directoryPath = "./images/")
 
 # get Further Reading data
 further_reading <- read_sheet(sheet_id, sheet = "Further reading")
+
+
 
 
 # User interface ----
@@ -284,7 +299,7 @@ ui <- navbarPage(#tags$img(src = "./images/logo.svg", width = "200px"),
   # Create Right Side Logo/Image with Link       
   tags$script(HTML("PsyChild - Tracking clinical psychedelics in children and adolescents.);
 header.append('<div style=\"float:left\"><img src=\"./images/logo_header.svg\" alt=\"alt\" style=\"float:left;height:50px;padding-top:1px;\"></div>');
-    console.log(header)")),
+    console.log(header)")), # var header = $('.navbar > .container-fluid');
   # title=div(img(src="./images/logo.svg"), "My Title in the Navbar"),
   tabPanel(span("Home", style="color:#1e9273ff"),
            helpText(
@@ -293,7 +308,7 @@ header.append('<div style=\"float:left\"><img src=\"./images/logo_header.svg\" a
              # tags$img(src = "images/logo.jpg"), # , width = "99px"
              # tags$img(src = "./images/logo.jpg", width = "99px"),
              # HTML('<center><img src="./images/logo.jpg" width="10%"></center>'),
-             # tags$img(src = "./images/logo.svg", width = "400px"),
+             # tags$img(src = "./images/logo_header.svg", width = "400px"),
              p(),
              # h4("Tracking clinical psychedelics in children and adolescents."),
              p("PsyChild is a database for psychedelic research in minors. It’s main aim is to provide a growing 
@@ -310,7 +325,7 @@ header.append('<div style=\"float:left\"><img src=\"./images/logo_header.svg\" a
                <a href='https://twitter.com/Peter_Th_R'  target='_blank'>Peter T. Rühr</a>. Issues can be reported at <a href='https://github.com/Peter-T-Ruehr/PsyChild/issues'  target='_blank'>PsyChild's GitHub page</a>."),
              HTML("If you use this website, please cite it as:<br>
                                      Rühr, P. & Rühr, P. (<b>2023</b>): <em>PsyChild</em>, accessed yyyy&#92;mm&#92;dd, &lt;http://ruehr.org/shiny/PsyChild/&gt;.<br><br>"),
-             HTML('<center><img src="https://live.staticflickr.com/65535/52837830388_fa787a0c35_o.jpg" width="50%"></center>'))
+             HTML('<center><img src="https://live.staticflickr.com/65535/52837830388_fa787a0c35_o.jpg" width="35%"></center>'))
   ),
   # Classes -----------------------------------------------------------------
   tabPanel(span("Substance Classes", style="color:#1e9273ff"),
@@ -363,12 +378,19 @@ header.append('<div style=\"float:left\"><img src=\"./images/logo_header.svg\" a
                                  max(PS.data$Date)),
                        step = 1,
                        sep = ''),
-           
-           checkboxGroupInput("Compound",
+           checkboxGroupInput("All",
                               # h3("Compound"),
-                              label = "Choose one or more compound(s) to display",
-                              choices = c("all",
-                                          compounds),
+                              label = "All Compounds",
+                              choices = c("all"),
+                              selected = "all"),
+           checkboxGroupInput("Endocannabinoids",
+                              # h3("Compound"),
+                              label = "Endocannabinoids",
+                              choices = c("2-AG (2-Arachidonoylglycerol)",
+                                          "AA (Arachidonic acid)",
+                                          "AEA (Anandamide)",
+                                          "OEA (Oleoylethanolamide)",
+                                          "PEA (Palmitoylethanolamide)"),
                               # "2-AG (2-Arachidonylglycerol)",
                               # "AA",
                               # "AEA (Anandamid)",
@@ -392,7 +414,6 @@ header.append('<div style=\"float:left\"><img src=\"./images/logo_header.svg\" a
                               # "Methysergide",
                               # "Nabilone",
                               # "Nabiximols",
-                              # "Naboline",
                               # "OEA (Oleoylethanolamide)",
                               # "PCP (Phencyclidin)",
                               # "PEA (Palmitoylethanolamid)",
@@ -402,7 +423,58 @@ header.append('<div style=\"float:left\"><img src=\"./images/logo_header.svg\" a
                               # "Scopolamine",
                               # "THC",
                               # "αET (alpha-Ethyltryptamine)"
-                              selected = "all"),
+                              selected = NULL),
+           checkboxGroupInput("Synthetic_cannabinoids",
+                              # h3("Compound"),
+                              label = "Synthetic cannabinoids",
+                              choices = c("Dexanabinol",
+                                          "Dronabinol",
+                                          "Levonantradol",
+                                          "Nabilone",
+                                          "Nabiximols"),
+                              selected = NULL),
+           checkboxGroupInput("Cannabinoid_receptor_agonist",
+                              # h3("Compound"),
+                              label = "Cannabinoid receptor agonist",
+                              choices = c("Lenabasum"),
+                              selected = NULL),
+           checkboxGroupInput("Psychedelics",
+                              # h3("Compound"),
+                              label = "Psychedelics",
+                              choices = c("LAE-32 (D-Lysergic acid ethylamide)",
+                                          "LSD (Lysergic acid diethylamide)",
+                                          "Mescaline",
+                                          "Methysergide",
+                                          "Psilocybin"),
+                              selected = NULL),
+           checkboxGroupInput("Dissociatives",
+                              # h3("Compound"),
+                              label = "Dissociatives",
+                              choices = c("Esketamine",
+                                          "Ketamine",
+                                          "Ketodex",
+                                          "Ketofol",
+                                          "PCP (Phencyclidine)"),
+                              selected = NULL),
+           checkboxGroupInput("Harmala_alkaloids",
+                              # h3("Compound"),
+                              label = "Harmala alkaloids",
+                              choices = c("Harmaline",
+                                          "Harmine"),
+                              selected = NULL),
+           checkboxGroupInput("Deliriants",
+                              # h3("Compound"),
+                              label = "Deliriants",
+                              choices = c("Physostigmine",
+                                          "Scopolamine"),
+                              selected = NULL),
+           checkboxGroupInput("Entactogens",
+                              # h3("Compound"),
+                              label = "Entactogens",
+                              choices = c("Iofetamine",
+                                          "mCPP (meta-Chlorophenylpiperazine)",
+                                          "αET (alpha-Ethyltryptamine)"),
+                              selected = NULL),
            
            div(dataTableOutput("table_print_Compound"), style = "font-size:80%")
   ),
@@ -431,11 +503,12 @@ server <- function(input, output) {
   
   output$studies_over_year_plot_Class <- renderPlotly({ # renderPlot
     
-    # testing
+    # # testing
     # input=list(range = c(1839, 2023), # 1839 1950 2023 1980
     #            range_compounds = c(1839, 2023), # 1839 1950 2023 1980
-    #            Class = c("Dissociatives, Entactogens"), # "Dissociatives" "all"
-    #            Compound = c("αET (alpha-Ethyltryptamine)")) # LSD Phytocannabinoids αET (alpha-Ethyltryptamine) all OEA (Oleoylethanolamide)
+    #            Class = c("Dissociatives, Entactogens")) # "Dissociatives" "all"
+    # output=NULL
+    # output$compound_selected <- "LSD (Lysergic acid diethylamide)"
     
     # filter by input range
     PS.data.plot.Class <- PS.data %>%
@@ -486,7 +559,7 @@ server <- function(input, output) {
   
   PS.data.print_Class <- PS.data.print_Class %>% 
     arrange(Date, `Substance class`) %>% 
-  distinct(Title, .keep_all = TRUE) %>% 
+    distinct(Title, .keep_all = TRUE) %>% 
     select(c(# `Date`,
       `Author`,
       `Location`,
@@ -523,17 +596,30 @@ server <- function(input, output) {
                  lengthChange = FALSE))
   
   # Compound -------------------------------------------------------------------  
-  output$compound_selected <-renderText({
-    paste0("Compounds selected: ", paste(input$Compound, collapse = ", "), ".")
+  
+  Compounds <- reactive({c(input$All,
+                           input$Endocannabinoids,
+                           input$Synthetic_cannabinoids,
+                           input$Cannabinoid_receptor_agonist,
+                           input$Psychedelics,
+                           input$Dissociatives,
+                           input$Harmala_alkaloids,
+                           input$Deliriants,
+                           input$Entactogens)})
+  
+  output$compound_selected <- renderText({
+    paste0("Compounds selected: ", paste(Compounds(), collapse = ", "), ".")
   })
+  
   
   output$studies_over_year_plot_Compound <- renderPlotly({ # renderPlot
     
     # # testing
     # input=list(range = c(1839, 2023), # 1839 1950 2023 1980
     #            range_compounds = c(1839, 2023), # 1839 1950 2023 1980
-    #            Class = c("Dissociatives, Entactogens"), # "Dissociatives" "all"
-    #            Compound = "Mescaline") # c("αET (alpha-Ethyltryptamine)", "LSD (Lysergic acid diethylamide)")) LSD Phytocannabinoids αET (alpha-Ethyltryptamine) all OEA (Oleoylethanolamide)
+    #            Class = c("Dissociatives, Entactogens")) # "Dissociatives" "all"
+    # output=NULL
+    # output$compound_selected <- paste(c("LSD (Lysergic acid diethylamide)", "Mescaline"), collapse = ", ")
     
     # filter by input range
     PS.data.compounds.plot <- PS.data.compounds  %>% 
@@ -542,14 +628,15 @@ server <- function(input, output) {
              Date <= input$range_compounds[2])
     
     # select input compounds
-    if("all" %in% input$Compound == FALSE){
+    if("all" %in% Compounds() == FALSE){
       # i=2
       tmp <- NULL
-      for(i in 1:length(unlist(strsplit(input$Compound, split = ", ")))){
+      i=1
+      for(i in 1:length(Compounds())){
         tmp <- rbind(tmp, PS.data.compounds.plot %>%
                        ungroup() %>%
-                       # filter(`Compound(s)` %in% unlist(strsplit(input$Compound, split = ", ")))
-                       filter(grepl(unlist(strsplit(input$Compound[i], split = ", ")), Compound_new_name))) # "Oleoylethanolamide"
+                       # filter(`Compound(s)` %in% unlist(strsplit( Compounds(), split = ", ")))
+                       filter(Compound_new_name %in% Compounds()[i])) # "Oleoylethanolamide"
       }
       PS.data.compounds.plot <- tmp
       rm(tmp)
@@ -580,19 +667,18 @@ server <- function(input, output) {
   })
   
   output$table_print_Compound <- renderDataTable({df <- reactiveVal(PS.data.print_Compound)
-  
-  PS.data.print_Compound <- PS.data.print_Compound %>% 
-    arrange(Date) %>% 
+  PS.data.print_Compound <- PS.data.compounds %>%
+    arrange(Date) %>%
     filter(Date >= input$range_compounds[1],
            Date <= input$range_compounds[2])
   
-  if("all" %in% input$Compound == FALSE){
+  if("all" %in% Compounds() == FALSE){
     # i=2
     tmp <- NULL
-    for(i in 1:length(unlist(strsplit(input$Compound, split = ", ")))){
+    for(i in 1:length(Compounds())){
       tmp <- rbind(tmp, PS.data.print_Compound %>%
-                     # filter(Compound %in% unlist(strsplit(input$Compound, split = ", ")))
-                     filter(grepl(unlist(strsplit(input$Compound[i], split = ", ")), `Compound(s)`)))
+                     # filter(Compound %in% unlist(strsplit(output$compound_selected, split = ", ")))
+                     filter(Compound_new_name %in% Compounds()[i]))
     }
     PS.data.print_Compound <- tmp
     rm(tmp)
@@ -601,6 +687,7 @@ server <- function(input, output) {
   }
   
   PS.data.print_Compound <- PS.data.print_Compound %>% 
+    ungroup() %>% 
     arrange(Date, `Compound(s)`) %>% 
     distinct(Title, .keep_all = TRUE) %>% 
     select(c(# `Date`,
@@ -661,9 +748,9 @@ server <- function(input, output) {
     gsub("http://", "", .)%>% 
     gsub("www.", "", .)
   datatable(further_reading %>% 
-    mutate(Link = paste0("<a href='", Link,"' target='_blank'>", reduced_links,"</a>")),
-    escape = FALSE,
-    rownames = FALSE) %>%
+              mutate(Link = paste0("<a href='", Link,"' target='_blank'>", reduced_links,"</a>")),
+            escape = FALSE,
+            rownames = FALSE) %>%
     formatStyle(1:5, 'vertical-align'='top') %>% 
     formatStyle(1:5, 'text-align' = 'left')
   })
@@ -671,7 +758,6 @@ server <- function(input, output) {
 
 # Run app ----
 shinyApp(ui, server)
-
 
 
 

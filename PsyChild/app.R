@@ -293,22 +293,26 @@ further_reading <- read_sheet(sheet_id, sheet = "Further reading")
 
 # User interface ----
 ui <- navbarPage(windowTitle = "PsyChild - Tracking clinical psychedelics in children and adolescents.",
-  # title="dsa",#tags$img(src = "./images/logo.svg", width = "200px"),
-  # Introduction -----------------------------------------------------------------
-  # titlePanel(title = span(img(src = "images/logo_header.svg", height = "50px", padding = "1px,1px,1px, 1px"), "")),
-  # title=div(img(src="./images/logo.svg"), "My Title in the Navbar"),
-  # https://stackoverflow.com/questions/24705431/how-can-i-insert-an-image-into-the-navbar-on-a-shiny-navbarpage
-  tags$script(HTML("var header = $('.navbar > .container-fluid');
+                 # title="dsa",#tags$img(src = "./images/logo.svg", width = "200px"),
+                 # Introduction -----------------------------------------------------------------
+                 # titlePanel(title = span(img(src = "images/logo_header.svg", height = "50px", padding = "1px,1px,1px, 1px"), "")),
+                 # title=div(img(src="./images/logo.svg"), "My Title in the Navbar"),
+                 # https://stackoverflow.com/questions/24705431/how-can-i-insert-an-image-into-the-navbar-on-a-shiny-navbarpage
+                 tags$script(HTML("var header = $('.navbar > .container-fluid');
   header.append('<div style=\"float:left\"><img src=\"images/logo_header.svg\" alt=\"alt\" style=\"float:left;height:50px;padding-top:1px;\"></div>');
       console.log(header)")),
-  tabPanel(span("Home", style="color:#1e9273ff"),
-           helpText(
-             h3("PsyChild - Tracking clinical psychedelics in children and adolescents."),
-             # HTML('<center><img src="images/logo_header.svg" width="50%"></center>'),
-             # tags$img(src = "./images/logo_header.svg", width = "400px"),
-             p(),
-             # h4("Tracking clinical psychedelics in children and adolescents."),
-             p("PsyChild is a database for psychedelic research in minors. It’s main aim is to provide a growing 
+                 # tags$head(tags$link(rel = "shortcut icon", href = "images/logo_header.svg")),
+                 
+                 tags$head(tags$link(rel = "icon", type = "image/svg", sizes = "16x16", href = "images/logo_header.svg")),
+                 
+                 tabPanel(span("Home", style="color:#1e9273ff"),
+                          helpText(
+                            h3("PsyChild - Tracking clinical psychedelics in children and adolescents."),
+                            # HTML('<center><img src="images/logo_header.svg" width="50%"></center>'),
+                            # tags$img(src = "./images/logo_header.svg", width = "400px"),
+                            p(),
+                            # h4("Tracking clinical psychedelics in children and adolescents."),
+                            p("PsyChild is a database for psychedelic research in minors. It’s main aim is to provide a growing 
                               bibliography on this multidisciplinary field for researchers, research subjects, patients, guardians, 
                               clinicians, and external experts. Some of the provided records contain accounts of violence, homophobia, 
                               and unethical conduct, underscoring the urgent need to grapple with the difficult history of this 
@@ -316,171 +320,223 @@ ui <- navbarPage(windowTitle = "PsyChild - Tracking clinical psychedelics in chi
                               (PAP) should be provided to minors, we do call for evidence-based, harm-reduction-oriented PAP 
                               protocols designed for minors in case research or treatement should be carried out. PsyChild is 
                               committed to an open science approach and welcomes suggestions and submissions."),
-             HTML("Please use the tabs above to access PsyChild's functionalities.<br><br>"),
-             HTML("<a href='https://twitter.com/ChewingGinger'  target='_blank'>Philipp Rühr</a> 
+                            HTML("Please use the tabs above to access PsyChild's functionalities.<br><br>"),
+                            HTML('<img src="https://live.staticflickr.com/65535/52838364217_569cc496f3_o.jpg" width="50%">'),
+                            p(),
+                            HTML("<a href='https://twitter.com/ChewingGinger'  target='_blank'>Philipp Rühr</a> 
                is responsible for curating new data for PsyChild, while this webpage is written and maintened by 
-               <a href='https://twitter.com/Peter_Th_R'  target='_blank'>Peter T. Rühr</a>. Issues can be reported at <a href='https://github.com/Peter-T-Ruehr/PsyChild/issues'  target='_blank'>PsyChild's GitHub page</a>."),
-             HTML("If you use this website, please cite it as:<br>
-                                     Rühr, P. & Rühr, P. (<b>2023</b>): <em>PsyChild</em>, accessed yyyy&#92;mm&#92;dd, &lt;http://ruehr.org/shiny/PsyChild/&gt;.<br><br>"),
-             HTML('<center><img src="https://live.staticflickr.com/65535/52837830388_fa787a0c35_o.jpg" width="35%"></center>'))
-  ),
-  # Classes -----------------------------------------------------------------
-  tabPanel(span("Substance Classes", style="color:#1e9273ff"),
-           # sidebarLayout(
-           #   sidebarPanel(
-           
-           # mainPanel(
-           # helpText(h3("Tracking clinical psychedelics in children and adolescents.")), # "Visualize psychedelic drug use in children through time and space"
-           verbatimTextOutput("class_selected"),
-           plotlyOutput("studies_over_year_plot_Class"), # plotOutput
-           # plotOutput("test_plot"),
-           sliderInput("range",
-                       label = "Years of interest:",
-                       min = min(PS.data$Date),
-                       max = max(PS.data$Date),
-                       value = c(min(PS.data$Date), # min(PS.data$Date), 1950,
-                                 max(PS.data$Date)),
-                       step = 1,
-                       sep = ''),
-           checkboxGroupInput("Class",
-                              # h3("Class"),
-                              label = "Choose one or more substance class(es) to display",
-                              choices = list("all",
-                                             "Deliriants",
-                                             "Dissociatives",
-                                             "Entactogens",
-                                             "MAOIs",
-                                             "Phytocannabinoids",
-                                             "Psychedelics",
-                                             "Synthetic cannabinoids"),
-                              selected = "all"),
-           div(dataTableOutput("table_print_Class"), style = "font-size:100%")
-  ),
-  
-  # Compounds --------------------------------------------------------------
-  tabPanel(span("Compounds", style="color:#1e9273ff"),
-           # sidebarLayout(
-           #   sidebarPanel(
-           #     helpText(h3("Tracking clinical psychedelics in children and adolescents.")),
-           
-           # mainPanel(
-           verbatimTextOutput("compound_selected"),
-           plotlyOutput("studies_over_year_plot_Compound"), # plotOutput
-           
-           sliderInput("range_compounds",
-                       label = "Years of interest:",
-                       min = min(PS.data$Date),
-                       max = max(PS.data$Date),
-                       value = c(min(PS.data$Date), # c(min(PS.data$Date), 1950,
-                                 max(PS.data$Date)),
-                       step = 1,
-                       sep = ''),
-           checkboxGroupInput("All",
-                              # h3("Compound"),
-                              label = "All Compounds",
-                              choices = c("all"),
-                              selected = "all"),
-           checkboxGroupInput("Endocannabinoids",
-                              # h3("Compound"),
-                              label = "Endocannabinoids",
-                              choices = c("2-AG (2-Arachidonoylglycerol)",
-                                          "AA (Arachidonic acid)",
-                                          "AEA (Anandamide)",
-                                          "OEA (Oleoylethanolamide)",
-                                          "PEA (Palmitoylethanolamide)"),
-                              # "2-AG (2-Arachidonylglycerol)",
-                              # "AA",
-                              # "AEA (Anandamid)",
-                              # "Delta-8-tetrahydrocannabinol (delta-8-THC)",
-                              # "Dexanabinol",
-                              # "Dronabinol",
-                              # "Esketamine",
-                              # "Harmaline",
-                              # "Harmine",
-                              # "Iofetamine",
-                              # "Ketamine",
-                              # "Ketodex",
-                              # "Ketofol",
-                              # "LAE-32 (D-Lysergic acid ethylamide)",
-                              # "Lenabasum",
-                              # "Levonantradol",
-                              # "LSD (Lysergic acid diethylamide)",
-                              # "Marinol",
-                              # "mCPP (meta-Chlorphenylpiperazin)",
-                              # "Mescaline",
-                              # "Methysergide",
-                              # "Nabilone",
-                              # "Nabiximols",
-                              # "OEA (Oleoylethanolamide)",
-                              # "PCP (Phencyclidin)",
-                              # "PEA (Palmitoylethanolamid)",
-                              # "Physostigmine",
-                              # "Phytocannabinoids",
-                              # "Psilocybin",
-                              # "Scopolamine",
-                              # "THC",
-                              # "αET (alpha-Ethyltryptamine)"
-                              selected = NULL),
-           checkboxGroupInput("Synthetic_cannabinoids",
-                              # h3("Compound"),
-                              label = "Synthetic cannabinoids",
-                              choices = c("Dexanabinol",
-                                          "Dronabinol",
-                                          "Levonantradol",
-                                          "Nabilone",
-                                          "Nabiximols"),
-                              selected = NULL),
-           checkboxGroupInput("Cannabinoid_receptor_agonist",
-                              # h3("Compound"),
-                              label = "Cannabinoid receptor agonist",
-                              choices = c("Lenabasum"),
-                              selected = NULL),
-           checkboxGroupInput("Psychedelics",
-                              # h3("Compound"),
-                              label = "Psychedelics",
-                              choices = c("LAE-32 (D-Lysergic acid ethylamide)",
-                                          "LSD (Lysergic acid diethylamide)",
-                                          "Mescaline",
-                                          "Methysergide",
-                                          "Psilocybin"),
-                              selected = NULL),
-           checkboxGroupInput("Dissociatives",
-                              # h3("Compound"),
-                              label = "Dissociatives",
-                              choices = c("Esketamine",
-                                          "Ketamine",
-                                          "Ketodex",
-                                          "Ketofol",
-                                          "PCP (Phencyclidine)"),
-                              selected = NULL),
-           checkboxGroupInput("Harmala_alkaloids",
-                              # h3("Compound"),
-                              label = "Harmala alkaloids",
-                              choices = c("Harmaline",
-                                          "Harmine"),
-                              selected = NULL),
-           checkboxGroupInput("Deliriants",
-                              # h3("Compound"),
-                              label = "Deliriants",
-                              choices = c("Physostigmine",
-                                          "Scopolamine"),
-                              selected = NULL),
-           checkboxGroupInput("Entactogens",
-                              # h3("Compound"),
-                              label = "Entactogens",
-                              choices = c("Iofetamine",
-                                          "mCPP (meta-Chlorophenylpiperazine)",
-                                          "αET (alpha-Ethyltryptamine)"),
-                              selected = NULL),
-           
-           div(dataTableOutput("table_print_Compound"), style = "font-size:80%")
-  ),
-  # )
-  # ))
-  tabPanel(span("Publication Map", style="color:#1e9273ff"),
-           plotlyOutput("map_plot")),
-  tabPanel(span("Further Reading", style="color:#1e9273ff"),
-           div(dataTableOutput("table_print_further_reading"), style = "font-size:80%"))
+               <a href='https://twitter.com/Peter_Th_R'  target='_blank'>Peter T. Rühr</a>. Issues can be reported at <a href='https://github.com/Peter-T-Ruehr/PsyChild/issues'  target='_blank'>PsyChild's GitHub page</a>.<br><br>"),
+                            # HTML("If you use this website, please cite it as:<br>
+                            #          Rühr, P. & Rühr, P. (<b>2023</b>): <em>PsyChild</em>, accessed yyyy&#92;mm&#92;dd, &lt;http://ruehr.org/shiny/PsyChild/&gt;.")
+                            # ),
+                            HTML("If you use this website, please cite it as:<br>
+                                     <em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://ruehr.org/shiny/PsyChild/.")
+                          )# <center></center>
+                 ),
+                 # Classes -----------------------------------------------------------------
+                 tabPanel(span("Substance Classes", style="color:#1e9273ff"),
+                          # sidebarLayout(
+                          #   sidebarPanel(
+                          
+                          # mainPanel(
+                          # helpText(h3("Tracking clinical psychedelics in children and adolescents.")), # "Visualize psychedelic drug use in children through time and space"
+                          verbatimTextOutput("class_selected"),
+                          plotlyOutput("studies_over_year_plot_Class"), # plotOutput
+                          # plotOutput("test_plot"),
+                          sliderInput("range",
+                                      label = "Years of interest:",
+                                      min = min(PS.data$Date),
+                                      max = max(PS.data$Date),
+                                      value = c(min(PS.data$Date), # min(PS.data$Date), 1950,
+                                                max(PS.data$Date)),
+                                      step = 1,
+                                      sep = ''),
+                          checkboxGroupInput("Class",
+                                             # h3("Class"),
+                                             label = "Choose one or more substance class(es) to display",
+                                             choices = list("all",
+                                                            "Deliriants",
+                                                            "Dissociatives",
+                                                            "Entactogens",
+                                                            "MAOIs",
+                                                            "Phytocannabinoids",
+                                                            "Psychedelics",
+                                                            "Synthetic cannabinoids"),
+                                             selected = "all"),
+                          div(dataTableOutput("table_print_Class"), style = "font-size:100%")
+                 ),
+                 
+                 # Compounds --------------------------------------------------------------
+                 tabPanel(span("Compounds", style="color:#1e9273ff"),
+                          # sidebarLayout(
+                          #   sidebarPanel(
+                          #     helpText(h3("Tracking clinical psychedelics in children and adolescents.")),
+                          
+                          # mainPanel(
+                          verbatimTextOutput("compound_selected"),
+                          plotlyOutput("studies_over_year_plot_Compound"), # plotOutput
+                          
+                          sliderInput("range_compounds",
+                                      label = "Years of interest:",
+                                      min = min(PS.data$Date),
+                                      max = max(PS.data$Date),
+                                      value = c(min(PS.data$Date), # c(min(PS.data$Date), 1950,
+                                                max(PS.data$Date)),
+                                      step = 1,
+                                      sep = ''),
+                          checkboxGroupInput("All",
+                                             # h3("Compound"),
+                                             label = "All Compounds",
+                                             choices = c("all"),
+                                             selected = "all"),
+                          checkboxGroupInput("Endocannabinoids",
+                                             # h3("Compound"),
+                                             label = "Endocannabinoids",
+                                             choices = c("2-AG (2-Arachidonoylglycerol)",
+                                                         "AA (Arachidonic acid)",
+                                                         "AEA (Anandamide)",
+                                                         "OEA (Oleoylethanolamide)",
+                                                         "PEA (Palmitoylethanolamide)"),
+                                             # "2-AG (2-Arachidonylglycerol)",
+                                             # "AA",
+                                             # "AEA (Anandamid)",
+                                             # "Delta-8-tetrahydrocannabinol (delta-8-THC)",
+                                             # "Dexanabinol",
+                                             # "Dronabinol",
+                                             # "Esketamine",
+                                             # "Harmaline",
+                                             # "Harmine",
+                                             # "Iofetamine",
+                                             # "Ketamine",
+                                             # "Ketodex",
+                                             # "Ketofol",
+                                             # "LAE-32 (D-Lysergic acid ethylamide)",
+                                             # "Lenabasum",
+                                             # "Levonantradol",
+                                             # "LSD (Lysergic acid diethylamide)",
+                                             # "Marinol",
+                                             # "mCPP (meta-Chlorphenylpiperazin)",
+                                             # "Mescaline",
+                                             # "Methysergide",
+                                             # "Nabilone",
+                                             # "Nabiximols",
+                                             # "OEA (Oleoylethanolamide)",
+                                             # "PCP (Phencyclidin)",
+                                             # "PEA (Palmitoylethanolamid)",
+                                             # "Physostigmine",
+                                             # "Phytocannabinoids",
+                                             # "Psilocybin",
+                                             # "Scopolamine",
+                                             # "THC",
+                                             # "αET (alpha-Ethyltryptamine)"
+                                             selected = NULL),
+                          checkboxGroupInput("Synthetic_cannabinoids",
+                                             # h3("Compound"),
+                                             label = "Synthetic cannabinoids",
+                                             choices = c("Dexanabinol",
+                                                         "Dronabinol",
+                                                         "Levonantradol",
+                                                         "Nabilone",
+                                                         "Nabiximols"),
+                                             selected = NULL),
+                          checkboxGroupInput("Cannabinoid_receptor_agonist",
+                                             # h3("Compound"),
+                                             label = "Cannabinoid receptor agonist",
+                                             choices = c("Lenabasum"),
+                                             selected = NULL),
+                          checkboxGroupInput("Psychedelics",
+                                             # h3("Compound"),
+                                             label = "Psychedelics",
+                                             choices = c("LAE-32 (D-Lysergic acid ethylamide)",
+                                                         "LSD (Lysergic acid diethylamide)",
+                                                         "Mescaline",
+                                                         "Methysergide",
+                                                         "Psilocybin"),
+                                             selected = NULL),
+                          checkboxGroupInput("Dissociatives",
+                                             # h3("Compound"),
+                                             label = "Dissociatives",
+                                             choices = c("Esketamine",
+                                                         "Ketamine",
+                                                         "Ketodex",
+                                                         "Ketofol",
+                                                         "PCP (Phencyclidine)"),
+                                             selected = NULL),
+                          checkboxGroupInput("Harmala_alkaloids",
+                                             # h3("Compound"),
+                                             label = "Harmala alkaloids",
+                                             choices = c("Harmaline",
+                                                         "Harmine"),
+                                             selected = NULL),
+                          checkboxGroupInput("Deliriants",
+                                             # h3("Compound"),
+                                             label = "Deliriants",
+                                             choices = c("Physostigmine",
+                                                         "Scopolamine"),
+                                             selected = NULL),
+                          checkboxGroupInput("Entactogens",
+                                             # h3("Compound"),
+                                             label = "Entactogens",
+                                             choices = c("Iofetamine",
+                                                         "mCPP (meta-Chlorophenylpiperazine)",
+                                                         "αET (alpha-Ethyltryptamine)"),
+                                             selected = NULL),
+                          
+                          div(dataTableOutput("table_print_Compound"), style = "font-size:80%")
+                 ),
+                 # )
+                 # ))
+                 tabPanel(span("Publication Map", style="color:#1e9273ff"),
+                          plotlyOutput("map_plot")),
+                 
+                 tabPanel(span("Further Reading", style="color:#1e9273ff"),
+                          div(dataTableOutput("table_print_further_reading"), style = "font-size:80%")),
+                 
+                 tabPanel(span("Imprint/Contact", style="color:#1e9273ff"),
+                          helpText(
+                            # HTML('<center><img src="images/logo_header.svg" width="50%"></center>'),
+                            # tags$img(src = "./images/logo_header.svg", width = "400px"),
+                            # p(),
+                            p(),
+                            h4("Site Notice"),
+                            HTML("<small>Information provided according to Sec. 5 German Telemedia Act (TMG)<br>
+Philipp Rühr<br>
+Schlesische Straße 5<br>
+10997 Berlin</small>"),
+                            
+                            h4("Contact"),
+                            HTML("<small>Telephone: +49 163 843 4522<br>
+Email: philippruehr@gmail.com</small>"),
+                            
+                            h4("Preferred mention for imprints "),
+                            HTML("<small><em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://ruehr.org/shiny/PsyChild/.</small>"),
+                            
+                            h4("Dispute Resolution"),
+                            HTML("<small>The European Commission provides a platform for online dispute resolution (OS): https://ec.europa.eu/consumers/odr. Please find our email in the impressum/legal notice.
+We do not take part in online dispute resolutions at consumer arbitration boards.</small>"),
+                            
+                            h4("Liability for Contents"),
+                            HTML("<small>As service providers, we are liable for own contents of these websites according to Sec. 7, paragraph 1 German Telemedia Act (TMG). However, according to Sec. 8 to 10 German Telemedia Act (TMG), service providers are not obligated to permanently monitor submitted or stored information or to search for evidences that indicate illegal activities.<br>
+Legal obligations to removing information or to blocking the use of information remain unchallenged. In this case, liability is only possible at the time of knowledge about a specific violation of law. Illegal contents will be removed immediately at the time we get knowledge of them.</small>"),
+                            
+                            h4("Liability for Links"),
+                            HTML("<small>Our offer includes links to external third party websites. We have no influence on the contents of those websites, therefore we cannot guarantee for those contents. Providers or administrators of linked websites are always responsible for their own contents.<br>
+The linked websites had been checked for possible violations of law at the time of the establishment of the link. Illegal contents were not detected at the time of the linking. A permanent monitoring of the contents of linked websites cannot be imposed without reasonable indications that there has been a violation of law. Illegal links will be removed immediately at the time we get knowledge of them.</small>"),
+                            
+                            h4("Copyright"),
+                            HTML("<small>Contents and compilations published on these websites by the providers are subject to German copyright laws. Reproduction, editing, distribution as well as the use of any kind outside the scope of the copyright law require a written permission of the author or originator. Downloads and copies of these websites are permitted for private use only. The commercial use of our contents without permission of the originator is prohibited.<br>
+Copyright laws of third parties are respected as long as the contents on these websites do not originate from the provider. Contributions of third parties on this site are indicated as such. However, if you notice any violations of copyright law, please inform us. Such contents will be removed immediately.</small>")
+                            
+                            
+                            # HTML("Please use the tabs above to access PsyChild's functionalities.<br><br>"),
+                            # HTML("<a href='https://twitter.com/ChewingGinger'  target='_blank'>Philipp Rühr</a> 
+                            #   is responsible for curating new data for PsyChild, while this webpage is written and maintened by 
+                            #   <a href='https://twitter.com/Peter_Th_R'  target='_blank'>Peter T. Rühr</a>. Issues can be reported at <a href='https://github.com/Peter-T-Ruehr/PsyChild/issues'  target='_blank'>PsyChild's GitHub page</a>."),
+                            # HTML("If you use this website, please cite it as:<br>
+                            #                         Rühr, P. & Rühr, P. (<b>2023</b>): <em>PsyChild</em>, accessed yyyy&#92;mm&#92;dd, &lt;http://ruehr.org/shiny/PsyChild/&gt;.<br><br>"),
+                            # HTML('<center><img src="https://live.staticflickr.com/65535/52838364217_569cc496f3_o.jpg" width="35%"></center>')
+                          )
+                 )
 )
 
 
@@ -503,7 +559,7 @@ server <- function(input, output) {
     # # testing
     # input=list(range = c(1839, 2023), # 1839 1950 2023 1980
     #            range_compounds = c(1839, 2023), # 1839 1950 2023 1980
-    #            Class = c("Dissociatives, Entactogens")) # "Dissociatives" "all"
+    #            Class = c("Dissociatives")) # "Dissociatives" "all", "Entactogens"
     # output=NULL
     # output$compound_selected <- "LSD (Lysergic acid diethylamide)"
     
@@ -514,12 +570,25 @@ server <- function(input, output) {
     
     # select input classes
     if("all" %in% input$Class == FALSE){
-      PS.data.plot.Class <- PS.data.plot.Class %>%
-        filter(`Substance class` %in% unlist(strsplit(input$Class, split = ", ")))
+      if(length(input$Class) > 1){
+        PS.data.plot.Class <- PS.data.plot.Class %>%
+          filter(`Substance class` %in% unlist(strsplit(input$Class, split = ", ")))
+      } else if(length(input$Class) == 1){
+        PS.data.plot.Class <- PS.data.plot.Class %>%
+          filter(`Substance class` %in% unlist(input$Class))
+      } else if(length(input$Class) == 0){
+        PS.data.plot.Class <- PS.data.plot.Class %>%
+          filter(`Substance class` %in% "Nothing selected!")
+      }
     } else {
       PS.data.plot.Class <- PS.data.plot.Class
     }
     
+    # if(nrow(PS.data.plot.Class) > 0){
+    # globalcolors <- PS.data.plot.Class$col_class
+    # } else {
+    #   PS.data.plot.Class <- tibble()
+    # }
     globalcolors <- PS.data.plot.Class$col_class
     opacity <- 0.75
     fig_classes <- plot_ly(data = PS.data.plot.Class, x=~Date, y=~cumul_years_class,
@@ -548,8 +617,16 @@ server <- function(input, output) {
   
   # select input classes
   if("all" %in% input$Class == FALSE){
-    PS.data.print_Class <- PS.data.print_Class %>%
-      filter(`Substance class` %in% unlist(strsplit(input$Class, split = ", ")))
+    if(length(input$Class) > 1){
+      PS.data.print_Class <- PS.data.print_Class %>%
+        filter(`Substance class` %in% unlist(strsplit(input$Class, split = ", ")))
+    } else if(length(input$Class) == 1){
+      PS.data.print_Class <- PS.data.print_Class %>%
+        filter(`Substance class` %in% unlist(input$Class))
+    } else if(length(input$Class) == 0){
+      PS.data.print_Class <- PS.data.print_Class %>%
+        filter(`Substance class` %in% "Nothing selected!")
+    }
   } else {
     PS.data.print_Class <- PS.data.print_Class
   }

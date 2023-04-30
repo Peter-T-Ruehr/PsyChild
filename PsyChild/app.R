@@ -320,7 +320,7 @@ ui <- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                               (PAP) should be provided to minors, we do call for evidence-based, harm-reduction-oriented PAP 
                               protocols designed for minors in case research or treatement should be carried out. PsyChild is 
                               committed to an open science approach and welcomes suggestions and submissions."),
-                            HTML("Please use the tabs above to access PsyChild's functionalities.<br><br>"),
+                            # HTML("Please use the tabs above to access PsyChild's functionalities.<br><br>"),
                             HTML('<img src="https://live.staticflickr.com/65535/52838364217_569cc496f3_o.jpg" width="30%">'),
                             p(),
                             HTML("<a href='https://twitter.com/ChewingGinger'  target='_blank'>Philipp Rühr</a> 
@@ -351,6 +351,7 @@ ui <- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                                                 max(PS.data$Date)),
                                       step = 1,
                                       sep = ''),
+                          
                           checkboxGroupInput("Class",
                                              # h3("Class"),
                                              label = "Choose one or more substance class(es) to display",
@@ -362,8 +363,19 @@ ui <- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                                                             "Harmala alkaloids",
                                                             "Phytocannabinoids",
                                                             "Synthetic cannabinoids"),
-                                             selected = "all"),
-                          div(dataTableOutput("table_print_Class"), style = "font-size:100%")
+                                             selected = "Psychedelics"), # all
+                          
+                          div(dataTableOutput("table_print_Class"), style = "font-size:80%"),
+                          
+                          h6(HTML(paste0("*", tags$sup("1")," For multicenter-studies, only the main site is listed."))),
+                          p(),
+                          h6(HTML(paste0("*", tags$sup("2")," Due to the large number of available studies with ketamine and ketofol, 
+                           references to the use of these compounds have only been included if they 
+                           either address symptoms of pediatric anesthesia emergence delirium (PAED), 
+                           or if they have been conducted in a psychiatric context."))),
+                          p(),
+                          h6(HTML(paste0("*", tags$sup("3")," Studies with cannabinoids have only been included if the ratio of 
+                           psychoactive cannabinoids vs. non psychoactive cannabinoids has been  higher than 1:20.")))
                  ),
                  
                  # Compounds --------------------------------------------------------------
@@ -386,9 +398,9 @@ ui <- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                                       sep = ''),
                           checkboxGroupInput("All",
                                              # h3("Compound"),
-                                             label = "All Compounds",
+                                             label = "Choose one or more compound(s) to display",
                                              choices = c("all"),
-                                             selected = "all"),
+                                             selected = NULL),
                           checkboxGroupInput("Psychedelics",
                                              # h3("Compound"),
                                              label = "Psychedelics",
@@ -397,7 +409,11 @@ ui <- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                                                          "Mescaline",
                                                          "Methysergide",
                                                          "Psilocybin"),
-                                             selected = NULL),
+                                             selected = c("LAE-32 (D-Lysergic acid ethylamide)",
+                                                          "LSD (Lysergic acid diethylamide)",
+                                                          "Mescaline",
+                                                          "Methysergide",
+                                                          "Psilocybin")),
                           checkboxGroupInput("Entactogens",
                                              # h3("Compound"),
                                              label = "Entactogens",
@@ -455,7 +471,17 @@ ui <- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                                              choices = c("Lenabasum"),
                                              selected = NULL),
                           
-                          div(dataTableOutput("table_print_Compound"), style = "font-size:80%")
+                          div(dataTableOutput("table_print_Compound"), style = "font-size:80%"),
+                          
+                          h6(HTML(paste0("*", tags$sup("1")," For multicenter-studies, only the main site is listed."))),
+                          p(),
+                          h6(HTML(paste0("*", tags$sup("2")," Due to the large number of available studies with ketamine and ketofol, 
+                           references to the use of these compounds have only been included if they 
+                           either address symptoms of pediatric anesthesia emergence delirium (PAED), 
+                           or if they have been conducted in a psychiatric context."))),
+                          p(),
+                          h6(HTML(paste0("*", tags$sup("3")," Studies with cannabinoids have only been included if the ratio of 
+                           psychoactive cannabinoids vs. non psychoactive cannabinoids has been  higher than 1:20.")))
                  ),
                  # )
                  # ))
@@ -481,7 +507,7 @@ Schlesische Straße 5<br>
                             HTML("<small>Telephone: +49 163 843 4522<br>
 Email: philippruehr@gmail.com</small>"),
                             
-                            h4("Preferred mention for imprints "),
+                            h4("Preferred mention for citations: "),
                             HTML("<small><em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://ruehr.org/shiny/PsyChild/.</small>"),
                             
                             h4("Dispute Resolution"),
@@ -578,6 +604,7 @@ server <- function(input, output) {
                              # tick0 = 10, 
                              tickmode = "linear"),
                            yaxis = list(
+                             title = 'Cumulative Publications',
                              range = list(0, max(PS.data$cumul_years_class))))
   })
   
@@ -635,12 +662,30 @@ server <- function(input, output) {
       # `comment 2`,
       # `Compound_new_name,
       # Country
-    ))
+    )) %>% 
+    rename(`Location (*1)` = Location,
+           `Compound (*2, *3)` = `Compound(s)`)
   
   PS.data.print_Class},
+  
+  extensions = 'Buttons',
+  
+  # options = list(
+  #   paging = TRUE,
+  #   searching = TRUE,
+  #   fixedColumns = TRUE,
+  #   autoWidth = TRUE,
+  #   ordering = TRUE,
+  #   dom = 'tB',
+  #   buttons = c('copy', 'csv', 'excel')
+  
   options = list(pageLength = 1000,
                  searching = FALSE,
-                 lengthChange = FALSE))
+                 lengthChange = FALSE,
+                 dom = 'tB',
+                 autoWidth = TRUE,
+                 buttons = c('copy', 'csv', 'excel')
+  ))
   
   # Compound -------------------------------------------------------------------  
   
@@ -710,6 +755,7 @@ server <- function(input, output) {
                                # tick0 = 10, 
                                tickmode = "linear"),
                              yaxis = list(
+                               title = 'Cumulative Publications',
                                range = list(0, max(PS.data.compounds$cumul_years_compound))))
   })
   
@@ -765,11 +811,23 @@ server <- function(input, output) {
       # `comment 2`,
       # `Compound_new_name,
       # Country
-    ))
+    )) %>% 
+    rename(`Location (*1)` = Location,
+           `Compound (*2, *3)` = `Compound(s)`)
   PS.data.print_Compound},
+  
+  extensions = 'Buttons',
+  
   options = list(pageLength = 1000,
                  searching = FALSE,
-                 lengthChange = FALSE))
+                 lengthChange = FALSE,
+                 dom = 'tB',
+                 autoWidth = TRUE,
+                 buttons = c('copy', 'csv', 'excel')
+  ))
+  # options = list(pageLength = 1000,
+  #                searching = FALSE,
+  #                lengthChange = FALSE)
   
   # MAP ---------------------------------------------------------------------
   output$map_plot <- renderPlotly({ # renderPlot
@@ -779,6 +837,7 @@ server <- function(input, output) {
                        # text=paste0(PS.data.map.reduced$Country, ":\n", PS.data.map.reduced$Publications), 
                        colorscale="Viridis",
                        hovertemplate = paste0(PS.data.map.reduced$Country, ":", PS.data.map.reduced$n, " Publications.")) # paste0(PS.data.map.reduced$Country, ":", PS.data.map.reduced$n, " Publications.\n", PS.data.map.reduced$Publications)
+    
     
     fig_map %>% 
       hide_colorbar() %>%

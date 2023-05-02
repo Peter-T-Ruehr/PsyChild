@@ -321,7 +321,7 @@ ui <- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                               protocols designed for minors in case research or treatement should be carried out. PsyChild is 
                               committed to an open science approach and welcomes suggestions and submissions."),
                             # HTML("Please use the tabs above to access PsyChild's functionalities.<br><br>"),
-                            HTML('<img src="https://live.staticflickr.com/65535/52838364217_569cc496f3_o.jpg" width="30%">'),
+                            HTML('<img src="https://live.staticflickr.com/65535/52865944604_18ee6790c7_o.jpg" width="30%">'),
                             p(),
                             HTML("<a href='https://twitter.com/ChewingGinger'  target='_blank'>Philipp Rühr</a> 
                is responsible for curating new data for PsyChild, while this webpage is written and maintened by 
@@ -333,6 +333,30 @@ ui <- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                                      <em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://ruehr.org/shiny/PsyChild/.")
                           )# <center></center>
                  ),
+                 
+                 # PsyChild data -----------------------------------------------------------------
+                 tabPanel(span("Data", style="color:#1e9273ff"),
+                          # sidebarLayout(
+                          #   sidebarPanel(
+                          
+                          # mainPanel(
+                          # helpText(h3("Tracking clinical psychedelics in minors.")), # "Visualize psychedelic drug use in children through time and space"
+                          
+                          p("The underlying data table of PsyChild."),
+                          div(dataTableOutput("table_print_PsyChild"), style = "font-size:80%"),
+                          
+                          h6(HTML(paste0("*", tags$sup("1")," For multicenter-studies, only the main site is listed."))),
+                          p(),
+                          h6(HTML(paste0("*", tags$sup("2")," Due to the large number of available studies with ketamine and ketofol, 
+                           references to the use of these compounds have only been included if they 
+                           either address symptoms of pediatric anesthesia emergence delirium (PAED), 
+                           or if they have been conducted in a psychiatric context."))),
+                          p(),
+                          h6(HTML(paste0("*", tags$sup("3")," Studies with cannabinoids have only been included if the ratio of 
+                           psychoactive cannabinoids vs. non psychoactive cannabinoids has been  higher than 1:20.")))
+                 ),
+                 
+                 
                  # Classes -----------------------------------------------------------------
                  tabPanel(span("Substance Classes", style="color:#1e9273ff"),
                           # sidebarLayout(
@@ -541,6 +565,67 @@ Copyright laws of third parties are respected as long as the contents on these w
 
 # Server logic ------------------------------------------------------------
 server <- function(input, output) {
+  
+  # all PsyChild data -------------------------------------------------------
+  
+  output$table_print_PsyChild <- renderDataTable({df <- reactiveVal(PS.data.print_Class)
+  PS.data.print_PsyChild <- PS.data.print_Class %>% 
+    arrange(Date, `Substance class`) %>% 
+    distinct(Title, .keep_all = TRUE) %>% 
+    drop_na(Title) %>% 
+    select(c(# `Date`,
+      `Author`,
+      `Location`,
+      # `Location photo`,
+      `Title`,
+      `Type`,
+      `Compound(s)`,
+      `Substance class`,
+      `ICD-11 Indication or field of application`,
+      `ICD-11 Indication as Groups or field of application`,
+      # `Psychiatric indication?`,
+      `Adjunct psychotherapy`,
+      # `Adjacent psychotherapy?`,
+      `Subjects`,
+      # `Only minors?`,
+      `Main psychiatric outcomes`,
+      # `Reported side effects/adverse events`,
+      `Side effects (MedDRA)`,
+      `Consent`,
+      `in/out patient`,
+      # `Route of administration`,
+      `Regimen (route of administration, dose, frequency)`,
+      `Concomitant Medications`,
+      `Comment`#,
+      # `comment 1`,
+      # `comment 2`,
+      # `Compound_new_name,
+      # Country
+    )) %>% 
+    rename(`Location (*1)` = Location,
+           `Compound (*2, *3)` = `Compound(s)`)
+  
+  PS.data.print_PsyChild},
+  
+  extensions = 'Buttons',
+  
+  # options = list(
+  #   paging = TRUE,
+  #   searching = TRUE,
+  #   fixedColumns = TRUE,
+  #   autoWidth = TRUE,
+  #   ordering = TRUE,
+  #   dom = 'tB',
+  #   buttons = c('copy', 'csv', 'excel')
+  
+  options = list(pageLength = 1000,
+                 searching = FALSE,
+                 lengthChange = FALSE,
+                 dom = 'tB',
+                 autoWidth = TRUE,
+                 buttons = c('copy', 'csv', 'excel')
+  ))
+  
   # Class -------------------------------------------------------------------  
   
   # output$test_plot <- renderPlot({
@@ -634,6 +719,7 @@ server <- function(input, output) {
   PS.data.print_Class <- PS.data.print_Class %>% 
     arrange(Date, `Substance class`) %>% 
     distinct(Title, .keep_all = TRUE) %>% 
+    drop_na(Title) %>% 
     select(c(# `Date`,
       `Author`,
       `Location`,
@@ -783,6 +869,7 @@ server <- function(input, output) {
     ungroup() %>% 
     arrange(Date, `Compound(s)`) %>% 
     distinct(Title, .keep_all = TRUE) %>% 
+    drop_na(Title) %>% 
     select(c(# `Date`,
       `Author`,
       `Location`,
@@ -860,10 +947,11 @@ server <- function(input, output) {
     formatStyle(1:5, 'vertical-align'='top') %>% 
     formatStyle(1:5, 'text-align' = 'left')
   })
-}
-
-# Run app ----
-shinyApp(ui, server)
-
-
-
+  }
+  
+  # Run app ----
+  shinyApp(ui, server)
+  
+  
+  
+  

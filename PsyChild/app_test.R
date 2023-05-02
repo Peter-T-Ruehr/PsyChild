@@ -1,4 +1,3 @@
-library(data.table)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
@@ -11,25 +10,6 @@ gs4_deauth()
 library(plotly)
 library(rvest)
 library(DT)
-
-readData <- function(session) {
-  progress <- Progress$new(session)
-  progress$set(value = 0, message = 'Loading...')
-  Sys.sleep(1)
-  # dt2 <<- 2
-  progress$set(value = 0.25, message = 'Loading...')
-  Sys.sleep(1)
-  # dt3 <<- 3
-  progress$set(value = 0.5, message = 'Loading...')
-  Sys.sleep(1)
-  # dt4 <<- 4
-  progress$set(value = 0.75, message = 'Loading...')
-  Sys.sleep(1)
-  # dt5 <<- 5
-  progress$set(value = 1, message = 'Loading...')
-  Sys.sleep(1)
-  progress$close()
-}
 
 sheet_id <- "https://docs.google.com/spreadsheets/d/1tL-9rg_K9rf5hpzj63MewlQLms1qV91Nt3RwMsFamaU/"
 PS.data <- read_sheet(sheet_id, sheet = "PsychChild")
@@ -584,10 +564,8 @@ Copyright laws of third parties are respected as long as the contents on these w
 
 
 # Server logic ------------------------------------------------------------
-server <- function(input, output, session) {
-  # if(is.null(dt5)){
-    readData(session)
-  # }
+server <- function(input, output) {
+  
   # all PsyChild data -------------------------------------------------------
   
   output$table_print_PsyChild <- renderDataTable({df <- reactiveVal(PS.data.print_Class)

@@ -1,13 +1,13 @@
 library(dplyr)
 library(tidyr)
-library(ggplot2)
+# library(ggplot2)
 library(shiny)
 library(viridisLite)
-library(ggrepel)
+# library(ggrepel)
 library(googlesheets4)
 gs4_deauth()
 library(plotly)
-library(rvest)
+# library(rvest)
 library(DT)
 
 # Add directory of static resources to Shiny's web server

@@ -1,8 +1,6 @@
-# library(data.table)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-# library(gsheet)
 library(shiny)
 library(viridisLite)
 library(ggrepel)
@@ -33,12 +31,9 @@ readData<<- function(session) {
   # remove unnamed columns
   PS.data <<- PS.data %>% 
     select(-contains('...'))
-  # get PsyChild data
-  # PS.data<<- gsheet2tbl(url = 'https://docs.google.com/spreadsheets/d/1tL-9rg_K9rf5hpzj63MewlQLms1qV91Nt3RwMsFamaU/edit?usp=sharing')
-  
+
   # get iso codes
   iso_codes <<- read_sheet(sheet_id, sheet = "iso_codes")
-  
   
   
   # remove NULL rows
@@ -59,15 +54,7 @@ readData<<- function(session) {
   
   # change Date to numeric
   PS.data$Date<<- as.numeric(PS.data$Date)
-  
-  # rename some columns
-  # PS.data<<- rename(PS.data, Class = 'Substance class')
-  # PS.data<<- rename(PS.data, Compound = 'Compound(s)') # was before: 'Psychedelic Compound(s) in children/adolescents')
-  # PS.data<<- rename(PS.data, Indication = 'Indication (for children/adolescents)/Field of Application')
-  # PS.data<<- rename(PS.data, Indication_ICD11 = 'Indication (Current terminology according to ICD-11)')
-  # PS.data<<- rename(PS.data, Psychotherapy = 'Adjacent psychotherapy?')
-  # PS.data<<- rename(PS.data, Psychiatric_indication = 'Psychiatric indication?')
-  
+
   # remove Date == NA columns
   PS.data<<- PS.data %>% 
     filter(!is.na(Date))
@@ -86,19 +73,6 @@ readData<<- function(session) {
                                          "THC \\(Delta-9 THC\\)",
                                          "THC \\(THC-homologs, Numbers 122 and 125A\\)",
                                          "αET \\(alpha-Ethyltryptamine\\)"),
-                                 # new = c("AG",
-                                 #         "AA",
-                                 #         "AEA",
-                                 #         "LAE",
-                                 #         "LSD",
-                                 #         "OEA",
-                                 #         "PCP",
-                                 #         "mCPP",
-                                 #         "PEA",
-                                 #         "THC",
-                                 #         "THC",
-                                 #         "THC",
-                                 #         "αET"))
                                  new = c("2-AG \\(2-Arachidonoylglycerol\\)",
                                          "AA \\(Arachidonic acid\\)",
                                          "AEA \\(Anandamide\\)",
@@ -133,19 +107,15 @@ readData<<- function(session) {
   PS.data.compounds <<- PS.data
   
   # change input compounds and data compounds to workable strings
-  # unique(PS.data.compounds$`Compound(s)`)
   PS.data.compounds$Compound_new_name <<- PS.data.compounds$`Compound(s)`
   for(i in 1:nrow(compound_translation)){
     PS.data.compounds$Compound_new_name <<- gsub(compound_translation$old[i], compound_translation$new[i], PS.data.compounds$Compound_new_name)
   }
-  # unique(PS.data.compounds$Compound_new_name)
   
   # get unique compounds
   compounds<<- sort(unique(unlist(strsplit(PS.data.compounds$Compound_new_name, split = "; "))))
   
   # get countries
-  # PS.data$Location
-  # i=1
   PS.data$Country<<- NA
   for(i in 1:nrow(PS.data)){
     curr_Location<<- unlist(strsplit(PS.data$Location[i], split = "; "))
@@ -165,11 +135,6 @@ readData<<- function(session) {
     ungroup()
   
   # separate multiple compounds from each other
-  # i=1
-  # i=25
-  # i = 39 # Mescaline
-  # tmp<<- PS.data.compounds
-  # PS.data.compounds<<- tmp
   rows_to_remove<<- NULL
   for(i in 1:nrow(PS.data.compounds)){
     # if compound cell contains ";"
@@ -230,8 +195,6 @@ readData<<- function(session) {
   cols_class<<- tibble(`Substance class` = unique(PS.data$`Substance class`), col_class = viridis(n=length(unique(PS.data$`Substance class`))))
   PS.data<<- PS.data %>% 
     left_join(cols_class, by = "Substance class")
-  # plot(1:nrow(cols), col = unique(PS.data$col), pch = 16, cex = 5)
-  # plot(1:nrow(cols), col = unique(PS.data.plot.Class$col), pch = 16, cex = 5)
   
   
   progress$set(value = 0.75, message = 'Loading...')
@@ -243,8 +206,6 @@ readData<<- function(session) {
     PS.data.compounds <<- PS.data.compounds %>%
       add_row(Compound_new_name = i,
               Date = missing_years)
-    # PS.data<<- PS.data %>%
-    #   arrange(`Substance class`, Date)
   }
   
   # add line at first year of current selection table
@@ -275,21 +236,9 @@ readData<<- function(session) {
                           col_compound = viridis(n=length(unique(PS.data.compounds$Compound_new_name))))
   PS.data.compounds <<- PS.data.compounds %>% 
     left_join(cols_compound, by = "Compound_new_name")
-  # plot(1:nrow(cols_compound), col = unique(PS.data.compounds$col_compound), pch = 16, cex = 5)
   
   
   # Map ---------------------------------------------------------------------
-  # url<<- "https://www.nationsonline.org/oneworld/country_code_list.htm"
-  # iso_codes<<- url %>%
-  #   read_html() %>%
-  #   html_table() %>% 
-  #   bind_rows() %>% 
-  #   subset(nchar(as.character(X2)) > 1) %>% 
-  #   select(-X1)
-  # names(iso_codes)<<- c("Country", "ISO2", "ISO3", "UN")
-  # head(iso_codes)
-  
-  
   PS.data.map<<- PS.data
   PS.data.map['ISO3']<<- iso_codes$ISO3[match(PS.data.map$Country, iso_codes$Country)]
   PS.data.map<<- PS.data.map %>% 
@@ -315,7 +264,6 @@ readData<<- function(session) {
   further_reading <<- read_sheet(sheet_id, sheet = "Further reading")
   
   progress$set(value = 1, message = 'Loading...')
-  # Sys.sleep(2)
   progress$close()
 }
 
@@ -323,25 +271,16 @@ readData<<- function(session) {
 
 # User interface ----
 ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in minors.",
-                 # title="dsa",#tags$img(src = "./images/logo.svg", width = "200px"),
-                 # Introduction -----------------------------------------------------------------
-                 # titlePanel(title = span(img(src = "images/logo_header.svg", height = "50px", padding = "1px,1px,1px, 1px"), "")),
-                 # title=div(img(src="./images/logo.svg"), "My Title in the Navbar"),
-                 # https://stackoverflow.com/questions/24705431/how-can-i-insert-an-image-into-the-navbar-on-a-shiny-navbarpage
                  tags$script(HTML("var header = $('.navbar > .container-fluid');
   header.append('<div style=\"float:left\"><img src=\"images/logo_header.svg\" alt=\"alt\" style=\"float:left;height:50px;padding-top:1px;\"></div>');
       console.log(header)")),
-                 # tags$head(tags$link(rel = "shortcut icon", href = "images/logo_header.svg")),
                  
                  tags$head(tags$link(rel = "icon", type = "image/svg", sizes = "16x16", href = "images/logo_header.svg")),
                  
                  tabPanel(span("Home", style="color:#1e9273ff"),
                           helpText(
                             h3("PsyChild. Tracking clinical psychedelics in minors."),
-                            # HTML('<center><img src="images/logo_header.svg" width="50%"></center>'),
-                            # tags$img(src = "./images/logo_header.svg", width = "400px"),
                             p(),
-                            # h4("Tracking clinical psychedelics in minors."),
                             p("PsyChild is a database for psychedelic research in minors. It’s main aim is to provide a growing 
                               bibliography on this multidisciplinary field for researchers, research subjects, patients, guardians, 
                               clinicians, and external experts. Some of the provided records contain accounts of violence, homophobia, 
@@ -350,28 +289,18 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                               (PAP) should be provided to minors, we do call for evidence-based, harm-reduction-oriented PAP 
                               protocols designed for minors in case research or treatement should be carried out. PsyChild is 
                               committed to an open science approach and welcomes suggestions and submissions."),
-                            # HTML("Please use the tabs above to access PsyChild's functionalities.<br><br>"),
                             HTML('<img src="https://live.staticflickr.com/65535/52865944604_18ee6790c7_o.jpg" width="30%">'),
                             p(),
                             HTML("<a href='https://twitter.com/ChewingGinger'  target='_blank'>Philipp Rühr</a> 
                is responsible for curating new data for PsyChild, while this webpage is written and maintened by 
                <a href='https://twitter.com/Peter_Th_R'  target='_blank'>Peter T. Rühr</a>. Issues can be reported at <a href='https://github.com/Peter-T-Ruehr/PsyChild/issues'  target='_blank'>PsyChild's GitHub page</a>.<br><br>"),
-                            # HTML("If you use this website, please cite it as:<br>
-                            #          Rühr, P. & Rühr, P. (<b>2023</b>): <em>PsyChild</em>, accessed yyyy&#92;mm&#92;dd, &lt;http://ruehr.org/shiny/PsyChild/&gt;.")
-                            # ),
                             HTML("If you use this website, please cite it as:<br>
                                      <em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://ruehr.org/shiny/PsyChild/.")
-                          )# <center></center>
+                          )
                  ),
                  
                  # PsyChild data -----------------------------------------------------------------
                  tabPanel(span("Data", style="color:#1e9273ff"),
-                          # sidebarLayout(
-                          #   sidebarPanel(
-                          
-                          # mainPanel(
-                          # helpText(h3("Tracking clinical psychedelics in minors.")), # "Visualize psychedelic drug use in children through time and space"
-                          
                           p("The underlying data table of PsyChild."),
                           div(dataTableOutput("table_print_PsyChild"), style = "font-size:80%"),
                           
@@ -389,8 +318,6 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                  
                  # Classes -----------------------------------------------------------------
                  tabPanel(span("Substance Classes", style="color:#1e9273ff"),
-                          # sidebarLayout(
-                          #   sidebarPanel(
                           
                           # mainPanel(
                           # helpText(h3("Tracking clinical psychedelics in minors.")), # "Visualize psychedelic drug use in children through time and space"
@@ -436,9 +363,6 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                  
                  # Compounds --------------------------------------------------------------
                  tabPanel(span("Compounds", style="color:#1e9273ff"),
-                          # sidebarLayout(
-                          #   sidebarPanel(
-                          #     helpText(h3("Tracking clinical psychedelics in minors.")),
                           
                           # mainPanel(
                           verbatimTextOutput("compound_selected"),
@@ -455,12 +379,10 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                                       step = 1,
                                       sep = ''),
                           checkboxGroupInput("All",
-                                             # h3("Compound"),
                                              label = "Choose one or more compound(s) to display",
                                              choices = c("all"),
                                              selected = NULL),
                           checkboxGroupInput("Psychedelics",
-                                             # h3("Compound"),
                                              label = "Psychedelics",
                                              choices = c("LAE-32 (D-Lysergic acid ethylamide)",
                                                          "LSD (Lysergic acid diethylamide)",
@@ -473,14 +395,12 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                                                           "Methysergide",
                                                           "Psilocybin")),
                           checkboxGroupInput("Entactogens",
-                                             # h3("Compound"),
                                              label = "Entactogens",
                                              choices = c("Iofetamine",
                                                          "mCPP (meta-Chlorophenylpiperazine)",
                                                          "αET (alpha-Ethyltryptamine)"),
                                              selected = NULL),
                           checkboxGroupInput("Dissociatives",
-                                             # h3("Compound"),
                                              label = "Dissociatives",
                                              choices = c("Esketamine",
                                                          "Ketamine",
@@ -489,7 +409,6 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                                                          "PCP (Phencyclidine)"),
                                              selected = NULL),
                           checkboxGroupInput("Deliriants",
-                                             # h3("Compound"),
                                              label = "Deliriants",
                                              choices = c("Atropine",
                                                          "Homatropine",
@@ -497,13 +416,11 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                                                          "Scopolamine"),
                                              selected = NULL),
                           checkboxGroupInput("Harmala_alkaloids",
-                                             # h3("Compound"),
                                              label = "Harmala alkaloids",
                                              choices = c("Harmaline",
                                                          "Harmine"),
                                              selected = NULL),
                           checkboxGroupInput("Phytocannabinoids",
-                                             # h3("Compound"),
                                              label = "Phytocannabinoids",
                                              choices = c("2-AG (2-Arachidonoylglycerol)",
                                                          "AA (Arachidonic acid)",
@@ -515,7 +432,6 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                                                          "THC (THC-homologs, Numbers 122 and 125A)"),
                                              selected = NULL),
                           checkboxGroupInput("Synthetic_cannabinoids",
-                                             # h3("Compound"),
                                              label = "Synthetic cannabinoids",
                                              choices = c("Dexanabinol",
                                                          "Dronabinol",
@@ -524,7 +440,6 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                                                          "Nabiximols"),
                                              selected = NULL),
                           checkboxGroupInput("Cannabinoid_receptor_agonists",
-                                             # h3("Compound"),
                                              label = "Cannabinoid receptor agonists",
                                              choices = c("Lenabasum"),
                                              selected = NULL),
@@ -541,8 +456,7 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                           h6(HTML(paste0("*", tags$sup("3")," Studies with cannabinoids have only been included if the ratio of 
                            psychoactive cannabinoids vs. non psychoactive cannabinoids has been  higher than 1:20.")))
                  ),
-                 # )
-                 # ))
+                 
                  tabPanel(span("Publication Map", style="color:#1e9273ff"),
                           plotlyOutput("map_plot")),
                  
@@ -551,9 +465,6 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                  
                  tabPanel(span("Imprint/Contact", style="color:#1e9273ff"),
                           helpText(
-                            # HTML('<center><img src="images/logo_header.svg" width="50%"></center>'),
-                            # tags$img(src = "./images/logo_header.svg", width = "400px"),
-                            # p(),
                             p(),
                             h4("Site Notice"),
                             HTML("<small>Information provided according to Sec. 5 German Telemedia Act (TMG)<br>
@@ -643,16 +554,7 @@ server <-  function(input, output, session) {
   PS.data.print_PsyChild},
   
   extensions = 'Buttons',
-  
-  # options = list(
-  #   paging = TRUE,
-  #   searching = TRUE,
-  #   fixedColumns = TRUE,
-  #   autoWidth = TRUE,
-  #   ordering = TRUE,
-  #   dom = 'tB',
-  #   buttons = c('copy', 'csv', 'excel')
-  
+
   options = list(pageLength = 1000,
                  searching = FALSE,
                  lengthChange = FALSE,
@@ -662,25 +564,12 @@ server <-  function(input, output, session) {
   ))
   
   # Class -------------------------------------------------------------------  
-  
-  # output$test_plot <-  renderPlot({
-  #   # plot(1:10)
-  #   ggplot(data = data.frame(x=1:10, y=1:10), aes(x=x, y=y)) + 
-  #     geom_point()
-  # })
-  
+
   output$class_selected <-renderText({
     paste0("Classes selected: ", paste(input$Class, collapse = ", "), ".")
   })
   
-  output$studies_over_year_plot_Class <-  renderPlotly({ # renderPlot
-    
-    # # testing
-    # input=list(range = c(1839, 2023), # 1839 1950 2023 1980
-    #            range_compounds = c(1839, 2023), # 1839 1950 2023 1980
-    #            Class = c("Dissociatives")) # "Dissociatives" "all", "Entactogens"
-    # output=NULL
-    # output$compound_selected <-  "LSD (Lysergic acid diethylamide)"
+  output$studies_over_year_plot_Class <-  renderPlotly({ 
     
     # filter by input range
     PS.data.plot.Class  <-  PS.data %>%
@@ -703,11 +592,6 @@ server <-  function(input, output, session) {
       PS.data.plot.Class <-  PS.data.plot.Class
     }
     
-    # if(nrow(PS.data.plot.Class) > 0){
-    # globalcolors <-  PS.data.plot.Class$col_class
-    # } else {
-    #   PS.data.plot.Class <-  tibble()
-    # }
     globalcolors <-  PS.data.plot.Class$col_class
     opacity <-  0.75
     fig_classes <-  plot_ly(data = PS.data.plot.Class, x=~Date, y=~cumul_years_class,
@@ -716,8 +600,8 @@ server <-  function(input, output, session) {
                             mode="lines", 
                             colors = globalcolors, 
                             opacity=opacity, 
-                            line = list(width=4)) # ,
-    # height=800)
+                            line = list(width=4))
+    
     fig_classes %>% layout(legend = list(orientation = 'h', y=-0.25),
                            xaxis = list(
                              dtick = 10,
@@ -783,6 +667,7 @@ server <-  function(input, output, session) {
       # `comment 2`,
       # `Compound_new_name,
       # Country
+      
     )) %>% 
     rename(`Location (*1)` = Location,
            `Compound (*2, *3)` = `Compound(s)`)
@@ -790,15 +675,6 @@ server <-  function(input, output, session) {
   PS.data.print_Class},
   
   extensions = 'Buttons',
-  
-  # options = list(
-  #   paging = TRUE,
-  #   searching = TRUE,
-  #   fixedColumns = TRUE,
-  #   autoWidth = TRUE,
-  #   ordering = TRUE,
-  #   dom = 'tB',
-  #   buttons = c('copy', 'csv', 'excel')
   
   options = list(pageLength = 1000,
                  searching = FALSE,
@@ -825,15 +701,7 @@ server <-  function(input, output, session) {
   })
   
   
-  output$studies_over_year_plot_Compound <-  renderPlotly({ # renderPlot
-    
-    # # testing
-    # input=list(range = c(1839, 2023), # 1839 1950 2023 1980
-    #            range_compounds = c(1839, 2023), # 1839 1950 2023 1980
-    #            Class = c("Dissociatives, Entactogens")) # "Dissociatives" "all"
-    # output=NULL
-    # output$compound_selected <-  paste(c("LSD (Lysergic acid diethylamide)", "Mescaline"), collapse = ", ")
-    
+  output$studies_over_year_plot_Compound <-  renderPlotly({
     # filter by input range
     PS.data.compounds.plot <-  PS.data.compounds  %>% 
       ungroup() %>%
@@ -848,17 +716,13 @@ server <-  function(input, output, session) {
       for(i in 1:length(Compounds())){
         tmp <-  rbind(tmp, PS.data.compounds.plot %>%
                         ungroup() %>%
-                        # filter(`Compound(s)` %in% unlist(strsplit( Compounds(), split = ", ")))
-                        filter(Compound_new_name %in% Compounds()[i])) # "Oleoylethanolamide"
+                        filter(Compound_new_name %in% Compounds()[i]))
       }
       PS.data.compounds.plot <-  tmp
       rm(tmp)
     } else {
       PS.data.compounds.plot <-  PS.data.compounds.plot
     }
-    
-    # tmp <-  PS.data.compounds.plot %>% 
-    #   drop_na(Title)
     
     globalcolors <-  PS.data.compounds.plot$col_compound
     opacity <-  0.75
@@ -868,8 +732,7 @@ server <-  function(input, output, session) {
                               mode="lines", 
                               colors = globalcolors, 
                               opacity=opacity, 
-                              line = list(width=4)) # ,
-    # height=800)
+                              line = list(width=4))
     fig_compounds %>% layout(legend = list(orientation = 'h', y=-0.25),
                              xaxis = list(
                                dtick = 10,
@@ -891,7 +754,6 @@ server <-  function(input, output, session) {
     tmp <-  NULL
     for(i in 1:length(Compounds())){
       tmp <-  rbind(tmp, PS.data.print_Compound %>%
-                      # filter(Compound %in% unlist(strsplit(output$compound_selected, split = ", ")))
                       filter(Compound_new_name %in% Compounds()[i]))
     }
     PS.data.print_Compound  <-  tmp
@@ -953,9 +815,8 @@ server <-  function(input, output, session) {
     fig_map <-  plot_ly(PS.data.map.reduced, type='choropleth', 
                         locations=PS.data.map.reduced$ISO3, 
                         z=PS.data.map.reduced$log_n, 
-                        # text=paste0(PS.data.map.reduced$Country, ":\n", PS.data.map.reduced$Publications), 
                         colorscale="Viridis",
-                        hovertemplate = paste0(PS.data.map.reduced$Country, ":", PS.data.map.reduced$n, " Publications.")) # paste0(PS.data.map.reduced$Country, ":", PS.data.map.reduced$n, " Publications.\n", PS.data.map.reduced$Publications)
+                        hovertemplate = paste0(PS.data.map.reduced$Country, ": ", PS.data.map.reduced$n, " Publication(s)."))
     
     
     fig_map %>% 

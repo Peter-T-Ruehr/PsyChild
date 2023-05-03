@@ -1,4 +1,4 @@
-library(data.table)
+# library(data.table)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
@@ -196,6 +196,7 @@ readData<<- function(session) {
     ungroup() %>%
     select((-one))
   
+  progress$set(value = 0.5, message = 'Loading...')
   
   # class -------------------------------------------------------------------
   # add all missing years
@@ -232,6 +233,8 @@ readData<<- function(session) {
   # plot(1:nrow(cols), col = unique(PS.data$col), pch = 16, cex = 5)
   # plot(1:nrow(cols), col = unique(PS.data.plot.Class$col), pch = 16, cex = 5)
   
+  
+  progress$set(value = 0.75, message = 'Loading...')
   # compound -------------------------------------------------------------------
   # add all missing years
   for(i in compounds){
@@ -306,17 +309,10 @@ readData<<- function(session) {
   
   
   
+  progress$set(value = 0.85, message = 'Loading...')
+  
   # get Further Reading data
   further_reading <<- read_sheet(sheet_id, sheet = "Further reading")
-  
-  
-  
-  
-  
-  
-  progress$set(value = 0.5, message = 'Loading...')
-  
-  progress$set(value = 0.75, message = 'Loading...')
   
   progress$set(value = 1, message = 'Loading...')
   # Sys.sleep(2)

@@ -12,24 +12,24 @@ library(plotly)
 library(rvest)
 library(DT)
 
-readData <- function(session) {
-  progress <- Progress$new(session)
-  progress$set(value = 0, message = 'Loading...')
-  Sys.sleep(1)
-  # dt2 <<- 2
-  progress$set(value = 0.25, message = 'Loading...')
-  Sys.sleep(1)
-  # dt3 <<- 3
-  progress$set(value = 0.5, message = 'Loading...')
-  Sys.sleep(1)
-  # dt4 <<- 4
-  progress$set(value = 0.75, message = 'Loading...')
-  Sys.sleep(1)
-  # dt5 <<- 5
-  progress$set(value = 1, message = 'Loading...')
-  Sys.sleep(1)
-  progress$close()
-}
+# readData <- function(session) {
+#   progress <- Progress$new(session)
+#   progress$set(value = 0, message = 'Loading...')
+#   Sys.sleep(1)
+#   # dt2 <<- 2
+#   progress$set(value = 0.25, message = 'Loading...')
+#   Sys.sleep(1)
+#   # dt3 <<- 3
+#   progress$set(value = 0.5, message = 'Loading...')
+#   Sys.sleep(1)
+#   # dt4 <<- 4
+#   progress$set(value = 0.75, message = 'Loading...')
+#   Sys.sleep(1)
+#   # dt5 <<- 5
+#   progress$set(value = 1, message = 'Loading...')
+#   Sys.sleep(1)
+#   progress$close()
+# }
 
 sheet_id <- "https://docs.google.com/spreadsheets/d/1tL-9rg_K9rf5hpzj63MewlQLms1qV91Nt3RwMsFamaU/"
 PS.data <- read_sheet(sheet_id, sheet = "PsychChild")
@@ -586,7 +586,7 @@ Copyright laws of third parties are respected as long as the contents on these w
 # Server logic ------------------------------------------------------------
 server <- function(input, output, session) {
   # if(is.null(dt5)){
-    readData(session)
+  # readData(session)
   # }
   # all PsyChild data -------------------------------------------------------
   
@@ -934,9 +934,6 @@ server <- function(input, output, session) {
                  autoWidth = TRUE,
                  buttons = c('copy', 'csv', 'excel')
   ))
-  # options = list(pageLength = 1000,
-  #                searching = FALSE,
-  #                lengthChange = FALSE)
   
   # MAP ---------------------------------------------------------------------
   output$map_plot <- renderPlotly({ # renderPlot
@@ -973,6 +970,3 @@ server <- function(input, output, session) {
 
 # Run app ----
 shinyApp(ui, server)
-
-
-

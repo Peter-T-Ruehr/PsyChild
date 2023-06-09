@@ -28,7 +28,7 @@ readData<<- function(session) {
   # remove unnamed columns
   PS.data <<- PS.data %>% 
     select(-contains('...'))
-
+  
   # get iso codes
   iso_codes <<- read_sheet(sheet_id, sheet = "iso_codes")
   
@@ -51,7 +51,7 @@ readData<<- function(session) {
   
   # change Date to numeric
   PS.data$Date<<- as.numeric(PS.data$Date)
-
+  
   # remove Date == NA columns
   PS.data<<- PS.data %>% 
     filter(!is.na(Date))
@@ -291,6 +291,9 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                               carried out. Inclusion in the database does not equal endorsement. PsyChild is committed to an 
                               open science approach and welcomes suggestions and submissions."),
                             HTML('<img src="https://live.staticflickr.com/65535/52865944604_18ee6790c7_o.jpg" width="30%">'),
+                            p(),
+                            p("On mobile devices, we recommend using the Desktop site instead of the default mobile version for 
+                              better viewing experience."),
                             p(),
                             HTML("<a href='https://twitter.com/ChewingGinger'  target='_blank'>Philipp Rühr</a> 
                is responsible for curating new data for PsyChild, while this webpage is written and maintened by 
@@ -557,7 +560,7 @@ server <-  function(input, output, session) {
   PS.data.print_PsyChild},
   
   extensions = 'Buttons',
-
+  
   options = list(pageLength = 1000,
                  searching = FALSE,
                  lengthChange = FALSE,
@@ -567,7 +570,7 @@ server <-  function(input, output, session) {
   ))
   
   # Class -------------------------------------------------------------------  
-
+  
   output$class_selected <-renderText({
     paste0("Classes selected: ", paste(input$Class, collapse = ", "), ".")
   })
@@ -830,19 +833,27 @@ server <-  function(input, output, session) {
   
   
   # FURTHER READING ---------------------------------------------------------
-  output$table_print_further_reading <-  renderDT({df <-  reactiveVal(further_reading)
   reduced_links <-  further_reading %>% 
-    pull(Link) %>% 
-    gsub("https://", "", .)%>% 
-    gsub("http://", "", .)%>% 
+    pull(Link) %>%
+    gsub("https://", "", .)%>%
+    gsub("http://", "", .)%>%
     gsub("www.", "", .)
-  datatable(further_reading %>% 
-              mutate(Link = paste0("<a href='", Link,"' target='_blank'>", reduced_links,"</a>")),
-            escape = FALSE,
-            rownames = FALSE) %>%
-    formatStyle(1:5, 'vertical-align'='top') %>% 
-    formatStyle(1:5, 'text-align' = 'left')
-  })
+  
+  output$table_print_further_reading <-  renderDataTable({df <-  reactiveVal(further_reading)
+  
+  further_reading %>% 
+    mutate(Link = paste0("<a href='", Link,"' target='_blank'>", reduced_links,"</a>"))},
+  
+  extensions = 'Buttons',
+  
+  options = list(pageLength = 1000,
+                 searching = FALSE,
+                 lengthChange = FALSE,
+                 dom = 'tB',
+                 autoWidth = TRUE,
+                 buttons = c('copy', 'csv', 'excel')
+  ))
+  
 }
 
 # Run the application 

@@ -1,13 +1,10 @@
 library(dplyr)
 library(tidyr)
-# library(ggplot2)
 library(shiny)
 library(viridisLite)
-# library(ggrepel)
 library(googlesheets4)
 gs4_deauth()
 library(plotly)
-# library(rvest)
 library(DT)
 
 # Add directory of static resources to Shiny's web server
@@ -281,20 +278,24 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                           helpText(
                             h3("PsyChild. Tracking clinical psychedelics in minors."),
                             p(),
-                            p("PsyChild is a database for psychedelic research in minors. It’s main aim is to provide a growing 
-                              bibliography on this multidisciplinary field for researchers, research subjects, patients, guardians, 
-                              clinicians, and external experts. Some of the provided records contain accounts of violence, homophobia, 
-                              and unethical conduct, underscoring the urgent need to grapple with the difficult history of this 
-                              field. While PsyChild takes a neutral stance on the question whether psychedelic-assisted psychotherapy 
-                              (PAP) should be provided to minors, we do call for evidence-based, harm-reduction-oriented PAP 
-                              protocols designed for minors in case research or treatement should be carried out. PsyChild is 
-                              committed to an open science approach and welcomes suggestions and submissions."),
+                            p("PsyChild is a database of clinical research with psychedelics and related compounds in minors. 
+                              Its main aim is to provide a growing bibliography on this multidisciplinary field for researchers, 
+                              research subjects, patients, guardians, clinicians, critics, and external experts. Some of the provided 
+                              records contain accounts of violence, homophobia, and unethical conduct, underscoring the urgent need to 
+                              grapple with the difficult history of this field. Due to the cross-pollination of different research 
+                              strands in this multidisciplinary field, PsyChild not only includes “classic” psychedelics but also 
+                              related compounds such as entactogens like mCPP and αET, deliriants like atropine and scopolamine, 
+                              and dissociatives like ketamine and PCP. While PsyChild takes a neutral stance on the question whether 
+                              psychedelic-assisted psychotherapy (PAP) should be provided to minors, we do call for evidence-based, 
+                              harm-reduction-oriented PAP protocols designed for minors in case research or treatment should be 
+                              carried out. Inclusion in the database does not equal endorsement. PsyChild is committed to an 
+                              open science approach and welcomes suggestions and submissions."),
                             HTML('<img src="https://live.staticflickr.com/65535/52865944604_18ee6790c7_o.jpg" width="30%">'),
                             p(),
                             HTML("<a href='https://twitter.com/ChewingGinger'  target='_blank'>Philipp Rühr</a> 
                is responsible for curating new data for PsyChild, while this webpage is written and maintened by 
-               <a href='https://twitter.com/Peter_Th_R'  target='_blank'>Peter T. Rühr</a>. Issues can be reported at <a href='https://github.com/Peter-T-Ruehr/PsyChild/issues'  target='_blank'>PsyChild's GitHub page</a>.<br><br>"),
-                            HTML("If you use this website, please cite it as:<br>
+               <a href='https://twitter.com/Peter_Th_R'  target='_blank'>Peter T. Rühr</a>. Issues can be reported at PsyChild's <a href='https://github.com/Peter-T-Ruehr/PsyChild/issues'  target='_blank'>GitHub page</a>.<br><br>"),
+                            HTML("Please cite this website as:<br>
                                      <em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://ruehr.org/shiny/PsyChild/.")
                           )
                  ),
@@ -312,7 +313,9 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                            or if they have been conducted in a psychiatric context."))),
                           p(),
                           h6(HTML(paste0("*", tags$sup("3")," Studies with cannabinoids have only been included if the ratio of 
-                           psychoactive cannabinoids vs. non psychoactive cannabinoids has been  higher than 1:20.")))
+                           psychoactive cannabinoids vs. non psychoactive cannabinoids has been  higher than 1:20."))),
+                          p(),
+                          p("Mobile visibility of PsyChild on cell phones is improved when you enable the 'Desktop version' manually on your phone browser.")
                  ),
                  
                  

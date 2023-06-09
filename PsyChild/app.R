@@ -833,28 +833,44 @@ server <-  function(input, output, session) {
   
   
   # FURTHER READING ---------------------------------------------------------
+  # reduced_links <-  further_reading %>% 
+  #   pull(Link) %>%
+  #   gsub("https://", "", .)%>%
+  #   gsub("http://", "", .)%>%
+  #   gsub("www.", "", .)
+  # 
+  # output$table_print_further_reading <-  renderDataTable({df <-  reactiveVal(further_reading)
+  # 
+  # further_reading %>% 
+  #   mutate(Link = paste0("<a href='", Link,"' target='_blank'>", reduced_links,"</a>"))},
+  # 
+  # extensions = 'Buttons',
+  # 
+  # options = list(pageLength = 1000,
+  #                searching = FALSE,
+  #                lengthChange = FALSE,
+  #                dom = 'tB',
+  #                autoWidth = TRUE,
+  #                buttons = c('copy', 'csv', 'excel')
+  # ))
+  output$table_print_further_reading <-  renderDT({df <-  reactiveVal(further_reading)
   reduced_links <-  further_reading %>% 
-    pull(Link) %>%
-    gsub("https://", "", .)%>%
-    gsub("http://", "", .)%>%
+    pull(Link) %>% 
+    gsub("https://", "", .)%>% 
+    gsub("http://", "", .)%>% 
     gsub("www.", "", .)
-  
-  output$table_print_further_reading <-  renderDataTable({df <-  reactiveVal(further_reading)
-  
-  further_reading %>% 
-    mutate(Link = paste0("<a href='", Link,"' target='_blank'>", reduced_links,"</a>"))},
-  
-  extensions = 'Buttons',
-  
-  options = list(pageLength = 1000,
-                 searching = FALSE,
-                 lengthChange = FALSE,
-                 dom = 'tB',
-                 autoWidth = TRUE,
-                 buttons = c('copy', 'csv', 'excel')
-  ))
-  
-}
+  datatable(further_reading %>% 
+              mutate(Link = paste0("<a href='", Link,"' target='_blank'>", reduced_links,"</a>")),
+            escape = FALSE,
+            rownames = FALSE, extensions = 'Buttons', options = list(pageLength = 1000,
+                                                                     searching = FALSE,
+                                                                     lengthChange = FALSE,
+                                                                     dom = 'tB',
+                                                                     autoWidth = TRUE,
+                                                                     buttons = c('copy', 'csv', 'excel'))) %>%
+    formatStyle(1:5, 'vertical-align'='top') %>% 
+    formatStyle(1:5, 'text-align' = 'left')
+  })}
 
 # Run the application 
 shinyApp(ui = ui, server = server)

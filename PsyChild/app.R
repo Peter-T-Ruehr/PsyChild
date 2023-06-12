@@ -18,46 +18,67 @@ PS.data.print_Compound<<- NULL
 PS.data.map.reduced<<- NULL
 further_reading<<- NULL
 
-readData<<- function(session) {
-  progress<<- Progress$new(session)
+readData <<- function(session) {
+  progress <<- Progress$new(session)
   progress$set(value = 0.1, message = 'Loading...')
-  sheet_id<<- "https://docs.google.com/spreadsheets/d/1tL-9rg_K9rf5hpzj63MewlQLms1qV91Nt3RwMsFamaU/"
+  
+  sheet_id <<- "https://docs.google.com/spreadsheets/d/1tL-9rg_K9rf5hpzj63MewlQLms1qV91Nt3RwMsFamaU/"
   PS.data <<- read_sheet(sheet_id, sheet = "PsychChild")
   
   progress$set(value = 0.25, message = 'Loading...')
+  
+  # get Author names of date before and after Current/Ongoing/Discontinued Trials
+  Current_Ongoing_Discontinued_row <<- which(PS.data$Location == "Current/Ongoing/Discontinued Trials")
+  Current_Ongoing_Discontinued_row <- which(PS.data$Location == "Current/Ongoing/Discontinued Trials")
+  
+  Authors_before <<- PS.data$Author[1:(Current_Ongoing_Discontinued_row-1)]
+  Authors_before <<- Authors_before[!is.na(Authors_before)]
+  
+  
+  Authors_after <<- PS.data$Author[(Current_Ongoing_Discontinued_row+1):nrow(PS.data)]
+  Authors_after <<- Authors_after[!is.na(Authors_after)]
+  
   # remove unnamed columns
   PS.data <<- PS.data %>% 
     select(-contains('...'))
+  # PS.data <- PS.data %>%
+  #   select(-contains('...'))
   
   # get iso codes
   iso_codes <<- read_sheet(sheet_id, sheet = "iso_codes")
   
-  
   # remove NULL rows
-  nulls<<- NULL
+  nulls <<- NULL
   for(i in 1:nrow(PS.data)){
-    curr_row<<- unlist(PS.data$Date[i])
+    curr_row <<- unlist(PS.data$Date[i])
     if(is.null(curr_row)){
-      nulls<<- c(nulls, i)
+      nulls <<- c(nulls, i)
     }
   }
-  PS.data<<- PS.data[-nulls, ]
+  if(!is.null(nulls)){
+    PS.data <<- PS.data[-nulls, ]
+  }
   
   # change Date from list to readable character
-  PS.data$Date<<- unlist(PS.data$Date)
+  PS.data$Date <<- unlist(PS.data$Date)
+  # PS.data$Date <- unlist(PS.data$Date)
   
-  # change current to 2023
-  PS.data$Date[PS.data$Date == "Current"]<<- 2023
+  # # change current to 2023 - deprecated
+  # PS.data$Date[PS.data$Date == "Current"] <<- 2023
+  # # PS.data$Date[PS.data$Date == "Current"] <- 2023
   
   # change Date to numeric
-  PS.data$Date<<- as.numeric(PS.data$Date)
+  PS.data$Date <<- as.numeric(PS.data$Date)
+  # PS.data$Date <- as.numeric(PS.data$Date)
   
   # remove Date == NA columns
-  PS.data<<- PS.data %>% 
+  PS.data <<- PS.data %>% 
     filter(!is.na(Date))
+  # PS.data <- PS.data %>% 
+  #   filter(!is.na(Date))
   
   # create old new names for Compounds list
-  compound_translation<<- tibble(old = c("2-AG \\(2-Arachidonoylglycerol\\)",
+  compound_translation <<- tibble(old = c("2-AG \\(2-Arachidonoylglycerol\\)",
                                          "AA Arachidonic acid",
                                          "AEA \\(Anandamide\\)",
                                          "LAE-32 \\(D-Lysergic acid diethylamide\\)",
@@ -83,6 +104,8 @@ readData<<- function(session) {
                                          "THC \\(Delta-9 THC\\)",
                                          "THC \\(THC-homologs, Numbers 122 and 125A\\)",
                                          "αET \\(alpha-Ethyltryptamine\\)"))
+  
+  
   
   # arrange PS_data
   PS.data <<- PS.data %>% 
@@ -305,8 +328,13 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                  
                  # PsyChild data -----------------------------------------------------------------
                  tabPanel(span("Data", style="color:#1e9273ff"),
-                          p("The underlying data table of PsyChild."),
-                          div(dataTableOutput("table_print_PsyChild"), style = "font-size:80%"),
+                          p("The underlying data tables of PsyChild."),
+                          p(),
+                          div(dataTableOutput("table_print_PsyChild_before"), style = "font-size:80%"),
+                          
+                          HTML("<br/><br/>"),
+                          h4("Current/Ongoing/Discontinued Trials"),
+                          div(dataTableOutput("table_print_PsyChild_after"), style = "font-size:80%"),
                           
                           h6(HTML(paste0("*", tags$sup("1")," For multicenter-studies, only the main site is listed."))),
                           p(),
@@ -519,9 +547,10 @@ server <-  function(input, output, session) {
     readData(session)
   }
   # all PsyChild data -------------------------------------------------------
-  
-  output$table_print_PsyChild <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
-  PS.data.print_PsyChild <-  PS.data.print_Class %>% 
+  # Before
+  output$table_print_PsyChild_before <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
+  PS.data.print_PsyChild_before <-  PS.data.print_Class %>% 
+    filter(Author %in% Authors_before) %>% 
     arrange(Date, `Substance class`) %>% 
     distinct(Title, .keep_all = TRUE) %>% 
     drop_na(Title) %>% 
@@ -557,7 +586,58 @@ server <-  function(input, output, session) {
     rename(`Location (*1)` = Location,
            `Compound (*2, *3)` = `Compound(s)`)
   
-  PS.data.print_PsyChild},
+  PS.data.print_PsyChild_before},
+  
+  extensions = 'Buttons',
+  
+  options = list(pageLength = 1000,
+                 searching = FALSE,
+                 lengthChange = FALSE,
+                 dom = 'tB',
+                 autoWidth = TRUE,
+                 buttons = c('copy', 'csv', 'excel')
+  ))
+  
+  # After
+  output$table_print_PsyChild_after <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
+  PS.data.print_PsyChild_after <-  PS.data.print_Class %>% 
+    filter(Author %in% Authors_after) %>% 
+    arrange(Date, `Substance class`) %>% 
+    distinct(Title, .keep_all = TRUE) %>% 
+    drop_na(Title) %>% 
+    select(c(# `Date`,
+      `Author`,
+      `Location`,
+      # `Location photo`, 
+      `Title`,
+      `Type`,
+      `Compound(s)`,
+      `Substance class`,
+      `ICD-11 Indication or field of application`,
+      `ICD-11 Indication as Groups or field of application`,
+      # `Psychiatric indication?`,
+      `Adjunct psychotherapy`,
+      # `Adjacent psychotherapy?`,
+      `Subjects`,
+      # `Only minors?`,
+      `Main psychiatric outcomes`,
+      # `Reported side effects/adverse events`,
+      `Side effects (MedDRA)`,
+      `Consent`,
+      `in/out patient`,
+      # `Route of administration`,
+      `Regimen (route of administration, dose, frequency)`,
+      `Concomitant Medications`,
+      `Comment`#,
+      # `comment 1`,
+      # `comment 2`,
+      # `Compound_new_name,
+      # Country
+    )) %>% 
+    rename(`Location (*1)` = Location,
+           `Compound (*2, *3)` = `Compound(s)`)
+  
+  PS.data.print_PsyChild_after},
   
   extensions = 'Buttons',
   

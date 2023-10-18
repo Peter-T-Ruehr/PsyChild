@@ -259,9 +259,9 @@ readData <<- function(session) {
   
   
   # Map ---------------------------------------------------------------------
-  PS.data.map<<- PS.data
-  PS.data.map['ISO3']<<- iso_codes$ISO3[match(PS.data.map$Country, iso_codes$Country)]
-  PS.data.map<<- PS.data.map %>% 
+  PS.data.map <<- PS.data
+  PS.data.map['ISO3'] <<- iso_codes$ISO3[match(PS.data.map$Country, iso_codes$Country)]
+  PS.data.map <<- PS.data.map %>% 
     filter(Country != "Unknown")
   
   PS.data.map.reduced <<- PS.data.map %>%
@@ -322,13 +322,15 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                is responsible for curating new data for PsyChild, while this webpage is written and maintened by 
                <a href='https://twitter.com/Peter_Th_R'  target='_blank'>Peter T. Rühr</a>. Issues can be reported at PsyChild's <a href='https://github.com/Peter-T-Ruehr/PsyChild/issues'  target='_blank'>GitHub page</a>.<br><br>"),
                             HTML("Please cite this website as:<br>
-                                     <em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://ruehr.org/shiny/PsyChild/.")
+                                     <em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://ruehr.org/shiny/PsyChild/. doi: <a href='https://zenodo.org/doi/10.5281/zenodo.10020023'  target='_blank'>10.5281/zenodo.10020023</a>.")
                           )
                  ),
                  
                  # PsyChild data -----------------------------------------------------------------
                  tabPanel(span("Data", style="color:#1e9273ff"),
-                          p("The underlying data tables of PsyChild."),
+                          HTML("<strong>The data tables of PsyChild.</strong>"),
+                          p("Download buttons are provided below (clipboard, csv, or Excel)."),
+                          p("Mobile visibility of PsyChild on cell phones is improved when you enable the 'Desktop version' manually on your phone browser."),
                           p(),
                           div(dataTableOutput("table_print_PsyChild_before"), style = "font-size:80%"),
                           
@@ -344,9 +346,7 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                            or if they have been conducted in a psychiatric context."))),
                           p(),
                           h6(HTML(paste0("*", tags$sup("3")," Studies with cannabinoids have only been included if the ratio of 
-                           psychoactive cannabinoids vs. non psychoactive cannabinoids has been  higher than 1:20."))),
-                          p(),
-                          p("Mobile visibility of PsyChild on cell phones is improved when you enable the 'Desktop version' manually on your phone browser.")
+                           psychoactive cannabinoids vs. non psychoactive cannabinoids has been  higher than 1:20.")))
                  ),
                  
                  
@@ -381,6 +381,9 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                                                             "Phytocannabinoids",
                                                             "Synthetic cannabinoids"),
                                              selected = "Psychedelics"), # all
+                          
+                          HTML("<strong>The underlying data of the above plot.</strong>"),
+                          p("Download buttons are provided below (clipboard, csv, or Excel)."),
                           
                           div(dataTableOutput("table_print_Class"), style = "font-size:80%"),
                           
@@ -478,6 +481,11 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                                              choices = c("Lenabasum"),
                                              selected = NULL),
                           
+                          
+                          
+                          HTML("<strong>The underlying data of the above plot.</strong>"),
+                          p("Download buttons are provided below (clipboard, csv, or Excel)."),
+                          
                           div(dataTableOutput("table_print_Compound"), style = "font-size:80%"),
                           
                           h6(HTML(paste0("*", tags$sup("1")," For multicenter-studies, only the main site is listed."))),
@@ -511,7 +519,7 @@ Schlesische Straße 5<br>
 Email: philippruehr@gmail.com</small>"),
                             
                             h4("Preferred mention for citations: "),
-                            HTML("<small><em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://ruehr.org/shiny/PsyChild/.</small>"),
+                            HTML("<small><em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://ruehr.org/shiny/PsyChild/. doi: <a href='https://zenodo.org/doi/10.5281/zenodo.10020023'  target='_blank'>10.5281/zenodo.10020023</a>.</small>"),
                             
                             h4("Dispute Resolution"),
                             HTML("<small>The European Commission provides a platform for online dispute resolution (OS): https://ec.europa.eu/consumers/odr. Please find our email in the impressum/legal notice.
@@ -548,7 +556,7 @@ server <-  function(input, output, session) {
   }
   # all PsyChild data -------------------------------------------------------
   # Before
-  output$table_print_PsyChild_before <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
+  output$table_print_PsyChild_reports <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
   PS.data.print_PsyChild_before <-  PS.data.print_Class %>% 
     filter(Author %in% Authors_before) %>% 
     arrange(Date, `Substance class`) %>% 
@@ -902,12 +910,26 @@ server <-  function(input, output, session) {
                         locations=PS.data.map.reduced$ISO3, 
                         z=PS.data.map.reduced$log_n, 
                         colorscale="Viridis",
-                        hovertemplate = paste0(PS.data.map.reduced$Country, ": ", PS.data.map.reduced$n, " Publication(s)."))
+                        hovertemplate = paste0(PS.data.map.reduced$Country, ": ", PS.data.map.reduced$n, " publication(s)."))
     
     
-    fig_map %>% 
+    fig_map <- fig_map %>% 
       hide_colorbar() %>%
       layout(title = 'Map of Publications per country')
+    
+    fig_map_points <- add_trace(fig_map,
+                                type='scattergeo',
+                                x = PS.data.map$Lon,
+                                y = PS.data.map$Lat,
+                                showlegend = FALSE,
+                                text = PS.data.map$Location,
+                                hoverinfo = 'text',
+                                mode = 'markers', 
+                                inherit = FALSE,
+                                marker = list(color='orange',
+                                              size = 5) #size = ~numbEmployed, sizeref = 4000, sizemode = 'area')
+    ) %>% 
+      layout(hoverdistance = 1)
   })
   
   

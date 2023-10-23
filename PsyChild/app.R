@@ -27,16 +27,18 @@ readData <<- function(session) {
   
   progress$set(value = 0.25, message = 'Loading...')
   
-  # get Author names of date before and after Current/Ongoing/Discontinued Trials
-  Current_Ongoing_Discontinued_row <<- which(PS.data$Location == "Current/Ongoing/Discontinued Trials")
-  Current_Ongoing_Discontinued_row <- which(PS.data$Location == "Current/Ongoing/Discontinued Trials")
+  # # get Author names of date before and after Current/Ongoing/Discontinued Trials
+  # Current_Ongoing_Discontinued_row <<- which(PS.data$Location == "Current/Ongoing/Discontinued Trials")
+  # Current_Ongoing_Discontinued_row <- which(PS.data$Location == "Current/Ongoing/Discontinued Trials")
+  # 
+  # Authors_before <<- PS.data$Author[1:(Current_Ongoing_Discontinued_row-1)]
+  # Authors_before <<- Authors_before[!is.na(Authors_before)]
+  # 
+  # 
+  # Authors_after <<- PS.data$Author[(Current_Ongoing_Discontinued_row+1):nrow(PS.data)]
+  # Authors_after <<- Authors_after[!is.na(Authors_after)]
   
-  Authors_before <<- PS.data$Author[1:(Current_Ongoing_Discontinued_row-1)]
-  Authors_before <<- Authors_before[!is.na(Authors_before)]
   
-  
-  Authors_after <<- PS.data$Author[(Current_Ongoing_Discontinued_row+1):nrow(PS.data)]
-  Authors_after <<- Authors_after[!is.na(Authors_after)]
   
   # remove unnamed columns
   PS.data <<- PS.data %>% 
@@ -332,11 +334,16 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                           p("Download buttons are provided below (clipboard, csv, or Excel)."),
                           p("Mobile visibility of PsyChild on cell phones is improved when you enable the 'Desktop version' manually on your phone browser."),
                           p(),
-                          div(dataTableOutput("table_print_PsyChild_before"), style = "font-size:80%"),
+                          h4("1. Reports/Archival"),
+                          div(dataTableOutput("table_print_PsyChild_Completed"), style = "font-size:80%"),
                           
                           HTML("<br/><br/>"),
-                          h4("Current/Ongoing/Discontinued Trials"),
-                          div(dataTableOutput("table_print_PsyChild_after"), style = "font-size:80%"),
+                          h4("2. Current/Ongoing"),
+                          div(dataTableOutput("table_print_PsyChild_Ongoing"), style = "font-size:80%"),
+                          
+                          HTML("<br/><br/>"),
+                          h4("3. Discontinued/Uncertain"),
+                          div(dataTableOutput("table_print_PsyChild_Discontinued"), style = "font-size:80%"),
                           
                           h6(HTML(paste0("*", tags$sup("1")," For multicenter-studies, only the main site is listed."))),
                           p(),
@@ -555,13 +562,14 @@ server <-  function(input, output, session) {
     readData(session)
   }
   # all PsyChild data -------------------------------------------------------
-  # Before
-  output$table_print_PsyChild_reports <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
-  PS.data.print_PsyChild_before <-  PS.data.print_Class %>% 
-    filter(Author %in% Authors_before) %>% 
-    arrange(Date, `Substance class`) %>% 
-    distinct(Title, .keep_all = TRUE) %>% 
-    drop_na(Title) %>% 
+  # Completed
+  output$table_print_PsyChild_Completed <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
+  data_Completed <-  PS.data.print_Class %>%
+    # filter(Author %in% Authors_before) %>%
+    arrange(Date, `Substance class`) %>%
+    distinct(Title, .keep_all = TRUE) %>%
+    drop_na(Title) %>%
+    filter(`Status` == "Completed") %>% 
     select(c(# `Date`,
       `Author`,
       `Location`,
@@ -590,11 +598,11 @@ server <-  function(input, output, session) {
       # `comment 2`,
       # `Compound_new_name,
       # Country
-    )) %>% 
+    )) %>%
     rename(`Location (*1)` = Location,
            `Compound (*2, *3)` = `Compound(s)`)
   
-  PS.data.print_PsyChild_before},
+  data_Completed},
   
   extensions = 'Buttons',
   
@@ -606,17 +614,18 @@ server <-  function(input, output, session) {
                  buttons = c('copy', 'csv', 'excel')
   ))
   
-  # After
-  output$table_print_PsyChild_after <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
-  PS.data.print_PsyChild_after <-  PS.data.print_Class %>% 
-    filter(Author %in% Authors_after) %>% 
-    arrange(Date, `Substance class`) %>% 
-    distinct(Title, .keep_all = TRUE) %>% 
-    drop_na(Title) %>% 
+  # Ongoing
+  output$table_print_PsyChild_Ongoing <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
+  data_Ongoing <-  PS.data.print_Class %>%
+    # filter(Author %in% Authors_before) %>%
+    arrange(Date, `Substance class`) %>%
+    distinct(Title, .keep_all = TRUE) %>%
+    drop_na(Title) %>%
+    filter(`Status` == "Ongoing") %>% 
     select(c(# `Date`,
       `Author`,
       `Location`,
-      # `Location photo`, 
+      # `Location photo`,
       `Title`,
       `Type`,
       `Compound(s)`,
@@ -641,11 +650,11 @@ server <-  function(input, output, session) {
       # `comment 2`,
       # `Compound_new_name,
       # Country
-    )) %>% 
+    )) %>%
     rename(`Location (*1)` = Location,
            `Compound (*2, *3)` = `Compound(s)`)
   
-  PS.data.print_PsyChild_after},
+  data_Ongoing},
   
   extensions = 'Buttons',
   
@@ -656,6 +665,161 @@ server <-  function(input, output, session) {
                  autoWidth = TRUE,
                  buttons = c('copy', 'csv', 'excel')
   ))
+  
+  # Discontinued
+  output$table_print_PsyChild_Discontinued <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
+  data_Discontinued <-  PS.data.print_Class %>%
+    # filter(Author %in% Authors_before) %>%
+    arrange(Date, `Substance class`) %>%
+    distinct(Title, .keep_all = TRUE) %>%
+    drop_na(Title) %>%
+    filter(is.na(`Status`) |
+             `Status` %in% c("Discontinued")) %>% 
+    select(c(# `Date`,
+      `Author`,
+      `Location`,
+      # `Location photo`,
+      `Title`,
+      `Type`,
+      `Compound(s)`,
+      `Substance class`,
+      `ICD-11 Indication or field of application`,
+      `ICD-11 Indication as Groups or field of application`,
+      # `Psychiatric indication?`,
+      `Adjunct psychotherapy`,
+      # `Adjacent psychotherapy?`,
+      `Subjects`,
+      # `Only minors?`,
+      `Main psychiatric outcomes`,
+      # `Reported side effects/adverse events`,
+      `Side effects (MedDRA)`,
+      `Consent`,
+      `in/out patient`,
+      # `Route of administration`,
+      `Regimen (route of administration, dose, frequency)`,
+      `Concomitant Medications`,
+      `Comment`#,
+      # `comment 1`,
+      # `comment 2`,
+      # `Compound_new_name,
+      # Country
+    )) %>%
+    rename(`Location (*1)` = Location,
+           `Compound (*2, *3)` = `Compound(s)`)
+  
+  data_Discontinued},
+  
+  extensions = 'Buttons',
+  
+  options = list(pageLength = 1000,
+                 searching = FALSE,
+                 lengthChange = FALSE,
+                 dom = 'tB',
+                 autoWidth = TRUE,
+                 buttons = c('copy', 'csv', 'excel')
+  ))
+  
+  # # Before
+  # output$table_print_PsyChild_reports <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
+  # PS.data.print_PsyChild_before <-  PS.data.print_Class %>%
+  #   filter(Author %in% Authors_before) %>%
+  #   arrange(Date, `Substance class`) %>%
+  #   distinct(Title, .keep_all = TRUE) %>%
+  #   drop_na(Title) %>%
+  #   select(c(# `Date`,
+  #     `Author`,
+  #     `Location`,
+  #     # `Location photo`,
+  #     `Title`,
+  #     `Type`,
+  #     `Compound(s)`,
+  #     `Substance class`,
+  #     `ICD-11 Indication or field of application`,
+  #     `ICD-11 Indication as Groups or field of application`,
+  #     # `Psychiatric indication?`,
+  #     `Adjunct psychotherapy`,
+  #     # `Adjacent psychotherapy?`,
+  #     `Subjects`,
+  #     # `Only minors?`,
+  #     `Main psychiatric outcomes`,
+  #     # `Reported side effects/adverse events`,
+  #     `Side effects (MedDRA)`,
+  #     `Consent`,
+  #     `in/out patient`,
+  #     # `Route of administration`,
+  #     `Regimen (route of administration, dose, frequency)`,
+  #     `Concomitant Medications`,
+  #     `Comment`#,
+  #     # `comment 1`,
+  #     # `comment 2`,
+  #     # `Compound_new_name,
+  #     # Country
+  #   )) %>%
+  #   rename(`Location (*1)` = Location,
+  #          `Compound (*2, *3)` = `Compound(s)`)
+  # 
+  # PS.data.print_PsyChild_before},
+  # 
+  # extensions = 'Buttons',
+  # 
+  # options = list(pageLength = 1000,
+  #                searching = FALSE,
+  #                lengthChange = FALSE,
+  #                dom = 'tB',
+  #                autoWidth = TRUE,
+  #                buttons = c('copy', 'csv', 'excel')
+  # ))
+  # 
+  # # After
+  # output$table_print_PsyChild_after <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
+  # PS.data.print_PsyChild_after <-  PS.data.print_Class %>% 
+  #   filter(Author %in% Authors_after) %>% 
+  #   arrange(Date, `Substance class`) %>% 
+  #   distinct(Title, .keep_all = TRUE) %>% 
+  #   drop_na(Title) %>% 
+  #   select(c(# `Date`,
+  #     `Author`,
+  #     `Location`,
+  #     # `Location photo`, 
+  #     `Title`,
+  #     `Type`,
+  #     `Compound(s)`,
+  #     `Substance class`,
+  #     `ICD-11 Indication or field of application`,
+  #     `ICD-11 Indication as Groups or field of application`,
+  #     # `Psychiatric indication?`,
+  #     `Adjunct psychotherapy`,
+  #     # `Adjacent psychotherapy?`,
+  #     `Subjects`,
+  #     # `Only minors?`,
+  #     `Main psychiatric outcomes`,
+  #     # `Reported side effects/adverse events`,
+  #     `Side effects (MedDRA)`,
+  #     `Consent`,
+  #     `in/out patient`,
+  #     # `Route of administration`,
+  #     `Regimen (route of administration, dose, frequency)`,
+  #     `Concomitant Medications`,
+  #     `Comment`#,
+  #     # `comment 1`,
+  #     # `comment 2`,
+  #     # `Compound_new_name,
+  #     # Country
+  #   )) %>% 
+  #   rename(`Location (*1)` = Location,
+  #          `Compound (*2, *3)` = `Compound(s)`)
+  # 
+  # PS.data.print_PsyChild_after},
+  # 
+  # extensions = 'Buttons',
+  # 
+  # options = list(pageLength = 1000,
+  #                searching = FALSE,
+  #                lengthChange = FALSE,
+  #                dom = 'tB',
+  #                autoWidth = TRUE,
+  #                buttons = c('copy', 'csv', 'excel')
+  # ))
   
   # Class -------------------------------------------------------------------  
   

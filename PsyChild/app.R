@@ -76,36 +76,36 @@ readData <<- function(session) {
   # remove Date == NA columns
   PS.data <<- PS.data %>% 
     filter(!is.na(Date))
-  # PS.data <- PS.data %>% 
+  # PS.data <- PS.data %>%
   #   filter(!is.na(Date))
   
   # create old new names for Compounds list
   compound_translation <<- tibble(old = c("2-AG \\(2-Arachidonoylglycerol\\)",
-                                         "AA Arachidonic acid",
-                                         "AEA \\(Anandamide\\)",
-                                         "LAE-32 \\(D-Lysergic acid diethylamide\\)",
-                                         "LSD \\(Lysergic acid diethylamide\\)",
-                                         "OEA \\(Oleoylethanolamide\\)",
-                                         "PCP \\(Phencyclidine\\)",
-                                         "mCPP \\(meta-Chlorophenylpiperazine\\)",
-                                         "PEA \\(Palmitoylethanolamide\\)",
-                                         "THC \\(Delta-8-THC\\)",
-                                         "THC \\(Delta-9 THC\\)",
-                                         "THC \\(THC-homologs, Numbers 122 and 125A\\)",
-                                         "αET \\(alpha-Ethyltryptamine\\)"),
-                                 new = c("2-AG \\(2-Arachidonoylglycerol\\)",
-                                         "AA \\(Arachidonic acid\\)",
-                                         "AEA \\(Anandamide\\)",
-                                         "LAE-32 \\(D-Lysergic acid diethylamide\\)",
-                                         "LSD \\(Lysergic acid diethylamide\\)",
-                                         "OEA \\(Oleoylethanolamide\\)",
-                                         "PCP \\(Phencyclidine\\)",
-                                         "mCPP \\(meta-Chlorophenylpiperazine\\)",
-                                         "PEA \\(Palmitoylethanolamide\\)",
-                                         "THC \\(Delta-8-THC\\)",
-                                         "THC \\(Delta-9 THC\\)",
-                                         "THC \\(THC-homologs, Numbers 122 and 125A\\)",
-                                         "αET \\(alpha-Ethyltryptamine\\)"))
+                                          "AA Arachidonic acid",
+                                          "AEA \\(Anandamide\\)",
+                                          "LAE-32 \\(D-Lysergic acid diethylamide\\)",
+                                          "LSD \\(Lysergic acid diethylamide\\)",
+                                          "OEA \\(Oleoylethanolamide\\)",
+                                          "PCP \\(Phencyclidine\\)",
+                                          "mCPP \\(meta-Chlorophenylpiperazine\\)",
+                                          "PEA \\(Palmitoylethanolamide\\)",
+                                          "THC \\(Delta-8-THC\\)",
+                                          "THC \\(Delta-9 THC\\)",
+                                          "THC \\(THC-homologs, Numbers 122 and 125A\\)",
+                                          "αET \\(alpha-Ethyltryptamine\\)"),
+                                  new = c("2-AG \\(2-Arachidonoylglycerol\\)",
+                                          "AA \\(Arachidonic acid\\)",
+                                          "AEA \\(Anandamide\\)",
+                                          "LAE-32 \\(D-Lysergic acid diethylamide\\)",
+                                          "LSD \\(Lysergic acid diethylamide\\)",
+                                          "OEA \\(Oleoylethanolamide\\)",
+                                          "PCP \\(Phencyclidine\\)",
+                                          "mCPP \\(meta-Chlorophenylpiperazine\\)",
+                                          "PEA \\(Palmitoylethanolamide\\)",
+                                          "THC \\(Delta-8-THC\\)",
+                                          "THC \\(Delta-9 THC\\)",
+                                          "THC \\(THC-homologs, Numbers 122 and 125A\\)",
+                                          "αET \\(alpha-Ethyltryptamine\\)"))
   
   
   
@@ -127,6 +127,7 @@ readData <<- function(session) {
   
   # save for later processing
   PS.data.compounds <<- PS.data
+  # PS.data.compounds <- PS.data
   
   # change input compounds and data compounds to workable strings
   PS.data.compounds$Compound_new_name <<- PS.data.compounds$`Compound(s)`
@@ -138,18 +139,18 @@ readData <<- function(session) {
   compounds<<- sort(unique(unlist(strsplit(PS.data.compounds$Compound_new_name, split = "; "))))
   
   # get countries
-  PS.data$Country<<- NA
+  PS.data$Country <<- NA
   for(i in 1:nrow(PS.data)){
     curr_Location<<- unlist(strsplit(PS.data$Location[i], split = "; "))
-    PS.data$Country[i]<<- curr_Location[length(curr_Location)]
+    PS.data$Country[i] <<- curr_Location[length(curr_Location)]
   }
-  PS.data$Country<<- gsub("USA", "United States of America", PS.data$Country)
-  PS.data$Country<<- gsub("^United States$", "United States of America", PS.data$Country)
-  PS.data$Country<<- gsub("Czechoslovakia", "Czech Republic", PS.data$Country)
-  PS.data$Country<<- gsub("England", "United Kingdom", PS.data$Country)
-  PS.data$Country<<- gsub("Scotland", "United Kingdom", PS.data$Country)
-  PS.data$Country<<- gsub("Iran", "Iran, Islamic Republic of", PS.data$Country)
-  PS.data$Country<<- gsub("Russia", "Russian Federation", PS.data$Country)
+  PS.data$Country <<- gsub("USA", "United States of America", PS.data$Country)
+  PS.data$Country <<- gsub("^United States$", "United States of America", PS.data$Country)
+  PS.data$Country <<- gsub("Czechoslovakia", "Czech Republic", PS.data$Country)
+  PS.data$Country <<- gsub("England", "United Kingdom", PS.data$Country)
+  PS.data$Country <<- gsub("Scotland", "United Kingdom", PS.data$Country)
+  PS.data$Country <<- gsub("Iran", "Iran, Islamic Republic of", PS.data$Country)
+  PS.data$Country <<- gsub("Russia", "Russian Federation", PS.data$Country)
   
   # save for printing
   PS.data.print_Class <<- PS.data
@@ -334,16 +335,24 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                           p("Download buttons are provided below (clipboard, csv, or Excel)."),
                           p("Mobile visibility of PsyChild on cell phones is improved when you enable the 'Desktop version' manually on your phone browser."),
                           p(),
-                          h4("1. Reports/Archival"),
+                          h4("Published"),
                           div(dataTableOutput("table_print_PsyChild_Completed"), style = "font-size:80%"),
                           
                           HTML("<br/><br/>"),
-                          h4("2. Current/Ongoing"),
-                          div(dataTableOutput("table_print_PsyChild_Ongoing"), style = "font-size:80%"),
+                          h4("Archival"),
+                          div(dataTableOutput("table_print_PsyChild_Archival"), style = "font-size:80%"),
                           
                           HTML("<br/><br/>"),
-                          h4("3. Discontinued/Uncertain"),
+                          h4("Publication pending"),
+                          div(dataTableOutput("table_print_PsyChild_Pending"), style = "font-size:80%"),
+                          
+                          HTML("<br/><br/>"),
+                          h4("Discontinued/Uncertain"),
                           div(dataTableOutput("table_print_PsyChild_Discontinued"), style = "font-size:80%"),
+                          
+                          HTML("<br/><br/>"),
+                          h4("Current/Ongoing"),
+                          div(dataTableOutput("table_print_PsyChild_Ongoing"), style = "font-size:80%"),
                           
                           h6(HTML(paste0("*", tags$sup("1")," For multicenter-studies, only the main site is listed."))),
                           p(),
@@ -353,7 +362,10 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                            or if they have been conducted in a psychiatric context."))),
                           p(),
                           h6(HTML(paste0("*", tags$sup("3")," Studies with cannabinoids have only been included if the ratio of 
-                           psychoactive cannabinoids vs. non psychoactive cannabinoids has been  higher than 1:20.")))
+                           psychoactive cannabinoids vs. non psychoactive cannabinoids has been  higher than 1:20."))),
+                          p(),
+                          h6(HTML(paste0("*", tags$sup("4")," As Treatment-Resistant Depression (TRD) is not clearly defined, 
+                                         it is labeled as MDD in the indication columns.")))
                  ),
                  
                  
@@ -402,7 +414,10 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                            or if they have been conducted in a psychiatric context."))),
                           p(),
                           h6(HTML(paste0("*", tags$sup("3")," Studies with cannabinoids have only been included if the ratio of 
-                           psychoactive cannabinoids vs. non psychoactive cannabinoids has been  higher than 1:20.")))
+                           psychoactive cannabinoids vs. non psychoactive cannabinoids has been  higher than 1:20."))),
+                          p(),
+                          h6(HTML(paste0("*", tags$sup("4")," As Treatment-Resistant Depression (TRD) is not clearly defined, 
+                                         it is labeled as MDD in the indication columns.")))
                  ),
                  
                  # Compounds --------------------------------------------------------------
@@ -503,7 +518,10 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                            or if they have been conducted in a psychiatric context."))),
                           p(),
                           h6(HTML(paste0("*", tags$sup("3")," Studies with cannabinoids have only been included if the ratio of 
-                           psychoactive cannabinoids vs. non psychoactive cannabinoids has been  higher than 1:20.")))
+                           psychoactive cannabinoids vs. non psychoactive cannabinoids has been  higher than 1:20."))),
+                          p(),
+                          h6(HTML(paste0("*", tags$sup("4")," As Treatment-Resistant Depression (TRD) is not clearly defined, 
+                                         it is labeled as MDD in the indication columns.")))
                  ),
                  
                  tabPanel(span("Publication Map", style="color:#1e9273ff"),
@@ -562,14 +580,14 @@ server <-  function(input, output, session) {
     readData(session)
   }
   # all PsyChild data -------------------------------------------------------
-  # Completed
+  # Published - Completed
   output$table_print_PsyChild_Completed <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
   data_Completed <-  PS.data.print_Class %>%
     # filter(Author %in% Authors_before) %>%
     arrange(Date, `Substance class`) %>%
     distinct(Title, .keep_all = TRUE) %>%
     drop_na(Title) %>%
-    filter(`Status` == "Completed") %>% 
+    filter(`Status` == "Published") %>% 
     select(c(# `Date`,
       `Author`,
       `Location`,
@@ -600,7 +618,10 @@ server <-  function(input, output, session) {
       # Country
     )) %>%
     rename(`Location (*1)` = Location,
-           `Compound (*2, *3)` = `Compound(s)`)
+           `Compound (*2, *3)` = `Compound(s)`,
+           `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+           `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
+
   
   data_Completed},
   
@@ -614,14 +635,14 @@ server <-  function(input, output, session) {
                  buttons = c('copy', 'csv', 'excel')
   ))
   
-  # Ongoing
+  # Current/Ongoing - Ongoing
   output$table_print_PsyChild_Ongoing <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
   data_Ongoing <-  PS.data.print_Class %>%
     # filter(Author %in% Authors_before) %>%
     arrange(Date, `Substance class`) %>%
     distinct(Title, .keep_all = TRUE) %>%
     drop_na(Title) %>%
-    filter(`Status` == "Ongoing") %>% 
+    filter(`Status` == "Current/Ongoing") %>% 
     select(c(# `Date`,
       `Author`,
       `Location`,
@@ -652,7 +673,9 @@ server <-  function(input, output, session) {
       # Country
     )) %>%
     rename(`Location (*1)` = Location,
-           `Compound (*2, *3)` = `Compound(s)`)
+           `Compound (*2, *3)` = `Compound(s)`,
+           `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+           `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
   
   data_Ongoing},
   
@@ -666,7 +689,7 @@ server <-  function(input, output, session) {
                  buttons = c('copy', 'csv', 'excel')
   ))
   
-  # Discontinued
+  # Discontinued/Uncertain - Discontinued
   output$table_print_PsyChild_Discontinued <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
   data_Discontinued <-  PS.data.print_Class %>%
     # filter(Author %in% Authors_before) %>%
@@ -674,7 +697,7 @@ server <-  function(input, output, session) {
     distinct(Title, .keep_all = TRUE) %>%
     drop_na(Title) %>%
     filter(is.na(`Status`) |
-             `Status` %in% c("Discontinued")) %>% 
+             `Status` %in% c("Discontinued/Uncertain")) %>% 
     select(c(# `Date`,
       `Author`,
       `Location`,
@@ -705,7 +728,9 @@ server <-  function(input, output, session) {
       # Country
     )) %>%
     rename(`Location (*1)` = Location,
-           `Compound (*2, *3)` = `Compound(s)`)
+           `Compound (*2, *3)` = `Compound(s)`,
+           `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+           `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
   
   data_Discontinued},
   
@@ -718,6 +743,117 @@ server <-  function(input, output, session) {
                  autoWidth = TRUE,
                  buttons = c('copy', 'csv', 'excel')
   ))
+  
+  # Publication pending - Pending
+  output$table_print_PsyChild_Pending <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
+  data_Pending <-  PS.data.print_Class %>%
+    # filter(Author %in% Authors_before) %>%
+    arrange(Date, `Substance class`) %>%
+    distinct(Title, .keep_all = TRUE) %>%
+    drop_na(Title) %>%
+    filter(is.na(`Status`) |
+             `Status` %in% c("Publication pending")) %>% 
+    select(c(# `Date`,
+      `Author`,
+      `Location`,
+      # `Location photo`,
+      `Title`,
+      `Type`,
+      `Compound(s)`,
+      `Substance class`,
+      `ICD-11 Indication or field of application`,
+      `ICD-11 Indication as Groups or field of application`,
+      # `Psychiatric indication?`,
+      `Adjunct psychotherapy`,
+      # `Adjacent psychotherapy?`,
+      `Subjects`,
+      # `Only minors?`,
+      `Main psychiatric outcomes`,
+      # `Reported side effects/adverse events`,
+      `Side effects (MedDRA)`,
+      `Consent`,
+      `in/out patient`,
+      # `Route of administration`,
+      `Regimen (route of administration, dose, frequency)`,
+      `Concomitant Medications`,
+      `Comment`#,
+      # `comment 1`,
+      # `comment 2`,
+      # `Compound_new_name,
+      # Country
+    )) %>%
+    rename(`Location (*1)` = Location,
+           `Compound (*2, *3)` = `Compound(s)`,
+           `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+           `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
+  
+  data_Pending},
+  
+  extensions = 'Buttons',
+  
+  options = list(pageLength = 1000,
+                 searching = FALSE,
+                 lengthChange = FALSE,
+                 dom = 'tB',
+                 autoWidth = TRUE,
+                 buttons = c('copy', 'csv', 'excel')
+  ))
+  
+  # Archival - Archival
+  output$table_print_PsyChild_Archival <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
+  data_Archival <-  PS.data.print_Class %>%
+    # filter(Author %in% Authors_before) %>%
+    arrange(Date, `Substance class`) %>%
+    distinct(Title, .keep_all = TRUE) %>%
+    drop_na(Title) %>%
+    filter(is.na(`Status`) |
+             `Status` %in% c("Archival")) %>% 
+    select(c(# `Date`,
+      `Author`,
+      `Location`,
+      # `Location photo`,
+      `Title`,
+      `Type`,
+      `Compound(s)`,
+      `Substance class`,
+      `ICD-11 Indication or field of application`,
+      `ICD-11 Indication as Groups or field of application`,
+      # `Psychiatric indication?`,
+      `Adjunct psychotherapy`,
+      # `Adjacent psychotherapy?`,
+      `Subjects`,
+      # `Only minors?`,
+      `Main psychiatric outcomes`,
+      # `Reported side effects/adverse events`,
+      `Side effects (MedDRA)`,
+      `Consent`,
+      `in/out patient`,
+      # `Route of administration`,
+      `Regimen (route of administration, dose, frequency)`,
+      `Concomitant Medications`,
+      `Comment`#,
+      # `comment 1`,
+      # `comment 2`,
+      # `Compound_new_name,
+      # Country
+    )) %>%
+    rename(`Location (*1)` = Location,
+           `Compound (*2, *3)` = `Compound(s)`,
+           `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+           `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
+  
+  data_Archival},
+  
+  extensions = 'Buttons',
+  
+  options = list(pageLength = 1000,
+                 searching = FALSE,
+                 lengthChange = FALSE,
+                 dom = 'tB',
+                 autoWidth = TRUE,
+                 buttons = c('copy', 'csv', 'excel')
+  ))
+  
   
   # # Before
   # output$table_print_PsyChild_reports <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
@@ -928,7 +1064,9 @@ server <-  function(input, output, session) {
       
     )) %>% 
     rename(`Location (*1)` = Location,
-           `Compound (*2, *3)` = `Compound(s)`)
+           `Compound (*2, *3)` = `Compound(s)`,
+           `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+           `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
   
   PS.data.print_Class},
   
@@ -1055,7 +1193,9 @@ server <-  function(input, output, session) {
       # Country
     )) %>% 
     rename(`Location (*1)` = Location,
-           `Compound (*2, *3)` = `Compound(s)`)
+           `Compound (*2, *3)` = `Compound(s)`,
+           `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+           `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
   PS.data.print_Compound},
   
   extensions = 'Buttons',

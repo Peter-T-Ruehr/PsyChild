@@ -325,7 +325,7 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                is responsible for curating new data for PsyChild, while this webpage is written and maintened by 
                <a href='https://twitter.com/Peter_Th_R'  target='_blank'>Peter T. Rühr</a>. Issues can be reported at PsyChild's <a href='https://github.com/Peter-T-Ruehr/PsyChild/issues'  target='_blank'>GitHub page</a>.<br><br>"),
                             HTML("Please cite this website as:<br>
-                                     <em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://ruehr.org/shiny/PsyChild/. doi: <a href='https://zenodo.org/doi/10.5281/zenodo.10020023'  target='_blank'>10.5281/zenodo.10020023</a>.")
+                                     <em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://ruehr.org/PsyChild. doi: <a href='https://zenodo.org/doi/10.5281/zenodo.10020023'  target='_blank'>10.5281/zenodo.10020023</a>.")
                           )
                  ),
                  
@@ -544,7 +544,7 @@ Schlesische Straße 5<br>
 Email: philippruehr@gmail.com</small>"),
                             
                             h4("Preferred mention for citations: "),
-                            HTML("<small><em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://ruehr.org/shiny/PsyChild/. doi: <a href='https://zenodo.org/doi/10.5281/zenodo.10020023'  target='_blank'>10.5281/zenodo.10020023</a>.</small>"),
+                            HTML("<small><em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://ruehr.org/PsyChild. doi: <a href='https://zenodo.org/doi/10.5281/zenodo.10020023'  target='_blank'>10.5281/zenodo.10020023</a>.</small>"),
                             
                             h4("Dispute Resolution"),
                             HTML("<small>The European Commission provides a platform for online dispute resolution (OS): https://ec.europa.eu/consumers/odr. Please find our email in the impressum/legal notice.
@@ -568,7 +568,7 @@ Copyright laws of third parties are respected as long as the contents on these w
                             #   is responsible for curating new data for PsyChild, while this webpage is written and maintened by 
                             #   <a href='https://twitter.com/Peter_Th_R'  target='_blank'>Peter T. Rühr</a>. Issues can be reported at <a href='https://github.com/Peter-T-Ruehr/PsyChild/issues'  target='_blank'>PsyChild's GitHub page</a>."),
                             # HTML("If you use this website, please cite it as:<br>
-                            #                         Rühr, P. & Rühr, P. (<b>2023</b>): <em>PsyChild</em>, accessed yyyy&#92;mm&#92;dd, &lt;http://ruehr.org/shiny/PsyChild/&gt;.<br><br>"),
+                            #                         Rühr, P. & Rühr, P. (<b>2023</b>): <em>PsyChild</em>, accessed yyyy&#92;mm&#92;dd, &lt;http://ruehr.org/PsyChild&gt;.<br><br>"),
                             # HTML('<center><img src="https://live.staticflickr.com/65535/52838364217_569cc496f3_o.jpg" width="35%"></center>')
                           )
                  )

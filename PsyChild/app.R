@@ -586,7 +586,7 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                  ),
                  
                  tabPanel(span("Publication Map", style="color:#1e9273ff"),
-                          plotlyOutput("map_plot")),
+                          plotlyOutput("map_plot", height = "800px")),
                  
                  tabPanel(span("Further Reading", style="color:#1e9273ff"),
                           div(dataTableOutput("table_print_further_reading"), style = "font-size:80%")),

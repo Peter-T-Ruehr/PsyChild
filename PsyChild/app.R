@@ -340,28 +340,29 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                           
                           h4("Published"),
                           div(dataTableOutput("table_print_PsyChild_Completed"), style = "font-size:80%"),
-                          tags$hr(style="border-color: #28BF97;"),
-                          
                           HTML("<br/><br/>"),
+                          
+                          tags$hr(style="border-color: #28BF97;"),
                           h4("Archival"),
                           div(dataTableOutput("table_print_PsyChild_Archival"), style = "font-size:80%"),
-                          tags$hr(style="border-color: #28BF97;"),
-                          
                           HTML("<br/><br/>"),
+                          
+                          tags$hr(style="border-color: #28BF97;"),
                           h4("Publication pending"),
                           div(dataTableOutput("table_print_PsyChild_Pending"), style = "font-size:80%"),
-                          tags$hr(style="border-color: #28BF97;"),
-                          
                           HTML("<br/><br/>"),
+                          
+                          tags$hr(style="border-color: #28BF97;"),
                           h4("Discontinued/Uncertain"),
                           div(dataTableOutput("table_print_PsyChild_Discontinued"), style = "font-size:80%"),
-                          tags$hr(style="border-color: #28BF97;"),
-                          
                           HTML("<br/><br/>"),
+                          
+                          tags$hr(style="border-color: #28BF97;"),
                           h4("Current/Ongoing"),
                           div(dataTableOutput("table_print_PsyChild_Ongoing"), style = "font-size:80%"),
-                          tags$hr(style="border-color: #28BF97;"),
+                          HTML("<br/><br/>"),
                           
+                          tags$hr(style="border-color: #28BF97;"),
                           h6(HTML(paste0("*", tags$sup("1")," For multicenter-studies, only the main site is listed."))),
                           p(),
                           h6(HTML(paste0("*", tags$sup("2")," Due to the large number of available studies with ketamine and ketofol, 
@@ -412,8 +413,34 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                           HTML("<strong>The underlying data of the above plot.</strong>"),
                           p("Download buttons are provided below (clipboard, csv, or Excel)."),
                           
-                          div(dataTableOutput("table_print_Class"), style = "font-size:80%"),
+                          HTML("<br/><br/>"),
+                          tags$hr(style="border-color: #28BF97;"),
                           
+                          h4("Published"),
+                          div(dataTableOutput("table_print_Class_Completed"), style = "font-size:80%"),
+                          HTML("<br/><br/>"),
+                          
+                          tags$hr(style="border-color: #28BF97;"),
+                          h4("Archival"),
+                          div(dataTableOutput("table_print_Class_Archival"), style = "font-size:80%"),
+                          HTML("<br/><br/>"),
+                          
+                          tags$hr(style="border-color: #28BF97;"),
+                          h4("Publication pending"),
+                          div(dataTableOutput("table_print_Class_Pending"), style = "font-size:80%"),
+                          HTML("<br/><br/>"),
+                          
+                          tags$hr(style="border-color: #28BF97;"),
+                          h4("Discontinued/Uncertain"),
+                          div(dataTableOutput("table_print_Class_Discontinued"), style = "font-size:80%"),
+                          HTML("<br/><br/>"),
+                          
+                          tags$hr(style="border-color: #28BF97;"),
+                          h4("Current/Ongoing"),
+                          div(dataTableOutput("table_print_Class_Ongoing"), style = "font-size:80%"),
+                          HTML("<br/><br/>"),
+                          
+                          tags$hr(style="border-color: #28BF97;"),
                           h6(HTML(paste0("*", tags$sup("1")," For multicenter-studies, only the main site is listed."))),
                           p(),
                           h6(HTML(paste0("*", tags$sup("2")," Due to the large number of available studies with ketamine and ketofol, 
@@ -516,8 +543,38 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                           HTML("<strong>The underlying data of the above plot.</strong>"),
                           p("Download buttons are provided below (clipboard, csv, or Excel)."),
                           
-                          div(dataTableOutput("table_print_Compound"), style = "font-size:80%"),
+                          # div(dataTableOutput("table_print_Compound"), style = "font-size:80%"),
                           
+                          
+                          HTML("<br/><br/>"),
+                          tags$hr(style="border-color: #28BF97;"),
+                          
+                          h4("Published"),
+                          div(dataTableOutput("table_print_Compound_Completed"), style = "font-size:80%"),
+                          HTML("<br/><br/>"),
+                          
+                          tags$hr(style="border-color: #28BF97;"),
+                          h4("Archival"),
+                          div(dataTableOutput("table_print_Compound_Archival"), style = "font-size:80%"),
+                          HTML("<br/><br/>"),
+                          
+                          tags$hr(style="border-color: #28BF97;"),
+                          h4("Publication pending"),
+                          div(dataTableOutput("table_print_Compound_Pending"), style = "font-size:80%"),
+                          HTML("<br/><br/>"),
+                          
+                          tags$hr(style="border-color: #28BF97;"),
+                          h4("Discontinued/Uncertain"),
+                          div(dataTableOutput("table_print_Compound_Discontinued"), style = "font-size:80%"),
+                          HTML("<br/><br/>"),
+                          
+                          tags$hr(style="border-color: #28BF97;"),
+                          h4("Current/Ongoing"),
+                          div(dataTableOutput("table_print_Compound_Ongoing"), style = "font-size:80%"),
+                          HTML("<br/><br/>"),
+                          
+                          
+                          tags$hr(style="border-color: #28BF97;"),
                           h6(HTML(paste0("*", tags$sup("1")," For multicenter-studies, only the main site is listed."))),
                           p(),
                           h6(HTML(paste0("*", tags$sup("2")," Due to the large number of available studies with ketamine and ketofol, 
@@ -629,7 +686,7 @@ server <-  function(input, output, session) {
            `Compound (*2, *3)` = `Compound(s)`,
            `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
            `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
-
+  
   
   data_Completed},
   
@@ -1014,12 +1071,395 @@ server <-  function(input, output, session) {
                              range = list(0, max(PS.data$cumul_years_class))))
   })
   
-  output$table_print_Class <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
+  
+  # # class print outputs
+  # output$table_print_Class <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
+  # 
+  # PS.data.print_Class <-  PS.data.print_Class %>% 
+  #   arrange(Date) %>% 
+  #   filter(Date >= input$range[1],
+  #          Date <= input$range[2])
+  # 
+  # # select input classes
+  # if("all" %in% input$Class == FALSE){
+  #   if(length(input$Class) > 1){
+  #     PS.data.print_Class <-  PS.data.print_Class %>%
+  #       filter(`Substance class` %in% unlist(strsplit(input$Class, split = ", ")))
+  #   } else if(length(input$Class) == 1){
+  #     PS.data.print_Class <-  PS.data.print_Class %>%
+  #       filter(`Substance class` %in% unlist(input$Class))
+  #   } else if(length(input$Class) == 0){
+  #     PS.data.print_Class <-  PS.data.print_Class %>%
+  #       filter(`Substance class` %in% "Nothing selected!")
+  #   }
+  # } else {
+  #   PS.data.print_Class <-  PS.data.print_Class
+  # }
+  # 
+  # PS.data.print_Class <-  PS.data.print_Class %>% 
+  #   arrange(Date, `Substance class`) %>% 
+  #   distinct(Title, .keep_all = TRUE) %>% 
+  #   drop_na(Title) %>% 
+  #   select(c(# `Date`,
+  #     `Author`,
+  #     `Location`,
+  #     # `Location photo`,
+  #     `Title`,
+  #     `Type`,
+  #     `Compound(s)`,
+  #     `Substance class`,
+  #     `ICD-11 Indication or field of application`,
+  #     `ICD-11 Indication as Groups or field of application`,
+  #     # `Psychiatric indication?`,
+  #     `Adjunct psychotherapy`,
+  #     # `Adjacent psychotherapy?`,
+  #     `Subjects`,
+  #     # `Only minors?`,
+  #     `Main psychiatric outcomes`,
+  #     # `Reported side effects/adverse events`,
+  #     `Side effects (MedDRA)`,
+  #     `Consent`,
+  #     `in/out patient`,
+  #     # `Route of administration`,
+  #     `Regimen (route of administration, dose, frequency)`,
+  #     `Concomitant Medications`,
+  #     `Comment`#,
+  #     # `comment 1`,
+  #     # `comment 2`,
+  #     # `Compound_new_name,
+  #     # Country
+  #     
+  #   )) %>% 
+  #   rename(`Location (*1)` = Location,
+  #          `Compound (*2, *3)` = `Compound(s)`,
+  #          `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+  #          `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
+  # 
+  # PS.data.print_Class},
+  # 
+  # extensions = 'Buttons',
+  # 
+  # options = list(pageLength = 1000,
+  #                searching = FALSE,
+  #                lengthChange = FALSE,
+  #                dom = 'tB',
+  #                autoWidth = TRUE,
+  #                buttons = c('copy', 'csv', 'excel')
+  # ))
+  
+  # class print outputs: Completed
+  output$table_print_Class_Completed <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
   
   PS.data.print_Class <-  PS.data.print_Class %>% 
     arrange(Date) %>% 
     filter(Date >= input$range[1],
-           Date <= input$range[2])
+           Date <= input$range[2]) %>%
+    filter(`Status` == "Published")
+  
+  # select input classes
+  if("all" %in% input$Class == FALSE){
+    if(length(input$Class) > 1){
+      PS.data.print_Class <-  PS.data.print_Class %>%
+        filter(`Substance class` %in% unlist(strsplit(input$Class, split = ", ")))
+    } else if(length(input$Class) == 1){
+      PS.data.print_Class <-  PS.data.print_Class %>%
+        filter(`Substance class` %in% unlist(input$Class))
+    } else if(length(input$Class) == 0){
+      PS.data.print_Class <-  PS.data.print_Class %>%
+        filter(`Substance class` %in% "Nothing selected!")
+    }
+  } else {
+    PS.data.print_Class <-  PS.data.print_Class
+  }
+  
+  PS.data.print_Class <-  PS.data.print_Class %>% 
+    arrange(Date, `Substance class`) %>% 
+    distinct(Title, .keep_all = TRUE) %>% 
+    drop_na(Title) %>% 
+    select(c(# `Date`,
+      `Author`,
+      `Location`,
+      # `Location photo`,
+      `Title`,
+      `Type`,
+      `Compound(s)`,
+      `Substance class`,
+      `ICD-11 Indication or field of application`,
+      `ICD-11 Indication as Groups or field of application`,
+      # `Psychiatric indication?`,
+      `Adjunct psychotherapy`,
+      # `Adjacent psychotherapy?`,
+      `Subjects`,
+      # `Only minors?`,
+      `Main psychiatric outcomes`,
+      # `Reported side effects/adverse events`,
+      `Side effects (MedDRA)`,
+      `Consent`,
+      `in/out patient`,
+      # `Route of administration`,
+      `Regimen (route of administration, dose, frequency)`,
+      `Concomitant Medications`,
+      `Comment`#,
+      # `comment 1`,
+      # `comment 2`,
+      # `Compound_new_name,
+      # Country
+      
+    )) %>% 
+    rename(`Location (*1)` = Location,
+           `Compound (*2, *3)` = `Compound(s)`,
+           `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+           `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
+  
+  PS.data.print_Class},
+  
+  extensions = 'Buttons',
+  
+  options = list(pageLength = 1000,
+                 searching = FALSE,
+                 lengthChange = FALSE,
+                 dom = 'tB',
+                 autoWidth = TRUE,
+                 buttons = c('copy', 'csv', 'excel')
+  ))
+  
+  
+  # class print outputs: Archival
+  output$table_print_Class_Archival <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
+  
+  PS.data.print_Class <-  PS.data.print_Class %>% 
+    arrange(Date) %>% 
+    filter(Date >= input$range[1],
+           Date <= input$range[2]) %>%
+    filter(`Status` == "Archival")
+  
+  # select input classes
+  if("all" %in% input$Class == FALSE){
+    if(length(input$Class) > 1){
+      PS.data.print_Class <-  PS.data.print_Class %>%
+        filter(`Substance class` %in% unlist(strsplit(input$Class, split = ", ")))
+    } else if(length(input$Class) == 1){
+      PS.data.print_Class <-  PS.data.print_Class %>%
+        filter(`Substance class` %in% unlist(input$Class))
+    } else if(length(input$Class) == 0){
+      PS.data.print_Class <-  PS.data.print_Class %>%
+        filter(`Substance class` %in% "Nothing selected!")
+    }
+  } else {
+    PS.data.print_Class <-  PS.data.print_Class
+  }
+  
+  PS.data.print_Class <-  PS.data.print_Class %>% 
+    arrange(Date, `Substance class`) %>% 
+    distinct(Title, .keep_all = TRUE) %>% 
+    drop_na(Title) %>% 
+    select(c(# `Date`,
+      `Author`,
+      `Location`,
+      # `Location photo`,
+      `Title`,
+      `Type`,
+      `Compound(s)`,
+      `Substance class`,
+      `ICD-11 Indication or field of application`,
+      `ICD-11 Indication as Groups or field of application`,
+      # `Psychiatric indication?`,
+      `Adjunct psychotherapy`,
+      # `Adjacent psychotherapy?`,
+      `Subjects`,
+      # `Only minors?`,
+      `Main psychiatric outcomes`,
+      # `Reported side effects/adverse events`,
+      `Side effects (MedDRA)`,
+      `Consent`,
+      `in/out patient`,
+      # `Route of administration`,
+      `Regimen (route of administration, dose, frequency)`,
+      `Concomitant Medications`,
+      `Comment`#,
+      # `comment 1`,
+      # `comment 2`,
+      # `Compound_new_name,
+      # Country
+      
+    )) %>% 
+    rename(`Location (*1)` = Location,
+           `Compound (*2, *3)` = `Compound(s)`,
+           `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+           `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
+  
+  PS.data.print_Class},
+  
+  extensions = 'Buttons',
+  
+  options = list(pageLength = 1000,
+                 searching = FALSE,
+                 lengthChange = FALSE,
+                 dom = 'tB',
+                 autoWidth = TRUE,
+                 buttons = c('copy', 'csv', 'excel')
+  ))
+  
+  # class print outputs: Pending
+  output$table_print_Class_Pending <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
+  
+  PS.data.print_Class <-  PS.data.print_Class %>% 
+    arrange(Date) %>% 
+    filter(Date >= input$range[1],
+           Date <= input$range[2]) %>%
+    filter(`Status` == "Pending")
+  
+  # select input classes
+  if("all" %in% input$Class == FALSE){
+    if(length(input$Class) > 1){
+      PS.data.print_Class <-  PS.data.print_Class %>%
+        filter(`Substance class` %in% unlist(strsplit(input$Class, split = ", ")))
+    } else if(length(input$Class) == 1){
+      PS.data.print_Class <-  PS.data.print_Class %>%
+        filter(`Substance class` %in% unlist(input$Class))
+    } else if(length(input$Class) == 0){
+      PS.data.print_Class <-  PS.data.print_Class %>%
+        filter(`Substance class` %in% "Nothing selected!")
+    }
+  } else {
+    PS.data.print_Class <-  PS.data.print_Class
+  }
+  
+  PS.data.print_Class <-  PS.data.print_Class %>% 
+    arrange(Date, `Substance class`) %>% 
+    distinct(Title, .keep_all = TRUE) %>% 
+    drop_na(Title) %>% 
+    select(c(# `Date`,
+      `Author`,
+      `Location`,
+      # `Location photo`,
+      `Title`,
+      `Type`,
+      `Compound(s)`,
+      `Substance class`,
+      `ICD-11 Indication or field of application`,
+      `ICD-11 Indication as Groups or field of application`,
+      # `Psychiatric indication?`,
+      `Adjunct psychotherapy`,
+      # `Adjacent psychotherapy?`,
+      `Subjects`,
+      # `Only minors?`,
+      `Main psychiatric outcomes`,
+      # `Reported side effects/adverse events`,
+      `Side effects (MedDRA)`,
+      `Consent`,
+      `in/out patient`,
+      # `Route of administration`,
+      `Regimen (route of administration, dose, frequency)`,
+      `Concomitant Medications`,
+      `Comment`#,
+      # `comment 1`,
+      # `comment 2`,
+      # `Compound_new_name,
+      # Country
+      
+    )) %>% 
+    rename(`Location (*1)` = Location,
+           `Compound (*2, *3)` = `Compound(s)`,
+           `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+           `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
+  
+  PS.data.print_Class},
+  
+  extensions = 'Buttons',
+  
+  options = list(pageLength = 1000,
+                 searching = FALSE,
+                 lengthChange = FALSE,
+                 dom = 'tB',
+                 autoWidth = TRUE,
+                 buttons = c('copy', 'csv', 'excel')
+  ))
+  
+  # class print outputs: Discontinued
+  output$table_print_Class_Discontinued <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
+  
+  PS.data.print_Class <-  PS.data.print_Class %>% 
+    arrange(Date) %>% 
+    filter(Date >= input$range[1],
+           Date <= input$range[2]) %>%
+    filter(`Status` == "Discontinued/Uncertain")
+  
+  # select input classes
+  if("all" %in% input$Class == FALSE){
+    if(length(input$Class) > 1){
+      PS.data.print_Class <-  PS.data.print_Class %>%
+        filter(`Substance class` %in% unlist(strsplit(input$Class, split = ", ")))
+    } else if(length(input$Class) == 1){
+      PS.data.print_Class <-  PS.data.print_Class %>%
+        filter(`Substance class` %in% unlist(input$Class))
+    } else if(length(input$Class) == 0){
+      PS.data.print_Class <-  PS.data.print_Class %>%
+        filter(`Substance class` %in% "Nothing selected!")
+    }
+  } else {
+    PS.data.print_Class <-  PS.data.print_Class
+  }
+  
+  PS.data.print_Class <-  PS.data.print_Class %>% 
+    arrange(Date, `Substance class`) %>% 
+    distinct(Title, .keep_all = TRUE) %>% 
+    drop_na(Title) %>% 
+    select(c(# `Date`,
+      `Author`,
+      `Location`,
+      # `Location photo`,
+      `Title`,
+      `Type`,
+      `Compound(s)`,
+      `Substance class`,
+      `ICD-11 Indication or field of application`,
+      `ICD-11 Indication as Groups or field of application`,
+      # `Psychiatric indication?`,
+      `Adjunct psychotherapy`,
+      # `Adjacent psychotherapy?`,
+      `Subjects`,
+      # `Only minors?`,
+      `Main psychiatric outcomes`,
+      # `Reported side effects/adverse events`,
+      `Side effects (MedDRA)`,
+      `Consent`,
+      `in/out patient`,
+      # `Route of administration`,
+      `Regimen (route of administration, dose, frequency)`,
+      `Concomitant Medications`,
+      `Comment`#,
+      # `comment 1`,
+      # `comment 2`,
+      # `Compound_new_name,
+      # Country
+      
+    )) %>% 
+    rename(`Location (*1)` = Location,
+           `Compound (*2, *3)` = `Compound(s)`,
+           `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+           `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
+  
+  PS.data.print_Class},
+  
+  extensions = 'Buttons',
+  
+  options = list(pageLength = 1000,
+                 searching = FALSE,
+                 lengthChange = FALSE,
+                 dom = 'tB',
+                 autoWidth = TRUE,
+                 buttons = c('copy', 'csv', 'excel')
+  ))
+  
+  # class print outputs: "Current/Ongoing"
+  output$table_print_Class_Ongoing <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
+  
+  PS.data.print_Class <-  PS.data.print_Class %>% 
+    arrange(Date) %>% 
+    filter(Date >= input$range[1],
+           Date <= input$range[2]) %>% 
+    filter(`Status` == "Current/Ongoing")
   
   # select input classes
   if("all" %in% input$Class == FALSE){
@@ -1147,11 +1587,366 @@ server <-  function(input, output, session) {
                                range = list(0, max(PS.data.compounds$cumul_years_compound))))
   })
   
-  output$table_print_Compound <-  renderDataTable({df <-  reactiveVal(PS.data.print_Compound)
+  # output$table_print_Compound <-  renderDataTable({df <-  reactiveVal(PS.data.print_Compound)
+  # PS.data.print_Compound  <-  PS.data.compounds %>%
+  #   arrange(Date) %>%
+  #   filter(Date >= input$range_compounds[1],
+  #          Date <= input$range_compounds[2])
+  # 
+  # if("all" %in% Compounds() == FALSE){
+  #   # i=2
+  #   tmp <-  NULL
+  #   for(i in 1:length(Compounds())){
+  #     tmp <-  rbind(tmp, PS.data.print_Compound %>%
+  #                     filter(Compound_new_name %in% Compounds()[i]))
+  #   }
+  #   PS.data.print_Compound  <-  tmp
+  #   rm(tmp)
+  # } else {
+  #   PS.data.print_Compound  <-  PS.data.print_Compound
+  # }
+  # 
+  # PS.data.print_Compound  <-  PS.data.print_Compound %>% 
+  #   ungroup() %>% 
+  #   arrange(Date, `Compound(s)`) %>% 
+  #   distinct(Title, .keep_all = TRUE) %>% 
+  #   drop_na(Title) %>% 
+  #   select(c(# `Date`,
+  #     `Author`,
+  #     `Location`,
+  #     # `Location photo`,
+  #     `Title`,
+  #     `Type`,
+  #     `Compound(s)`,
+  #     `Substance class`,
+  #     `ICD-11 Indication or field of application`,
+  #     `ICD-11 Indication as Groups or field of application`,
+  #     # `Psychiatric indication?`,
+  #     `Adjunct psychotherapy`,
+  #     # `Adjacent psychotherapy?`,
+  #     `Subjects`,
+  #     # `Only minors?`,
+  #     `Main psychiatric outcomes`,
+  #     # `Reported side effects/adverse events`,
+  #     `Side effects (MedDRA)`,
+  #     `Consent`,
+  #     `in/out patient`,
+  #     # `Route of administration`,
+  #     `Regimen (route of administration, dose, frequency)`,
+  #     `Concomitant Medications`,
+  #     `Comment`#,
+  #     # `comment 1`,
+  #     # `comment 2`,
+  #     # `Compound_new_name,
+  #     # Country
+  #   )) %>% 
+  #   rename(`Location (*1)` = Location,
+  #          `Compound (*2, *3)` = `Compound(s)`,
+  #          `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+  #          `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
+  # PS.data.print_Compound},
+  # 
+  # extensions = 'Buttons',
+  # 
+  # options = list(pageLength = 1000,
+  #                searching = FALSE,
+  #                lengthChange = FALSE,
+  #                dom = 'tB',
+  #                autoWidth = TRUE,
+  #                buttons = c('copy', 'csv', 'excel')
+  # ))
+  
+  # Published: Completed
+  output$table_print_Compound_Completed <-  renderDataTable({df <-  reactiveVal(PS.data.print_Compound)
   PS.data.print_Compound  <-  PS.data.compounds %>%
     arrange(Date) %>%
     filter(Date >= input$range_compounds[1],
-           Date <= input$range_compounds[2])
+           Date <= input$range_compounds[2]) %>% 
+    filter(Status == "Published")
+  
+  if("all" %in% Compounds() == FALSE){
+    # i=2
+    tmp <-  NULL
+    for(i in 1:length(Compounds())){
+      tmp <-  rbind(tmp, PS.data.print_Compound %>%
+                      filter(Compound_new_name %in% Compounds()[i]))
+    }
+    PS.data.print_Compound  <-  tmp
+    rm(tmp)
+  } else {
+    PS.data.print_Compound  <-  PS.data.print_Compound
+  }
+  
+  PS.data.print_Compound  <-  PS.data.print_Compound %>% 
+    ungroup() %>% 
+    arrange(Date, `Compound(s)`) %>% 
+    distinct(Title, .keep_all = TRUE) %>% 
+    drop_na(Title) %>% 
+    select(c(# `Date`,
+      `Author`,
+      `Location`,
+      # `Location photo`,
+      `Title`,
+      `Type`,
+      `Compound(s)`,
+      `Substance class`,
+      `ICD-11 Indication or field of application`,
+      `ICD-11 Indication as Groups or field of application`,
+      # `Psychiatric indication?`,
+      `Adjunct psychotherapy`,
+      # `Adjacent psychotherapy?`,
+      `Subjects`,
+      # `Only minors?`,
+      `Main psychiatric outcomes`,
+      # `Reported side effects/adverse events`,
+      `Side effects (MedDRA)`,
+      `Consent`,
+      `in/out patient`,
+      # `Route of administration`,
+      `Regimen (route of administration, dose, frequency)`,
+      `Concomitant Medications`,
+      `Comment`#,
+      # `comment 1`,
+      # `comment 2`,
+      # `Compound_new_name,
+      # Country
+    )) %>% 
+    rename(`Location (*1)` = Location,
+           `Compound (*2, *3)` = `Compound(s)`,
+           `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+           `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
+  PS.data.print_Compound},
+  
+  extensions = 'Buttons',
+  
+  options = list(pageLength = 1000,
+                 searching = FALSE,
+                 lengthChange = FALSE,
+                 dom = 'tB',
+                 autoWidth = TRUE,
+                 buttons = c('copy', 'csv', 'excel')
+  ))
+  
+  # Archival: Archival
+  output$table_print_Compound_Archival <-  renderDataTable({df <-  reactiveVal(PS.data.print_Compound)
+  PS.data.print_Compound  <-  PS.data.compounds %>%
+    arrange(Date) %>%
+    filter(Date >= input$range_compounds[1],
+           Date <= input$range_compounds[2]) %>% 
+    filter(Status == "Archival")
+  
+  if("all" %in% Compounds() == FALSE){
+    # i=2
+    tmp <-  NULL
+    for(i in 1:length(Compounds())){
+      tmp <-  rbind(tmp, PS.data.print_Compound %>%
+                      filter(Compound_new_name %in% Compounds()[i]))
+    }
+    PS.data.print_Compound  <-  tmp
+    rm(tmp)
+  } else {
+    PS.data.print_Compound  <-  PS.data.print_Compound
+  }
+  
+  PS.data.print_Compound  <-  PS.data.print_Compound %>% 
+    ungroup() %>% 
+    arrange(Date, `Compound(s)`) %>% 
+    distinct(Title, .keep_all = TRUE) %>% 
+    drop_na(Title) %>% 
+    select(c(# `Date`,
+      `Author`,
+      `Location`,
+      # `Location photo`,
+      `Title`,
+      `Type`,
+      `Compound(s)`,
+      `Substance class`,
+      `ICD-11 Indication or field of application`,
+      `ICD-11 Indication as Groups or field of application`,
+      # `Psychiatric indication?`,
+      `Adjunct psychotherapy`,
+      # `Adjacent psychotherapy?`,
+      `Subjects`,
+      # `Only minors?`,
+      `Main psychiatric outcomes`,
+      # `Reported side effects/adverse events`,
+      `Side effects (MedDRA)`,
+      `Consent`,
+      `in/out patient`,
+      # `Route of administration`,
+      `Regimen (route of administration, dose, frequency)`,
+      `Concomitant Medications`,
+      `Comment`#,
+      # `comment 1`,
+      # `comment 2`,
+      # `Compound_new_name,
+      # Country
+    )) %>% 
+    rename(`Location (*1)` = Location,
+           `Compound (*2, *3)` = `Compound(s)`,
+           `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+           `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
+  PS.data.print_Compound},
+  
+  extensions = 'Buttons',
+  
+  options = list(pageLength = 1000,
+                 searching = FALSE,
+                 lengthChange = FALSE,
+                 dom = 'tB',
+                 autoWidth = TRUE,
+                 buttons = c('copy', 'csv', 'excel')
+  ))
+  
+  # Pending: Pending
+  output$table_print_Compound_Pending <-  renderDataTable({df <-  reactiveVal(PS.data.print_Compound)
+  PS.data.print_Compound  <-  PS.data.compounds %>%
+    arrange(Date) %>%
+    filter(Date >= input$range_compounds[1],
+           Date <= input$range_compounds[2]) %>% 
+    filter(Status == "Pending")
+  
+  if("all" %in% Compounds() == FALSE){
+    # i=2
+    tmp <-  NULL
+    for(i in 1:length(Compounds())){
+      tmp <-  rbind(tmp, PS.data.print_Compound %>%
+                      filter(Compound_new_name %in% Compounds()[i]))
+    }
+    PS.data.print_Compound  <-  tmp
+    rm(tmp)
+  } else {
+    PS.data.print_Compound  <-  PS.data.print_Compound
+  }
+  
+  PS.data.print_Compound  <-  PS.data.print_Compound %>% 
+    ungroup() %>% 
+    arrange(Date, `Compound(s)`) %>% 
+    distinct(Title, .keep_all = TRUE) %>% 
+    drop_na(Title) %>% 
+    select(c(# `Date`,
+      `Author`,
+      `Location`,
+      # `Location photo`,
+      `Title`,
+      `Type`,
+      `Compound(s)`,
+      `Substance class`,
+      `ICD-11 Indication or field of application`,
+      `ICD-11 Indication as Groups or field of application`,
+      # `Psychiatric indication?`,
+      `Adjunct psychotherapy`,
+      # `Adjacent psychotherapy?`,
+      `Subjects`,
+      # `Only minors?`,
+      `Main psychiatric outcomes`,
+      # `Reported side effects/adverse events`,
+      `Side effects (MedDRA)`,
+      `Consent`,
+      `in/out patient`,
+      # `Route of administration`,
+      `Regimen (route of administration, dose, frequency)`,
+      `Concomitant Medications`,
+      `Comment`#,
+      # `comment 1`,
+      # `comment 2`,
+      # `Compound_new_name,
+      # Country
+    )) %>% 
+    rename(`Location (*1)` = Location,
+           `Compound (*2, *3)` = `Compound(s)`,
+           `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+           `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
+  PS.data.print_Compound},
+  
+  extensions = 'Buttons',
+  
+  options = list(pageLength = 1000,
+                 searching = FALSE,
+                 lengthChange = FALSE,
+                 dom = 'tB',
+                 autoWidth = TRUE,
+                 buttons = c('copy', 'csv', 'excel')
+  ))
+  
+  # Discontinued: Discontinued/Uncertain
+  output$table_print_Compound_Discontinued <-  renderDataTable({df <-  reactiveVal(PS.data.print_Compound)
+  PS.data.print_Compound  <-  PS.data.compounds %>%
+    arrange(Date) %>%
+    filter(Date >= input$range_compounds[1],
+           Date <= input$range_compounds[2]) %>% 
+    filter(Status == "Discontinued/Uncertain")
+  
+  if("all" %in% Compounds() == FALSE){
+    # i=2
+    tmp <-  NULL
+    for(i in 1:length(Compounds())){
+      tmp <-  rbind(tmp, PS.data.print_Compound %>%
+                      filter(Compound_new_name %in% Compounds()[i]))
+    }
+    PS.data.print_Compound  <-  tmp
+    rm(tmp)
+  } else {
+    PS.data.print_Compound  <-  PS.data.print_Compound
+  }
+  
+  PS.data.print_Compound  <-  PS.data.print_Compound %>% 
+    ungroup() %>% 
+    arrange(Date, `Compound(s)`) %>% 
+    distinct(Title, .keep_all = TRUE) %>% 
+    drop_na(Title) %>% 
+    select(c(# `Date`,
+      `Author`,
+      `Location`,
+      # `Location photo`,
+      `Title`,
+      `Type`,
+      `Compound(s)`,
+      `Substance class`,
+      `ICD-11 Indication or field of application`,
+      `ICD-11 Indication as Groups or field of application`,
+      # `Psychiatric indication?`,
+      `Adjunct psychotherapy`,
+      # `Adjacent psychotherapy?`,
+      `Subjects`,
+      # `Only minors?`,
+      `Main psychiatric outcomes`,
+      # `Reported side effects/adverse events`,
+      `Side effects (MedDRA)`,
+      `Consent`,
+      `in/out patient`,
+      # `Route of administration`,
+      `Regimen (route of administration, dose, frequency)`,
+      `Concomitant Medications`,
+      `Comment`#,
+      # `comment 1`,
+      # `comment 2`,
+      # `Compound_new_name,
+      # Country
+    )) %>% 
+    rename(`Location (*1)` = Location,
+           `Compound (*2, *3)` = `Compound(s)`,
+           `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
+           `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
+  PS.data.print_Compound},
+  
+  extensions = 'Buttons',
+  
+  options = list(pageLength = 1000,
+                 searching = FALSE,
+                 lengthChange = FALSE,
+                 dom = 'tB',
+                 autoWidth = TRUE,
+                 buttons = c('copy', 'csv', 'excel')
+  ))
+  
+  # Ongoing: Ongoing
+  output$table_print_Compound_Ongoing <-  renderDataTable({df <-  reactiveVal(PS.data.print_Compound)
+  PS.data.print_Compound  <-  PS.data.compounds %>%
+    arrange(Date) %>%
+    filter(Date >= input$range_compounds[1],
+           Date <= input$range_compounds[2]) %>% 
+    filter(Status == "Ongoing")
   
   if("all" %in% Compounds() == FALSE){
     # i=2

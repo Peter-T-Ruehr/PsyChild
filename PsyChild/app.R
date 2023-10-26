@@ -915,109 +915,6 @@ server <-  function(input, output, session) {
                  buttons = c('copy', 'csv', 'excel')
   ))
   
-  
-  # # Before
-  # output$table_print_PsyChild_reports <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
-  # PS.data.print_PsyChild_before <-  PS.data.print_Class %>%
-  #   filter(Author %in% Authors_before) %>%
-  #   arrange(Date, `Substance class`) %>%
-  #   distinct(Title, .keep_all = TRUE) %>%
-  #   drop_na(Title) %>%
-  #   select(c(# `Date`,
-  #     `Author`,
-  #     `Location`,
-  #     # `Location photo`,
-  #     `Title`,
-  #     `Type`,
-  #     `Compound(s)`,
-  #     `Substance class`,
-  #     `ICD-11 Indication or field of application`,
-  #     `ICD-11 Indication as Groups or field of application`,
-  #     # `Psychiatric indication?`,
-  #     `Adjunct psychotherapy`,
-  #     # `Adjacent psychotherapy?`,
-  #     `Subjects`,
-  #     # `Only minors?`,
-  #     `Main psychiatric outcomes`,
-  #     # `Reported side effects/adverse events`,
-  #     `Side effects (MedDRA)`,
-  #     `Consent`,
-  #     `in/out patient`,
-  #     # `Route of administration`,
-  #     `Regimen (route of administration, dose, frequency)`,
-  #     `Concomitant Medications`,
-  #     `Comment`#,
-  #     # `comment 1`,
-  #     # `comment 2`,
-  #     # `Compound_new_name,
-  #     # Country
-  #   )) %>%
-  #   rename(`Location (*1)` = Location,
-  #          `Compound (*2, *3)` = `Compound(s)`)
-  # 
-  # PS.data.print_PsyChild_before},
-  # 
-  # extensions = 'Buttons',
-  # 
-  # options = list(pageLength = 1000,
-  #                searching = FALSE,
-  #                lengthChange = FALSE,
-  #                dom = 'tB',
-  #                autoWidth = TRUE,
-  #                buttons = c('copy', 'csv', 'excel')
-  # ))
-  # 
-  # # After
-  # output$table_print_PsyChild_after <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
-  # PS.data.print_PsyChild_after <-  PS.data.print_Class %>% 
-  #   filter(Author %in% Authors_after) %>% 
-  #   arrange(Date, `Substance class`) %>% 
-  #   distinct(Title, .keep_all = TRUE) %>% 
-  #   drop_na(Title) %>% 
-  #   select(c(# `Date`,
-  #     `Author`,
-  #     `Location`,
-  #     # `Location photo`, 
-  #     `Title`,
-  #     `Type`,
-  #     `Compound(s)`,
-  #     `Substance class`,
-  #     `ICD-11 Indication or field of application`,
-  #     `ICD-11 Indication as Groups or field of application`,
-  #     # `Psychiatric indication?`,
-  #     `Adjunct psychotherapy`,
-  #     # `Adjacent psychotherapy?`,
-  #     `Subjects`,
-  #     # `Only minors?`,
-  #     `Main psychiatric outcomes`,
-  #     # `Reported side effects/adverse events`,
-  #     `Side effects (MedDRA)`,
-  #     `Consent`,
-  #     `in/out patient`,
-  #     # `Route of administration`,
-  #     `Regimen (route of administration, dose, frequency)`,
-  #     `Concomitant Medications`,
-  #     `Comment`#,
-  #     # `comment 1`,
-  #     # `comment 2`,
-  #     # `Compound_new_name,
-  #     # Country
-  #   )) %>% 
-  #   rename(`Location (*1)` = Location,
-  #          `Compound (*2, *3)` = `Compound(s)`)
-  # 
-  # PS.data.print_PsyChild_after},
-  # 
-  # extensions = 'Buttons',
-  # 
-  # options = list(pageLength = 1000,
-  #                searching = FALSE,
-  #                lengthChange = FALSE,
-  #                dom = 'tB',
-  #                autoWidth = TRUE,
-  #                buttons = c('copy', 'csv', 'excel')
-  # ))
-  
   # Class -------------------------------------------------------------------  
   
   output$class_selected <-renderText({
@@ -1066,82 +963,6 @@ server <-  function(input, output, session) {
                              title = 'Cumulative Publications',
                              range = list(0, max(PS.data$cumul_years_class))))
   })
-  
-  
-  # # class print outputs
-  # output$table_print_Class <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
-  # 
-  # PS.data.print_Class <-  PS.data.print_Class %>% 
-  #   arrange(Date) %>% 
-  #   filter(Date >= input$range[1],
-  #          Date <= input$range[2])
-  # 
-  # # select input classes
-  # if("all" %in% input$Class == FALSE){
-  #   if(length(input$Class) > 1){
-  #     PS.data.print_Class <-  PS.data.print_Class %>%
-  #       filter(`Substance class` %in% unlist(strsplit(input$Class, split = ", ")))
-  #   } else if(length(input$Class) == 1){
-  #     PS.data.print_Class <-  PS.data.print_Class %>%
-  #       filter(`Substance class` %in% unlist(input$Class))
-  #   } else if(length(input$Class) == 0){
-  #     PS.data.print_Class <-  PS.data.print_Class %>%
-  #       filter(`Substance class` %in% "Nothing selected!")
-  #   }
-  # } else {
-  #   PS.data.print_Class <-  PS.data.print_Class
-  # }
-  # 
-  # PS.data.print_Class <-  PS.data.print_Class %>% 
-  #   arrange(Date, `Substance class`) %>% 
-  #   distinct(Title, .keep_all = TRUE) %>% 
-  #   drop_na(Title) %>% 
-  #   select(c(# `Date`,
-  #     `Author`,
-  #     `Location`,
-  #     # `Location photo`,
-  #     `Title`,
-  #     `Type`,
-  #     `Compound(s)`,
-  #     `Substance class`,
-  #     `ICD-11 Indication or field of application`,
-  #     `ICD-11 Indication as Groups or field of application`,
-  #     # `Psychiatric indication?`,
-  #     `Adjunct psychotherapy`,
-  #     # `Adjacent psychotherapy?`,
-  #     `Subjects`,
-  #     # `Only minors?`,
-  #     `Main psychiatric outcomes`,
-  #     # `Reported side effects/adverse events`,
-  #     `Side effects (MedDRA)`,
-  #     `Consent`,
-  #     `in/out patient`,
-  #     # `Route of administration`,
-  #     `Regimen (route of administration, dose, frequency)`,
-  #     `Concomitant Medications`,
-  #     `Comment`#,
-  #     # `comment 1`,
-  #     # `comment 2`,
-  #     # `Compound_new_name,
-  #     # Country
-  #     
-  #   )) %>% 
-  #   rename(`Location (*1)` = Location,
-  #          `Compound (*2, *3)` = `Compound(s)`,
-  #          `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
-  #          `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
-  # 
-  # PS.data.print_Class},
-  # 
-  # extensions = 'Buttons',
-  # 
-  # options = list(pageLength = 1000,
-  #                searching = FALSE,
-  #                lengthChange = FALSE,
-  #                dom = 'tB',
-  #                autoWidth = TRUE,
-  #                buttons = c('copy', 'csv', 'excel')
-  # ))
   
   # class print outputs: Completed
   output$table_print_Class_Completed <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)
@@ -1583,75 +1404,6 @@ server <-  function(input, output, session) {
                                range = list(0, max(PS.data.compounds$cumul_years_compound))))
   })
   
-  # output$table_print_Compound <-  renderDataTable({df <-  reactiveVal(PS.data.print_Compound)
-  # PS.data.print_Compound  <-  PS.data.compounds %>%
-  #   arrange(Date) %>%
-  #   filter(Date >= input$range_compounds[1],
-  #          Date <= input$range_compounds[2])
-  # 
-  # if("all" %in% Compounds() == FALSE){
-  #   # i=2
-  #   tmp <-  NULL
-  #   for(i in 1:length(Compounds())){
-  #     tmp <-  rbind(tmp, PS.data.print_Compound %>%
-  #                     filter(Compound_new_name %in% Compounds()[i]))
-  #   }
-  #   PS.data.print_Compound  <-  tmp
-  #   rm(tmp)
-  # } else {
-  #   PS.data.print_Compound  <-  PS.data.print_Compound
-  # }
-  # 
-  # PS.data.print_Compound  <-  PS.data.print_Compound %>% 
-  #   ungroup() %>% 
-  #   arrange(Date, `Compound(s)`) %>% 
-  #   distinct(Title, .keep_all = TRUE) %>% 
-  #   drop_na(Title) %>% 
-  #   select(c(# `Date`,
-  #     `Author`,
-  #     `Location`,
-  #     # `Location photo`,
-  #     `Title`,
-  #     `Type`,
-  #     `Compound(s)`,
-  #     `Substance class`,
-  #     `ICD-11 Indication or field of application`,
-  #     `ICD-11 Indication as Groups or field of application`,
-  #     # `Psychiatric indication?`,
-  #     `Adjunct psychotherapy`,
-  #     # `Adjacent psychotherapy?`,
-  #     `Subjects`,
-  #     # `Only minors?`,
-  #     `Main psychiatric outcomes`,
-  #     # `Reported side effects/adverse events`,
-  #     `Side effects (MedDRA)`,
-  #     `Consent`,
-  #     `in/out patient`,
-  #     # `Route of administration`,
-  #     `Regimen (route of administration, dose, frequency)`,
-  #     `Concomitant Medications`,
-  #     `Comment`#,
-  #     # `comment 1`,
-  #     # `comment 2`,
-  #     # `Compound_new_name,
-  #     # Country
-  #   )) %>% 
-  #   rename(`Location (*1)` = Location,
-  #          `Compound (*2, *3)` = `Compound(s)`,
-  #          `ICD-11 Indication or field of application (*4)` = `ICD-11 Indication or field of application`,
-  #          `ICD-11 Indication as Groups or field of application (*4)` = `ICD-11 Indication as Groups or field of application`)
-  # PS.data.print_Compound},
-  # 
-  # extensions = 'Buttons',
-  # 
-  # options = list(pageLength = 1000,
-  #                searching = FALSE,
-  #                lengthChange = FALSE,
-  #                dom = 'tB',
-  #                autoWidth = TRUE,
-  #                buttons = c('copy', 'csv', 'excel')
-  # ))
-  
   # Published: Completed
   output$table_print_Compound_Completed <-  renderDataTable({df <-  reactiveVal(PS.data.print_Compound)
   PS.data.print_Compound  <-  PS.data.compounds %>%
@@ -2020,19 +1772,19 @@ server <-  function(input, output, session) {
       hide_colorbar() %>%
       layout(title = 'Map of Publications per country')
     
-    fig_map_points <- add_trace(fig_map,
-                                type='scattergeo',
-                                x = PS.data.map$Lon,
-                                y = PS.data.map$Lat,
-                                showlegend = FALSE,
-                                text = PS.data.map$Location,
-                                hoverinfo = 'text',
-                                mode = 'markers', 
-                                inherit = FALSE,
-                                marker = list(color='orange',
-                                              size = 5) #size = ~numbEmployed, sizeref = 4000, sizemode = 'area')
-    ) %>% 
-      layout(hoverdistance = 1)
+    # fig_map_points <- add_trace(fig_map,
+    #                             type='scattergeo',
+    #                             x = PS.data.map$Lon,
+    #                             y = PS.data.map$Lat,
+    #                             showlegend = FALSE,
+    #                             text = PS.data.map$Location,
+    #                             hoverinfo = 'text',
+    #                             mode = 'markers', 
+    #                             inherit = FALSE,
+    #                             marker = list(color='orange',
+    #                                           size = 5) #size = ~numbEmployed, sizeref = 4000, sizemode = 'area')
+    # ) %>% 
+    #   layout(hoverdistance = 1)
   })
   
   

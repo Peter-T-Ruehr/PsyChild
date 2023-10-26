@@ -20,12 +20,12 @@ further_reading<<- NULL
 
 readData <<- function(session) {
   progress <<- Progress$new(session)
-  progress$set(value = 0.1, message = 'Loading...')
+  progress$set(value = 0.1, message = 'Loading PsyChild data...')
   
   sheet_id <<- "https://docs.google.com/spreadsheets/d/1tL-9rg_K9rf5hpzj63MewlQLms1qV91Nt3RwMsFamaU/"
   PS.data <<- read_sheet(sheet_id, sheet = "PsychChild")
   
-  progress$set(value = 0.25, message = 'Loading...')
+  progress$set(value = 0.25, message = 'Cleaning PsyChild data...')
   
   # # get Author names of date before and after Current/Ongoing/Discontinued Trials
   # Current_Ongoing_Discontinued_row <<- which(PS.data$Location == "Current/Ongoing/Discontinued Trials")
@@ -184,7 +184,7 @@ readData <<- function(session) {
     ungroup() %>%
     select((-one))
   
-  progress$set(value = 0.5, message = 'Loading...')
+  progress$set(value = 0.5, message = 'Creating chronology...')
   
   # class -------------------------------------------------------------------
   # add all missing years
@@ -219,8 +219,6 @@ readData <<- function(session) {
   PS.data<<- PS.data %>% 
     left_join(cols_class, by = "Substance class")
   
-  
-  progress$set(value = 0.75, message = 'Loading...')
   # compound -------------------------------------------------------------------
   # add all missing years
   for(i in compounds){
@@ -261,6 +259,7 @@ readData <<- function(session) {
     left_join(cols_compound, by = "Compound_new_name")
   
   
+  progress$set(value = 0.75, message = 'Creating map...')
   # Map ---------------------------------------------------------------------
   PS.data.map <<- PS.data
   PS.data.map['ISO3'] <<- iso_codes$ISO3[match(PS.data.map$Country, iso_codes$Country)]
@@ -281,12 +280,12 @@ readData <<- function(session) {
   
   
   
-  progress$set(value = 0.85, message = 'Loading...')
+  progress$set(value = 0.85, message = 'Loading Further reading data...')
   
   # get Further Reading data
   further_reading <<- read_sheet(sheet_id, sheet = "Further reading")
   
-  progress$set(value = 1, message = 'Loading...')
+  progress$set(value = 1, message = 'All done!')
   progress$close()
 }
 
@@ -1761,11 +1760,13 @@ server <-  function(input, output, session) {
   
   # MAP ---------------------------------------------------------------------
   output$map_plot <-  renderPlotly({ # renderPlot
-    fig_map <-  plot_ly(PS.data.map.reduced, type='choropleth', 
+    fig_map <-  plot_ly(PS.data.map.reduced, 
+                        type='choropleth',
                         locations=PS.data.map.reduced$ISO3, 
                         z=PS.data.map.reduced$log_n, 
                         colorscale="Viridis",
-                        hovertemplate = paste0(PS.data.map.reduced$Country, ": ", PS.data.map.reduced$n, " publication(s)."))
+                        hovertemplate = paste0(PS.data.map.reduced$Country, ": ", PS.data.map.reduced$n, " publication(s).",
+                                               '<extra></extra>'))
     
     
     fig_map <- fig_map %>% 

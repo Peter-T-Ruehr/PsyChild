@@ -303,6 +303,7 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                  tabPanel(span("Home", style="color:#1e9273ff"),
                           helpText(
                             h3("PsyChild. Tracking clinical psychedelics in minors."),
+                            tags$hr(style="border-color: #28BF97;"),
                             p(),
                             p("PsyChild is a database of clinical research with psychedelics and related compounds in minors. 
                               Its main aim is to provide a growing bibliography on this multidisciplinary field for researchers, 
@@ -334,25 +335,32 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                           HTML("<strong>The data tables of PsyChild.</strong>"),
                           p("Download buttons are provided below (clipboard, csv, or Excel)."),
                           p("Mobile visibility of PsyChild on cell phones is improved when you enable the 'Desktop version' manually on your phone browser."),
+                          tags$hr(style="border-color: #28BF97;"),
                           p(),
+                          
                           h4("Published"),
                           div(dataTableOutput("table_print_PsyChild_Completed"), style = "font-size:80%"),
+                          tags$hr(style="border-color: #28BF97;"),
                           
                           HTML("<br/><br/>"),
                           h4("Archival"),
                           div(dataTableOutput("table_print_PsyChild_Archival"), style = "font-size:80%"),
+                          tags$hr(style="border-color: #28BF97;"),
                           
                           HTML("<br/><br/>"),
                           h4("Publication pending"),
                           div(dataTableOutput("table_print_PsyChild_Pending"), style = "font-size:80%"),
+                          tags$hr(style="border-color: #28BF97;"),
                           
                           HTML("<br/><br/>"),
                           h4("Discontinued/Uncertain"),
                           div(dataTableOutput("table_print_PsyChild_Discontinued"), style = "font-size:80%"),
+                          tags$hr(style="border-color: #28BF97;"),
                           
                           HTML("<br/><br/>"),
                           h4("Current/Ongoing"),
                           div(dataTableOutput("table_print_PsyChild_Ongoing"), style = "font-size:80%"),
+                          tags$hr(style="border-color: #28BF97;"),
                           
                           h6(HTML(paste0("*", tags$sup("1")," For multicenter-studies, only the main site is listed."))),
                           p(),

@@ -1759,18 +1759,23 @@ server <-  function(input, output, session) {
   ))
   
   # MAP ---------------------------------------------------------------------
+  tickvals = c(0, 5, 10, 20, 40, 70)
+  
   output$map_plot <-  renderPlotly({ # renderPlot
     fig_map <-  plot_ly(PS.data.map.reduced, 
                         type='choropleth',
                         locations=PS.data.map.reduced$ISO3, 
                         z=PS.data.map.reduced$log_n, 
                         colorscale="Viridis",
+                        colorbar=list(len=0.3,y=5000,
+                                      tickvals=log(tickvals), # x=0.8,
+                                      ticktext=tickvals),
                         hovertemplate = paste0(PS.data.map.reduced$Country, ": ", PS.data.map.reduced$n, " publication(s).",
                                                '<extra></extra>'))
     
     
     fig_map <- fig_map %>% 
-      hide_colorbar() %>%
+      # hide_colorbar() %>%
       layout(title = 'Map of Publications per country')
     
     # fig_map_points <- add_trace(fig_map,

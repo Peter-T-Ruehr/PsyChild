@@ -335,30 +335,30 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                           HTML("<strong>The data tables of PsyChild.</strong>"),
                           p("Download buttons are provided below (clipboard, csv, or Excel)."),
                           p("Mobile visibility of PsyChild on cell phones is improved when you enable the 'Desktop version' manually on your phone browser."),
-                          tags$hr(style="border-color: #28BF97;"),
-                          p(),
+                          HTML("<br/><br/>"),
                           
-                          h4("Published"),
+                          tags$hr(style="border-color: #28BF97;"),
+                          tags$h4("Published", style="color: #28BF97;"),
                           div(dataTableOutput("table_print_PsyChild_Completed"), style = "font-size:80%"),
                           HTML("<br/><br/>"),
                           
                           tags$hr(style="border-color: #28BF97;"),
-                          h4("Archival"),
+                          tags$h4("Archival", style="color: #28BF97;"),
                           div(dataTableOutput("table_print_PsyChild_Archival"), style = "font-size:80%"),
                           HTML("<br/><br/>"),
                           
                           tags$hr(style="border-color: #28BF97;"),
-                          h4("Publication pending"),
+                          tags$h4("Publication pending", style="color: #28BF97;"),
                           div(dataTableOutput("table_print_PsyChild_Pending"), style = "font-size:80%"),
                           HTML("<br/><br/>"),
                           
                           tags$hr(style="border-color: #28BF97;"),
-                          h4("Discontinued/Uncertain"),
+                          tags$h4("Discontinued/Uncertain", style="color: #28BF97;"),
                           div(dataTableOutput("table_print_PsyChild_Discontinued"), style = "font-size:80%"),
                           HTML("<br/><br/>"),
                           
                           tags$hr(style="border-color: #28BF97;"),
-                          h4("Current/Ongoing"),
+                          tags$h4("Current/Ongoing", style="color: #28BF97;"),
                           div(dataTableOutput("table_print_PsyChild_Ongoing"), style = "font-size:80%"),
                           HTML("<br/><br/>"),
                           
@@ -416,27 +416,27 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                           HTML("<br/><br/>"),
                           tags$hr(style="border-color: #28BF97;"),
                           
-                          h4("Published"),
+                          tags$h4("Published", style="color: #28BF97;"),
                           div(dataTableOutput("table_print_Class_Completed"), style = "font-size:80%"),
                           HTML("<br/><br/>"),
                           
                           tags$hr(style="border-color: #28BF97;"),
-                          h4("Archival"),
+                          tags$h4("Archival", style="color: #28BF97;"),
                           div(dataTableOutput("table_print_Class_Archival"), style = "font-size:80%"),
                           HTML("<br/><br/>"),
                           
                           tags$hr(style="border-color: #28BF97;"),
-                          h4("Publication pending"),
+                          tags$h4("Publication pending", style="color: #28BF97;"),
                           div(dataTableOutput("table_print_Class_Pending"), style = "font-size:80%"),
                           HTML("<br/><br/>"),
                           
                           tags$hr(style="border-color: #28BF97;"),
-                          h4("Discontinued/Uncertain"),
+                          tags$h4("Discontinued/Uncertain", style="color: #28BF97;"),
                           div(dataTableOutput("table_print_Class_Discontinued"), style = "font-size:80%"),
                           HTML("<br/><br/>"),
                           
                           tags$hr(style="border-color: #28BF97;"),
-                          h4("Current/Ongoing"),
+                          tags$h4("Current/Ongoing", style="color: #28BF97;"),
                           div(dataTableOutput("table_print_Class_Ongoing"), style = "font-size:80%"),
                           HTML("<br/><br/>"),
                           
@@ -542,34 +542,30 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                           
                           HTML("<strong>The underlying data of the above plot.</strong>"),
                           p("Download buttons are provided below (clipboard, csv, or Excel)."),
-                          
-                          # div(dataTableOutput("table_print_Compound"), style = "font-size:80%"),
-                          
-                          
                           HTML("<br/><br/>"),
-                          tags$hr(style="border-color: #28BF97;"),
                           
-                          h4("Published"),
+                          tags$hr(style="border-color: #28BF97;"),
+                          tags$h4("Published", style="color: #28BF97;"),
                           div(dataTableOutput("table_print_Compound_Completed"), style = "font-size:80%"),
                           HTML("<br/><br/>"),
                           
                           tags$hr(style="border-color: #28BF97;"),
-                          h4("Archival"),
+                          tags$h4("Archival", style="color: #28BF97;"),
                           div(dataTableOutput("table_print_Compound_Archival"), style = "font-size:80%"),
                           HTML("<br/><br/>"),
                           
                           tags$hr(style="border-color: #28BF97;"),
-                          h4("Publication pending"),
+                          tags$h4("Publication pending", style="color: #28BF97;"),
                           div(dataTableOutput("table_print_Compound_Pending"), style = "font-size:80%"),
                           HTML("<br/><br/>"),
                           
                           tags$hr(style="border-color: #28BF97;"),
-                          h4("Discontinued/Uncertain"),
+                          tags$h4("Discontinued/Uncertain", style="color: #28BF97;"),
                           div(dataTableOutput("table_print_Compound_Discontinued"), style = "font-size:80%"),
                           HTML("<br/><br/>"),
                           
                           tags$hr(style="border-color: #28BF97;"),
-                          h4("Current/Ongoing"),
+                          tags$h4("Current/Ongoing", style="color: #28BF97;"),
                           div(dataTableOutput("table_print_Compound_Ongoing"), style = "font-size:80%"),
                           HTML("<br/><br/>"),
                           

@@ -1759,7 +1759,7 @@ server <-  function(input, output, session) {
   ))
   
   # MAP ---------------------------------------------------------------------
-  tickvals = c(0, 5, 10, 20, 40, 70)
+  tickvals = c(0, 1, 2, 5, 10, 20, 40, 70) # c(0, log(c(5, 10, 20, 40, 70)))
   
   output$map_plot <-  renderPlotly({ # renderPlot
     fig_map <-  plot_ly(PS.data.map.reduced, 
@@ -1768,8 +1768,9 @@ server <-  function(input, output, session) {
                         z=PS.data.map.reduced$log_n, 
                         colorscale="Viridis",
                         colorbar=list(len=0.3,y=5000,
-                                      tickvals=log(tickvals), # x=0.8,
-                                      ticktext=tickvals),
+                                      tickvals=log(tickvals),
+                                      ticktext=tickvals,
+                                      title = "Publications"),
                         hovertemplate = paste0(PS.data.map.reduced$Country, ": ", PS.data.map.reduced$n, " publication(s).",
                                                '<extra></extra>'))
     

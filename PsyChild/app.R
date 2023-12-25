@@ -325,7 +325,7 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                is responsible for curating new data for PsyChild, while this webpage is written and maintened by 
                <a href='https://twitter.com/Peter_Th_R'  target='_blank'>Peter T. Rühr</a>. Issues can be reported at PsyChild's <a href='https://github.com/Peter-T-Ruehr/PsyChild/issues'  target='_blank'>GitHub page</a>.<br><br>"),
                             HTML("Please cite this website as:<br>
-                                     <em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://ruehr.org/PsyChild. doi: <a href='https://zenodo.org/doi/10.5281/zenodo.10020023'  target='_blank'>10.5281/zenodo.10020023</a>.")
+                                     <em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://PsyChild.info. doi: <a href='https://zenodo.org/doi/10.5281/zenodo.10020023'  target='_blank'>10.5281/zenodo.10020023</a>.")
                           )
                  ),
                  
@@ -604,7 +604,7 @@ Schlesische Straße 5<br>
 Email: philippruehr@gmail.com</small>"),
                             
                             h4("Preferred mention for citations: "),
-                            HTML("<small><em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://ruehr.org/PsyChild. doi: <a href='https://zenodo.org/doi/10.5281/zenodo.10020023'  target='_blank'>10.5281/zenodo.10020023</a>.</small>"),
+                            HTML("<small><em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://PsyChild.info. doi: <a href='https://zenodo.org/doi/10.5281/zenodo.10020023'  target='_blank'>10.5281/zenodo.10020023</a>.</small>"),
                             
                             h4("Dispute Resolution"),
                             HTML("<small>The European Commission provides a platform for online dispute resolution (OS): https://ec.europa.eu/consumers/odr. Please find our email in the impressum/legal notice.

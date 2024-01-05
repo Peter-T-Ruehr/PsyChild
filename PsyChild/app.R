@@ -692,8 +692,8 @@ server <-  function(input, output, session) {
                  lengthChange = FALSE,
                  dom = 'tB',
                  autoWidth = TRUE,
-                 buttons = c('copy', 'csv', 'excel')
-  ))
+                 buttons = c('copy', 'csv', 'excel'))
+  )
   
   # Current/Ongoing - Ongoing
   output$table_print_PsyChild_Ongoing <-  renderDataTable({df <-  reactiveVal(PS.data.print_Class)

@@ -65,9 +65,9 @@ readData <<- function(session) {
   PS.data$Date <<- unlist(PS.data$Date)
   # PS.data$Date <- unlist(PS.data$Date)
   
-  # # change current to 2023 - deprecated
-  # PS.data$Date[PS.data$Date == "Current"] <<- 2023
-  # # PS.data$Date[PS.data$Date == "Current"] <- 2023
+  # # change current to 2024 - deprecated
+  # PS.data$Date[PS.data$Date == "Current"] <<- 2024
+  # # PS.data$Date[PS.data$Date == "Current"] <- 2024
   
   # change Date to numeric
   PS.data$Date <<- as.numeric(PS.data$Date)
@@ -325,7 +325,7 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                is responsible for curating new data for PsyChild, while this webpage is written and maintened by 
                <a href='https://twitter.com/Peter_Th_R'  target='_blank'>Peter T. Rühr</a>. Issues can be reported at PsyChild's <a href='https://github.com/Peter-T-Ruehr/PsyChild/issues'  target='_blank'>GitHub page</a>.<br><br>"),
                             HTML("Please cite this website as:<br>
-                                     <em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://PsyChild.info. doi: <a href='https://zenodo.org/doi/10.5281/zenodo.10020023'  target='_blank'>10.5281/zenodo.10020023</a>.")
+                                     <em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from https//PsyChild.info. doi: <a href='https://zenodo.org/doi/10.5281/zenodo.10020023'  target='_blank'>10.5281/zenodo.10020023</a>.")
                           )
                  ),
                  
@@ -388,11 +388,11 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                           sliderInput("range",
                                       label = "Years of interest:",
                                       min = 1839, # min(PS.data$Date)
-                                      max = 2023, # max(PS.data$Date)
+                                      max = 2024, # max(PS.data$Date)
                                       # value = c(min(PS.data$Date), 
                                       #           max(PS.data$Date)),
                                       value = c(1839, 
-                                                2023),
+                                                2024),
                                       step = 1,
                                       sep = ''),
                           
@@ -464,11 +464,11 @@ ui<<- navbarPage(windowTitle = "PsyChild. Tracking clinical psychedelics in mino
                           sliderInput("range_compounds",
                                       label = "Years of interest:",
                                       min = 1839, # min(PS.data$Date)
-                                      max = 2023, # max(PS.data$Date)
+                                      max = 2024, # max(PS.data$Date)
                                       # value = c(min(PS.data$Date), 
                                       #           max(PS.data$Date)),
                                       value = c(1839, 
-                                                2023),
+                                                2024),
                                       step = 1,
                                       sep = ''),
                           checkboxGroupInput("All",
@@ -604,7 +604,7 @@ Schlesische Straße 5<br>
 Email: philippruehr@gmail.com</small>"),
                             
                             h4("Preferred mention for citations: "),
-                            HTML("<small><em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from http://PsyChild.info. doi: <a href='https://zenodo.org/doi/10.5281/zenodo.10020023'  target='_blank'>10.5281/zenodo.10020023</a>.</small>"),
+                            HTML("<small><em>PsyChild. Tracking Clinical Psychedelics in Minors</em> (<strong>2023)</strong>. Retrieved &lt;yyyy&#92;mm&#92;dd&gt; from https//PsyChild.info. doi: <a href='https://zenodo.org/doi/10.5281/zenodo.10020023'  target='_blank'>10.5281/zenodo.10020023</a>.</small>"),
                             
                             h4("Dispute Resolution"),
                             HTML("<small>The European Commission provides a platform for online dispute resolution (OS): https://ec.europa.eu/consumers/odr. Please find our email in the impressum/legal notice.
